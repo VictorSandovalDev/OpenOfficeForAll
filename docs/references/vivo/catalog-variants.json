@@ -1,0 +1,5950 @@
+{
+ "45181c16-0c49-4b7d-b94f-37c71d207809/purple": {
+  "type": "Mug (Wide)",
+  "family": "Coffee",
+  "color": "purple",
+  "rotations": [
+   {
+    "color": "purple",
+    "orientation": "Right",
+    "dims": {
+     "width": 14,
+     "height": 12
+    },
+    "offset": {
+     "left": 11,
+     "top": 11
+    },
+    "originX": 4,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/purple/Right"
+   },
+   {
+    "color": "purple",
+    "orientation": "Down",
+    "dims": {
+     "width": 11,
+     "height": 14
+    },
+    "offset": {
+     "left": 11,
+     "top": 11
+    },
+    "originX": 4,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/purple/Down"
+   },
+   {
+    "color": "purple",
+    "orientation": "Left",
+    "dims": {
+     "width": 14,
+     "height": 12
+    },
+    "offset": {
+     "left": 8,
+     "top": 11
+    },
+    "originX": 8,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/purple/Left"
+   },
+   {
+    "color": "purple",
+    "orientation": "Up",
+    "dims": {
+     "width": 11,
+     "height": 14
+    },
+    "offset": {
+     "left": 11,
+     "top": 9
+    },
+    "originX": 5,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/purple/Up"
+   }
+  ]
+ },
+ "31d0a844-689a-45d1-8859-127fcf068dc8/purple": {
+  "type": "Single Coffee Machine",
+  "family": "Coffee",
+  "color": "purple",
+  "rotations": [
+   {
+    "color": "purple",
+    "orientation": "Down",
+    "dims": {
+     "width": 22,
+     "height": 32
+    },
+    "offset": {
+     "left": 5,
+     "top": 4
+    },
+    "originX": 11,
+    "originY": 26,
+    "collision": [],
+    "sittable": [],
+    "key": "single-coffee-machine/purple/Down"
+   }
+  ]
+ },
+ "ba16723e-7e21-4e05-860d-abfa82e6b57a/black": {
+  "type": "Kitchen Cabinet (Large)",
+  "family": "Kitchen Counters",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 64,
+     "height": 32
+    },
+    "offset": {
+     "left": 0,
+     "top": 32
+    },
+    "originX": 32,
+    "originY": 22,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 23,
+     "height": 64
+    },
+    "offset": {
+     "left": 37,
+     "top": 0
+    },
+    "originX": 11,
+    "originY": 38,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": 0
+     },
+     {
+      "x": -0.15625,
+      "y": 1
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 64,
+     "height": 32
+    },
+    "offset": {
+     "left": 0,
+     "top": 32
+    },
+    "originX": 32,
+    "originY": 22,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 23,
+     "height": 64
+    },
+    "offset": {
+     "left": 4,
+     "top": 0
+    },
+    "originX": 11,
+    "originY": 38,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0
+     },
+     {
+      "x": -0.125,
+      "y": 1
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/black/Right"
+   }
+  ]
+ },
+ "a672c7f0-7a28-47e7-8783-ce5b12f0aee0/black": {
+  "type": "Wall Cabinet",
+  "family": "Wall Cabinet",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 32,
+     "height": 24
+    },
+    "offset": {
+     "left": 0,
+     "top": 8
+    },
+    "originX": 16,
+    "originY": 18,
+    "collision": [],
+    "sittable": [],
+    "key": "wall-cabinet/black/Down"
+   }
+  ]
+ },
+ "b9fd4b43-6935-4b04-9731-e50948e9980c/white": {
+  "type": "Mini Fridge",
+  "family": "Fridge",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 24,
+     "height": 38
+    },
+    "offset": {
+     "left": 4,
+     "top": 26
+    },
+    "originX": 12,
+    "originY": 29,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.1875
+     }
+    ],
+    "sittable": [],
+    "key": "mini-fridge/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 17,
+     "height": 45
+    },
+    "offset": {
+     "left": 4,
+     "top": 19
+    },
+    "originX": 8,
+    "originY": 33,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.40625
+     }
+    ],
+    "sittable": [],
+    "key": "mini-fridge/white/Right"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 17,
+     "height": 45
+    },
+    "offset": {
+     "left": 11,
+     "top": 19
+    },
+    "originX": 8,
+    "originY": 33,
+    "collision": [
+     {
+      "x": -0.34375,
+      "y": 0.40625
+     }
+    ],
+    "sittable": [],
+    "key": "mini-fridge/white/Left"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 38
+    },
+    "offset": {
+     "left": 4,
+     "top": 26
+    },
+    "originX": 12,
+    "originY": 29,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.1875
+     }
+    ],
+    "sittable": [],
+    "key": "mini-fridge/white/Up"
+   }
+  ]
+ },
+ "f1a995a2-306d-45cf-a28f-bf6370128219/white": {
+  "type": "Fiddle-leaf Fig",
+  "family": "Room Plant",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 46
+    },
+    "offset": {
+     "left": 3,
+     "top": 17
+    },
+    "originX": 13,
+    "originY": 36,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.46875
+     }
+    ],
+    "sittable": [],
+    "key": "fiddle-leaf-fig/white/Up"
+   },
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 24,
+     "height": 46
+    },
+    "offset": {
+     "left": 6,
+     "top": 17
+    },
+    "originX": 10,
+    "originY": 36,
+    "collision": [
+     {
+      "x": -0.1875,
+      "y": 0.46875
+     }
+    ],
+    "sittable": [],
+    "key": "fiddle-leaf-fig/white/Down"
+   }
+  ]
+ },
+ "8bb8a470-16b5-452f-8b6f-5cbeb2454f7a/white": {
+  "type": "Office Desk",
+  "family": "Desk",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 92,
+     "height": 41
+    },
+    "offset": {
+     "left": 2,
+     "top": 0
+    },
+    "originX": 46,
+    "originY": 28,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0
+     },
+     {
+      "x": 0.9375,
+      "y": 0
+     },
+     {
+      "x": 1.9375,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "office-desk/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 92,
+     "height": 41
+    },
+    "offset": {
+     "left": 2,
+     "top": 0
+    },
+    "originX": 46,
+    "originY": 28,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0
+     },
+     {
+      "x": 0.9375,
+      "y": 0
+     },
+     {
+      "x": 1.9375,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "office-desk/white/Up"
+   }
+  ]
+ },
+ "58c707cc-cc78-4f24-8529-99349a15d952/black": {
+  "type": "Aeron Chair",
+  "family": "Chair",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 23
+    },
+    "offset": {
+     "left": 4,
+     "top": 40
+    },
+    "originX": 12,
+    "originY": 17,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.125,
+      "y": -0.25
+     }
+    ],
+    "key": "aeron-chair/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 21,
+     "height": 33
+    },
+    "offset": {
+     "left": 0,
+     "top": 27
+    },
+    "originX": 13,
+    "originY": 26,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.15625
+     }
+    ],
+    "key": "aeron-chair/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 33
+    },
+    "offset": {
+     "left": 11,
+     "top": 27
+    },
+    "originX": 7,
+    "originY": 26,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.34375,
+      "y": 0.15625
+     }
+    ],
+    "key": "aeron-chair/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 24,
+     "height": 35
+    },
+    "offset": {
+     "left": 4,
+     "top": 25
+    },
+    "originX": 12,
+    "originY": 28,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.125,
+      "y": 0.21875
+     }
+    ],
+    "key": "aeron-chair/black/Down"
+   }
+  ]
+ },
+ "f66d00cd-dc5e-431b-9855-2265df0854cb/black": {
+  "type": "Cubicle Shelves",
+  "family": "Bookcase",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 72,
+     "height": 54
+    },
+    "offset": {
+     "left": 12,
+     "top": 74
+    },
+    "originX": 36,
+    "originY": 49,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 0.6875
+     },
+     {
+      "x": 0.625,
+      "y": 0.6875
+     },
+     {
+      "x": 1.625,
+      "y": 0.6875
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 72,
+     "height": 54
+    },
+    "offset": {
+     "left": 12,
+     "top": 74
+    },
+    "originX": 36,
+    "originY": 49,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 0.6875
+     },
+     {
+      "x": 0.625,
+      "y": 0.6875
+     },
+     {
+      "x": 1.625,
+      "y": 0.6875
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 17,
+     "height": 104
+    },
+    "offset": {
+     "left": 3,
+     "top": 24
+    },
+    "originX": 8,
+    "originY": 71,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 1.25
+     },
+     {
+      "x": -0.09375,
+      "y": 2.25
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 17,
+     "height": 104
+    },
+    "offset": {
+     "left": 76,
+     "top": 24
+    },
+    "originX": 8,
+    "originY": 71,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 1.25
+     },
+     {
+      "x": -0.375,
+      "y": 2.25
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/black/Left"
+   }
+  ]
+ },
+ "8b5b1cce-1db3-4420-a011-66ed393db693/yellow": {
+  "type": "Rubber Ducky",
+  "family": "Duck",
+  "color": "yellow",
+  "rotations": [
+   {
+    "color": "yellow",
+    "orientation": "Left",
+    "dims": {
+     "width": 13,
+     "height": 10
+    },
+    "offset": {
+     "left": 7,
+     "top": 11
+    },
+    "originX": 8,
+    "originY": 6,
+    "collision": [],
+    "sittable": [],
+    "key": "rubber-ducky/yellow/Left"
+   },
+   {
+    "color": "yellow",
+    "orientation": "Up",
+    "dims": {
+     "width": 11,
+     "height": 14
+    },
+    "offset": {
+     "left": 11,
+     "top": 8
+    },
+    "originX": 5,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "rubber-ducky/yellow/Up"
+   },
+   {
+    "color": "yellow",
+    "orientation": "Down",
+    "dims": {
+     "width": 11,
+     "height": 11
+    },
+    "offset": {
+     "left": 11,
+     "top": 11
+    },
+    "originX": 5,
+    "originY": 5,
+    "collision": [],
+    "sittable": [],
+    "key": "rubber-ducky/yellow/Down"
+   },
+   {
+    "color": "yellow",
+    "orientation": "Right",
+    "dims": {
+     "width": 13,
+     "height": 10
+    },
+    "offset": {
+     "left": 12,
+     "top": 11
+    },
+    "originX": 4,
+    "originY": 6,
+    "collision": [],
+    "sittable": [],
+    "key": "rubber-ducky/yellow/Right"
+   }
+  ]
+ },
+ "a08c13e2-9236-4b6d-b522-7a1faf3fef9a/lightcoffee": {
+  "type": "Mid Century Side Table",
+  "family": "1x1 Table",
+  "color": "lightcoffee",
+  "rotations": [
+   {
+    "color": "lightcoffee",
+    "orientation": "Down",
+    "dims": {
+     "width": 24,
+     "height": 24
+    },
+    "offset": {
+     "left": 4,
+     "top": 8
+    },
+    "originX": 11,
+    "originY": 17,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": -0.25
+     }
+    ],
+    "sittable": [],
+    "key": "mid-century-side-table/lightcoffee/Down"
+   },
+   {
+    "color": "lightcoffee",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 24
+    },
+    "offset": {
+     "left": 4,
+     "top": 8
+    },
+    "originX": 11,
+    "originY": 17,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": -0.25
+     }
+    ],
+    "sittable": [],
+    "key": "mid-century-side-table/lightcoffee/Up"
+   },
+   {
+    "color": "lightcoffee",
+    "orientation": "Right",
+    "dims": {
+     "width": 20,
+     "height": 27
+    },
+    "offset": {
+     "left": 6,
+     "top": 5
+    },
+    "originX": 9,
+    "originY": 13,
+    "collision": [
+     {
+      "x": -0.1875,
+      "y": -0.15625
+     }
+    ],
+    "sittable": [],
+    "key": "mid-century-side-table/lightcoffee/Right"
+   },
+   {
+    "color": "lightcoffee",
+    "orientation": "Left",
+    "dims": {
+     "width": 20,
+     "height": 27
+    },
+    "offset": {
+     "left": 6,
+     "top": 5
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [
+     {
+      "x": -0.1875,
+      "y": -0.15625
+     }
+    ],
+    "sittable": [],
+    "key": "mid-century-side-table/lightcoffee/Left"
+   }
+  ]
+ },
+ "52be93ee-25a7-4b44-911c-1bc782bab211/brown": {
+  "type": "Mid Century Leather Couch",
+  "family": "Couch",
+  "color": "brown",
+  "rotations": [
+   {
+    "color": "brown",
+    "orientation": "Down",
+    "dims": {
+     "width": 64,
+     "height": 37
+    },
+    "offset": {
+     "left": 0,
+     "top": 55
+    },
+    "originX": 32,
+    "originY": 32,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.28125
+     },
+     {
+      "x": 1,
+      "y": 0.28125
+     }
+    ],
+    "key": "mid-century-leather-couch/brown/Down"
+   },
+   {
+    "color": "brown",
+    "orientation": "Up",
+    "dims": {
+     "width": 64,
+     "height": 28
+    },
+    "offset": {
+     "left": 0,
+     "top": 64
+    },
+    "originX": 32,
+    "originY": 23,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "key": "mid-century-leather-couch/brown/Up"
+   },
+   {
+    "color": "brown",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 64
+    },
+    "offset": {
+     "left": 43,
+     "top": 29
+    },
+    "originX": 10,
+    "originY": 59,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.34375,
+      "y": 0.09375
+     },
+     {
+      "x": -0.34375,
+      "y": 1.09375
+     }
+    ],
+    "key": "mid-century-leather-couch/brown/Left"
+   },
+   {
+    "color": "brown",
+    "orientation": "Right",
+    "dims": {
+     "width": 21,
+     "height": 64
+    },
+    "offset": {
+     "left": 0,
+     "top": 29
+    },
+    "originX": 10,
+    "originY": 59,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.09375
+     },
+     {
+      "x": 0,
+      "y": 1.09375
+     }
+    ],
+    "key": "mid-century-leather-couch/brown/Right"
+   }
+  ]
+ },
+ "aae5a626-3f55-4cab-8729-15518a845518/blue": {
+  "type": "Beanbag Chair",
+  "family": "Chair",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 23,
+     "height": 23
+    },
+    "offset": {
+     "left": 9,
+     "top": 2
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.28125,
+      "y": -0.0625
+     }
+    ],
+    "key": "beanbag-chair/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 23,
+     "height": 23
+    },
+    "offset": {
+     "left": 0,
+     "top": 2
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": -0.0625
+     }
+    ],
+    "key": "beanbag-chair/blue/Right"
+   },
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 26,
+     "height": 23
+    },
+    "offset": {
+     "left": 3,
+     "top": 0
+    },
+    "originX": 13,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": 0
+     }
+    ],
+    "key": "beanbag-chair/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 26,
+     "height": 22
+    },
+    "offset": {
+     "left": 3,
+     "top": 7
+    },
+    "originX": 13,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": -0.21875
+     }
+    ],
+    "key": "beanbag-chair/blue/Up"
+   }
+  ]
+ },
+ "45181c16-0c49-4b7d-b94f-37c71d207809/coffee": {
+  "type": "Mug (Wide)",
+  "family": "Coffee",
+  "color": "coffee",
+  "rotations": [
+   {
+    "color": "coffee",
+    "orientation": "Down",
+    "dims": {
+     "width": 11,
+     "height": 14
+    },
+    "offset": {
+     "left": 10,
+     "top": 9
+    },
+    "originX": 5,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/coffee/Down"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Left",
+    "dims": {
+     "width": 14,
+     "height": 12
+    },
+    "offset": {
+     "left": 11,
+     "top": 11
+    },
+    "originX": 5,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/coffee/Left"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Up",
+    "dims": {
+     "width": 11,
+     "height": 13
+    },
+    "offset": {
+     "left": 11,
+     "top": 11
+    },
+    "originX": 5,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/coffee/Up"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Right",
+    "dims": {
+     "width": 14,
+     "height": 12
+    },
+    "offset": {
+     "left": 7,
+     "top": 11
+    },
+    "originX": 8,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-wide/coffee/Right"
+   }
+  ]
+ },
+ "7c1a1c00-1ddd-4f90-a2f0-33da00d8677c/coffee": {
+  "type": "Round Coffee Table",
+  "family": "Coffee Table",
+  "color": "coffee",
+  "rotations": [
+   {
+    "color": "coffee",
+    "orientation": "Down",
+    "dims": {
+     "width": 54,
+     "height": 37
+    },
+    "offset": {
+     "left": 5,
+     "top": 0
+    },
+    "originX": 27,
+    "originY": 16,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": 0
+     },
+     {
+      "x": 0.84375,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "round-coffee-table/coffee/Down"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Up",
+    "dims": {
+     "width": 26,
+     "height": 48
+    },
+    "offset": {
+     "left": 3,
+     "top": 0
+    },
+    "originX": 12,
+    "originY": 21,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "round-coffee-table/coffee/Up"
+   }
+  ]
+ },
+ "aae5a626-3f55-4cab-8729-15518a845518/purple": {
+  "type": "Beanbag Chair",
+  "family": "Chair",
+  "color": "purple",
+  "rotations": [
+   {
+    "color": "purple",
+    "orientation": "Left",
+    "dims": {
+     "width": 23,
+     "height": 23
+    },
+    "offset": {
+     "left": 9,
+     "top": 2
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.28125,
+      "y": -0.0625
+     }
+    ],
+    "key": "beanbag-chair/purple/Left"
+   },
+   {
+    "color": "purple",
+    "orientation": "Right",
+    "dims": {
+     "width": 23,
+     "height": 23
+    },
+    "offset": {
+     "left": 0,
+     "top": 2
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": -0.0625
+     }
+    ],
+    "key": "beanbag-chair/purple/Right"
+   },
+   {
+    "color": "purple",
+    "orientation": "Down",
+    "dims": {
+     "width": 26,
+     "height": 23
+    },
+    "offset": {
+     "left": 3,
+     "top": 0
+    },
+    "originX": 13,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": 0
+     }
+    ],
+    "key": "beanbag-chair/purple/Down"
+   },
+   {
+    "color": "purple",
+    "orientation": "Up",
+    "dims": {
+     "width": 26,
+     "height": 22
+    },
+    "offset": {
+     "left": 3,
+     "top": 7
+    },
+    "originX": 13,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": -0.21875
+     }
+    ],
+    "key": "beanbag-chair/purple/Up"
+   }
+  ]
+ },
+ "aae5a626-3f55-4cab-8729-15518a845518/pink": {
+  "type": "Beanbag Chair",
+  "family": "Chair",
+  "color": "pink",
+  "rotations": [
+   {
+    "color": "pink",
+    "orientation": "Right",
+    "dims": {
+     "width": 23,
+     "height": 23
+    },
+    "offset": {
+     "left": 0,
+     "top": 2
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": -0.0625
+     }
+    ],
+    "key": "beanbag-chair/pink/Right"
+   },
+   {
+    "color": "pink",
+    "orientation": "Left",
+    "dims": {
+     "width": 23,
+     "height": 23
+    },
+    "offset": {
+     "left": 9,
+     "top": 2
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.28125,
+      "y": -0.0625
+     }
+    ],
+    "key": "beanbag-chair/pink/Left"
+   },
+   {
+    "color": "pink",
+    "orientation": "Down",
+    "dims": {
+     "width": 26,
+     "height": 23
+    },
+    "offset": {
+     "left": 3,
+     "top": 0
+    },
+    "originX": 13,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": 0
+     }
+    ],
+    "key": "beanbag-chair/pink/Down"
+   },
+   {
+    "color": "pink",
+    "orientation": "Up",
+    "dims": {
+     "width": 26,
+     "height": 22
+    },
+    "offset": {
+     "left": 3,
+     "top": 7
+    },
+    "originX": 13,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": -0.21875
+     }
+    ],
+    "key": "beanbag-chair/pink/Up"
+   }
+  ]
+ },
+ "70e9eb9b-3373-4f89-9ddb-cd5d2300b70f/green": {
+  "type": "Bird of Paradise (Green)",
+  "family": "Room Plant",
+  "color": "green",
+  "rotations": []
+ },
+ "4cd886e4-ac74-4d4a-9e3f-f423a27443f5/white": {
+  "type": "Ceramic Planter",
+  "family": "Room Plant",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 16,
+     "height": 26
+    },
+    "offset": {
+     "left": 8,
+     "top": 3
+    },
+    "originX": 8,
+    "originY": 20,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.09375
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 16,
+     "height": 25
+    },
+    "offset": {
+     "left": 8,
+     "top": 4
+    },
+    "originX": 8,
+    "originY": 19,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.125
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/white/Right"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 16,
+     "height": 26
+    },
+    "offset": {
+     "left": 8,
+     "top": 3
+    },
+    "originX": 8,
+    "originY": 20,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.09375
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/white/Up"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 16,
+     "height": 25
+    },
+    "offset": {
+     "left": 8,
+     "top": 4
+    },
+    "originX": 8,
+    "originY": 19,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.125
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/white/Left"
+   }
+  ]
+ },
+ "7ba29be0-ab73-4702-a4ed-800c21a9ea06/blue": {
+  "type": "Lawn Chair",
+  "family": "Chair",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 27
+    },
+    "offset": {
+     "left": 4,
+     "top": 34
+    },
+    "originX": 12,
+    "originY": 18,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.125,
+      "y": -0.0625
+     }
+    ],
+    "key": "lawn-chair/blue/Up"
+   },
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 24,
+     "height": 38
+    },
+    "offset": {
+     "left": 4,
+     "top": 23
+    },
+    "originX": 12,
+    "originY": 29,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.125,
+      "y": 0.28125
+     }
+    ],
+    "key": "lawn-chair/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 19,
+     "height": 35
+    },
+    "offset": {
+     "left": 10,
+     "top": 26
+    },
+    "originX": 9,
+    "originY": 27,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.3125,
+      "y": 0.1875
+     }
+    ],
+    "key": "lawn-chair/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 19,
+     "height": 35
+    },
+    "offset": {
+     "left": 3,
+     "top": 26
+    },
+    "originX": 9,
+    "originY": 27,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": 0.1875
+     }
+    ],
+    "key": "lawn-chair/blue/Right"
+   }
+  ]
+ },
+ "226f9547-40e6-4129-b988-d6c74828d3b0/coffee": {
+  "type": "Simple Chair",
+  "family": "Chair",
+  "color": "coffee",
+  "rotations": [
+   {
+    "color": "coffee",
+    "orientation": "Up",
+    "dims": {
+     "width": 20,
+     "height": 21
+    },
+    "offset": {
+     "left": 6,
+     "top": 40
+    },
+    "originX": 10,
+    "originY": 14,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.1875,
+      "y": -0.25
+     }
+    ],
+    "key": "simple-chair/coffee/Up"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Left",
+    "dims": {
+     "width": 22,
+     "height": 31
+    },
+    "offset": {
+     "left": 7,
+     "top": 30
+    },
+    "originX": 11,
+    "originY": 24,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.21875,
+      "y": 0.0625
+     }
+    ],
+    "key": "simple-chair/coffee/Left"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Down",
+    "dims": {
+     "width": 20,
+     "height": 29
+    },
+    "offset": {
+     "left": 6,
+     "top": 31
+    },
+    "originX": 10,
+    "originY": 20,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.1875,
+      "y": 0.03125
+     }
+    ],
+    "key": "simple-chair/coffee/Down"
+   },
+   {
+    "color": "coffee",
+    "orientation": "Right",
+    "dims": {
+     "width": 22,
+     "height": 31
+    },
+    "offset": {
+     "left": 3,
+     "top": 30
+    },
+    "originX": 10,
+    "originY": 24,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": 0.0625
+     }
+    ],
+    "key": "simple-chair/coffee/Right"
+   }
+  ]
+ },
+ "72280b5c-ec80-42bb-8cf1-7682d8ba7665/green": {
+  "type": "Fern",
+  "family": "Ground Plant",
+  "color": "green",
+  "rotations": [
+   {
+    "color": "green",
+    "orientation": "Down",
+    "dims": {
+     "width": 27,
+     "height": 20
+    },
+    "offset": {
+     "left": 3,
+     "top": 6
+    },
+    "originX": 13,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "fern/green/Down"
+   }
+  ]
+ },
+ "6caaf27f-5c7e-4b61-9909-3f8dd0031b69/grey": {
+  "type": "Koi Pond",
+  "family": "Pond",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 96,
+     "height": 95
+    },
+    "offset": {
+     "left": 0,
+     "top": 0
+    },
+    "originX": 47,
+    "originY": 48,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     },
+     {
+      "x": 2,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 1
+     },
+     {
+      "x": 2,
+      "y": 1
+     },
+     {
+      "x": 1,
+      "y": 1
+     }
+    ],
+    "sittable": [],
+    "key": "koi-pond/grey/Down"
+   }
+  ]
+ },
+ "1ce4efb2-35ff-44cd-9b7e-6f62dfc489c1/green": {
+  "type": "Window (Modern)",
+  "family": "Window Large",
+  "color": "green",
+  "rotations": []
+ },
+ "6743f5f7-2e5f-4fa6-9a5f-2e5e83606787/black": {
+  "type": "Ficus",
+  "family": "Room Plant",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 26,
+     "height": 46
+    },
+    "offset": {
+     "left": 3,
+     "top": 16
+    },
+    "originX": 13,
+    "originY": 39,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.5
+     }
+    ],
+    "sittable": [],
+    "key": "ficus/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 26,
+     "height": 46
+    },
+    "offset": {
+     "left": 3,
+     "top": 16
+    },
+    "originX": 13,
+    "originY": 39,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.5
+     }
+    ],
+    "sittable": [],
+    "key": "ficus/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 26,
+     "height": 46
+    },
+    "offset": {
+     "left": 3,
+     "top": 16
+    },
+    "originX": 13,
+    "originY": 39,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.5
+     }
+    ],
+    "sittable": [],
+    "key": "ficus/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 26,
+     "height": 46
+    },
+    "offset": {
+     "left": 3,
+     "top": 16
+    },
+    "originX": 13,
+    "originY": 39,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.5
+     }
+    ],
+    "sittable": [],
+    "key": "ficus/black/Left"
+   }
+  ]
+ },
+ "86401824-136b-4e04-bca3-a2ea21190cc4/black": {
+  "type": "Wall Clock (Minimal Face)",
+  "family": "Wall Clock",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 21,
+     "height": 21
+    },
+    "offset": {
+     "left": 6,
+     "top": 23
+    },
+    "originX": 10,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "wall-clock-minimal-face/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 21
+    },
+    "offset": {
+     "left": 6,
+     "top": 23
+    },
+    "originX": 10,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "wall-clock-minimal-face/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 21,
+     "height": 21
+    },
+    "offset": {
+     "left": 6,
+     "top": 23
+    },
+    "originX": 10,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "wall-clock-minimal-face/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 21,
+     "height": 21
+    },
+    "offset": {
+     "left": 6,
+     "top": 23
+    },
+    "originX": 10,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "wall-clock-minimal-face/black/Right"
+   }
+  ]
+ },
+ "56cef06b-1087-4250-9ada-44d36841f09c/teal": {
+  "type": "Barcelona Chair",
+  "family": "Chair",
+  "color": "teal",
+  "rotations": [
+   {
+    "color": "teal",
+    "orientation": "Left",
+    "dims": {
+     "width": 22,
+     "height": 33
+    },
+    "offset": {
+     "left": 10,
+     "top": 30
+    },
+    "originX": 8,
+    "originY": 24,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.3125,
+      "y": 0.0625
+     }
+    ],
+    "key": "barcelona-chair/teal/Left"
+   },
+   {
+    "color": "teal",
+    "orientation": "Down",
+    "dims": {
+     "width": 23,
+     "height": 36
+    },
+    "offset": {
+     "left": 5,
+     "top": 26
+    },
+    "originX": 11,
+    "originY": 25,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.15625,
+      "y": 0.1875
+     }
+    ],
+    "key": "barcelona-chair/teal/Down"
+   },
+   {
+    "color": "teal",
+    "orientation": "Right",
+    "dims": {
+     "width": 22,
+     "height": 33
+    },
+    "offset": {
+     "left": 0,
+     "top": 30
+    },
+    "originX": 13,
+    "originY": 24,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.0625
+     }
+    ],
+    "key": "barcelona-chair/teal/Right"
+   },
+   {
+    "color": "teal",
+    "orientation": "Up",
+    "dims": {
+     "width": 22,
+     "height": 23
+    },
+    "offset": {
+     "left": 5,
+     "top": 41
+    },
+    "originX": 11,
+    "originY": 13,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.15625,
+      "y": -0.28125
+     }
+    ],
+    "key": "barcelona-chair/teal/Up"
+   }
+  ]
+ },
+ "eb3c6286-9681-4444-aba9-aaccd53d4a3f/black": {
+  "type": "Molecular Lamp",
+  "family": "Floor Lamp",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 23,
+     "height": 51
+    },
+    "offset": {
+     "left": 5,
+     "top": 11
+    },
+    "originX": 11,
+    "originY": 45,
+    "collision": [],
+    "sittable": [],
+    "key": "molecular-lamp/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 23,
+     "height": 51
+    },
+    "offset": {
+     "left": 5,
+     "top": 11
+    },
+    "originX": 11,
+    "originY": 45,
+    "collision": [],
+    "sittable": [],
+    "key": "molecular-lamp/black/Up"
+   }
+  ]
+ },
+ "8f55ff5b-4488-45bf-b83e-cbbcd3150de2/grey": {
+  "type": "Aloe Vera",
+  "family": "Desk Plant",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 19,
+     "height": 25
+    },
+    "offset": {
+     "left": 7,
+     "top": 3
+    },
+    "originX": 9,
+    "originY": 21,
+    "collision": [],
+    "sittable": [],
+    "key": "aloe-vera/grey/Down"
+   }
+  ]
+ },
+ "df81dc5a-c4d9-491f-9a67-c1f4829b7b6c/lightteal": {
+  "type": "Small Fishtank",
+  "family": "Small Fishtank",
+  "color": "lightteal",
+  "rotations": [
+   {
+    "color": "lightteal",
+    "orientation": "Down",
+    "dims": {
+     "width": 29,
+     "height": 40
+    },
+    "offset": {
+     "left": 1,
+     "top": 24
+    },
+    "originX": 15,
+    "originY": 30,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": 0.25
+     }
+    ],
+    "sittable": [],
+    "key": "small-fishtank/lightteal/Down"
+   },
+   {
+    "color": "lightteal",
+    "orientation": "Up",
+    "dims": {
+     "width": 29,
+     "height": 40
+    },
+    "offset": {
+     "left": 2,
+     "top": 24
+    },
+    "originX": 14,
+    "originY": 30,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0.25
+     }
+    ],
+    "sittable": [],
+    "key": "small-fishtank/lightteal/Up"
+   },
+   {
+    "color": "lightteal",
+    "orientation": "Left",
+    "dims": {
+     "width": 22,
+     "height": 43
+    },
+    "offset": {
+     "left": 5,
+     "top": 21
+    },
+    "originX": 11,
+    "originY": 31,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": 0.34375
+     }
+    ],
+    "sittable": [],
+    "key": "small-fishtank/lightteal/Left"
+   },
+   {
+    "color": "lightteal",
+    "orientation": "Right",
+    "dims": {
+     "width": 22,
+     "height": 43
+    },
+    "offset": {
+     "left": 5,
+     "top": 21
+    },
+    "originX": 11,
+    "originY": 31,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": 0.34375
+     }
+    ],
+    "sittable": [],
+    "key": "small-fishtank/lightteal/Right"
+   }
+  ]
+ },
+ "25551364-e150-4816-9b7b-a00df9420cdf/black": {
+  "type": "Simple Coffee Table",
+  "family": "Coffee Table",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 54,
+     "height": 30
+    },
+    "offset": {
+     "left": 5,
+     "top": 1
+    },
+    "originX": 27,
+    "originY": 15,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": -0.03125
+     },
+     {
+      "x": 0.84375,
+      "y": -0.03125
+     }
+    ],
+    "sittable": [],
+    "key": "simple-coffee-table/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 48
+    },
+    "offset": {
+     "left": 4,
+     "top": 1
+    },
+    "originX": 11,
+    "originY": 20,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": -0.03125
+     }
+    ],
+    "sittable": [],
+    "key": "simple-coffee-table/black/Up"
+   }
+  ]
+ },
+ "ac1a5246-3c94-43a4-a993-04fa897a5c18/grey": {
+  "type": "Round Table",
+  "family": "1x1 Table",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 28,
+     "height": 31
+    },
+    "offset": {
+     "left": 2,
+     "top": 1
+    },
+    "originX": 14,
+    "originY": 18,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": -0.03125
+     }
+    ],
+    "sittable": [],
+    "key": "round-table/grey/Down"
+   }
+  ]
+ },
+ "58425a51-2bb0-47ca-b808-f660ee7c2005/black": {
+  "type": "Floating Bookshelf",
+  "family": "Shelf",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 44,
+     "height": 21
+    },
+    "offset": {
+     "left": 26,
+     "top": 16
+    },
+    "originX": 22,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "floating-bookshelf/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 44,
+     "height": 21
+    },
+    "offset": {
+     "left": 26,
+     "top": 16
+    },
+    "originX": 22,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "floating-bookshelf/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 44,
+     "height": 21
+    },
+    "offset": {
+     "left": 26,
+     "top": 16
+    },
+    "originX": 22,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "floating-bookshelf/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 44,
+     "height": 21
+    },
+    "offset": {
+     "left": 26,
+     "top": 16
+    },
+    "originX": 22,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "floating-bookshelf/black/Up"
+   }
+  ]
+ },
+ "c51eed3e-4e9d-4de5-a06f-f69976e2d35e/orange": {
+  "type": "Philodendron",
+  "family": "Room Plant",
+  "color": "orange",
+  "rotations": [
+   {
+    "color": "orange",
+    "orientation": "Right",
+    "dims": {
+     "width": 25,
+     "height": 39
+    },
+    "offset": {
+     "left": 5,
+     "top": 23
+    },
+    "originX": 11,
+    "originY": 32,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": 0.28125
+     }
+    ],
+    "sittable": [],
+    "key": "philodendron/orange/Right"
+   },
+   {
+    "color": "orange",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 36
+    },
+    "offset": {
+     "left": 9,
+     "top": 26
+    },
+    "originX": 7,
+    "originY": 29,
+    "collision": [
+     {
+      "x": -0.28125,
+      "y": 0.1875
+     }
+    ],
+    "sittable": [],
+    "key": "philodendron/orange/Left"
+   },
+   {
+    "color": "orange",
+    "orientation": "Up",
+    "dims": {
+     "width": 21,
+     "height": 36
+    },
+    "offset": {
+     "left": 2,
+     "top": 26
+    },
+    "originX": 14,
+    "originY": 29,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0.1875
+     }
+    ],
+    "sittable": [],
+    "key": "philodendron/orange/Up"
+   },
+   {
+    "color": "orange",
+    "orientation": "Down",
+    "dims": {
+     "width": 25,
+     "height": 39
+    },
+    "offset": {
+     "left": 2,
+     "top": 23
+    },
+    "originX": 14,
+    "originY": 32,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0.28125
+     }
+    ],
+    "sittable": [],
+    "key": "philodendron/orange/Down"
+   }
+  ]
+ },
+ "516fdbc1-5623-4506-8a5d-f3604e60f059/black": {
+  "type": "Espresso Machine",
+  "family": "Coffee",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 30,
+     "height": 39
+    },
+    "offset": {
+     "left": 1,
+     "top": 8
+    },
+    "originX": 15,
+    "originY": 32,
+    "collision": [],
+    "sittable": [],
+    "key": "espresso-machine/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 20,
+     "height": 46
+    },
+    "offset": {
+     "left": 4,
+     "top": 5
+    },
+    "originX": 8,
+    "originY": 34,
+    "collision": [],
+    "sittable": [],
+    "key": "espresso-machine/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 43
+    },
+    "offset": {
+     "left": 7,
+     "top": 8
+    },
+    "originX": 12,
+    "originY": 31,
+    "collision": [],
+    "sittable": [],
+    "key": "espresso-machine/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 30,
+     "height": 39
+    },
+    "offset": {
+     "left": 1,
+     "top": 20
+    },
+    "originX": 15,
+    "originY": 32,
+    "collision": [],
+    "sittable": [],
+    "key": "espresso-machine/black/Up"
+   }
+  ]
+ },
+ "ba16723e-7e21-4e05-860d-abfa82e6b57a/grey": {
+  "type": "Kitchen Cabinet (Large)",
+  "family": "Kitchen Counters",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 64,
+     "height": 32
+    },
+    "offset": {
+     "left": 0,
+     "top": 32
+    },
+    "originX": 32,
+    "originY": 22,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/grey/Down"
+   },
+   {
+    "color": "grey",
+    "orientation": "Left",
+    "dims": {
+     "width": 23,
+     "height": 64
+    },
+    "offset": {
+     "left": 37,
+     "top": 0
+    },
+    "originX": 11,
+    "originY": 38,
+    "collision": [
+     {
+      "x": -0.15625,
+      "y": 0
+     },
+     {
+      "x": -0.15625,
+      "y": 1
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/grey/Left"
+   },
+   {
+    "color": "grey",
+    "orientation": "Right",
+    "dims": {
+     "width": 23,
+     "height": 64
+    },
+    "offset": {
+     "left": 4,
+     "top": 0
+    },
+    "originX": 11,
+    "originY": 38,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0
+     },
+     {
+      "x": -0.125,
+      "y": 1
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/grey/Right"
+   },
+   {
+    "color": "grey",
+    "orientation": "Up",
+    "dims": {
+     "width": 64,
+     "height": 32
+    },
+    "offset": {
+     "left": 0,
+     "top": 32
+    },
+    "originX": 32,
+    "originY": 22,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "kitchen-cabinet-large/grey/Up"
+   }
+  ]
+ },
+ "4b5562d3-b7c5-4837-bd15-5bb37353b8fd/black": {
+  "type": "Office Cabinet",
+  "family": "Cabinet",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 32,
+     "height": 58
+    },
+    "offset": {
+     "left": 0,
+     "top": 37
+    },
+    "originX": 16,
+    "originY": 50,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0.84375
+     }
+    ],
+    "sittable": [],
+    "key": "office-cabinet/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 32,
+     "height": 60
+    },
+    "offset": {
+     "left": 0,
+     "top": 35
+    },
+    "originX": 16,
+    "originY": 52,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0.90625
+     }
+    ],
+    "sittable": [],
+    "key": "office-cabinet/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 16,
+     "height": 75
+    },
+    "offset": {
+     "left": 12,
+     "top": 21
+    },
+    "originX": 8,
+    "originY": 59,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 1.34375
+     }
+    ],
+    "sittable": [],
+    "key": "office-cabinet/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 16,
+     "height": 75
+    },
+    "offset": {
+     "left": 4,
+     "top": 21
+    },
+    "originX": 8,
+    "originY": 59,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 1.34375
+     }
+    ],
+    "sittable": [],
+    "key": "office-cabinet/black/Right"
+   }
+  ]
+ },
+ "4cd886e4-ac74-4d4a-9e3f-f423a27443f5/brown": {
+  "type": "Ceramic Planter",
+  "family": "Room Plant",
+  "color": "brown",
+  "rotations": [
+   {
+    "color": "brown",
+    "orientation": "Down",
+    "dims": {
+     "width": 16,
+     "height": 26
+    },
+    "offset": {
+     "left": 8,
+     "top": 3
+    },
+    "originX": 8,
+    "originY": 20,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.09375
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/brown/Down"
+   },
+   {
+    "color": "brown",
+    "orientation": "Right",
+    "dims": {
+     "width": 16,
+     "height": 25
+    },
+    "offset": {
+     "left": 8,
+     "top": 4
+    },
+    "originX": 8,
+    "originY": 19,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.125
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/brown/Right"
+   },
+   {
+    "color": "brown",
+    "orientation": "Up",
+    "dims": {
+     "width": 16,
+     "height": 26
+    },
+    "offset": {
+     "left": 8,
+     "top": 3
+    },
+    "originX": 8,
+    "originY": 20,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.09375
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/brown/Up"
+   },
+   {
+    "color": "brown",
+    "orientation": "Left",
+    "dims": {
+     "width": 16,
+     "height": 25
+    },
+    "offset": {
+     "left": 8,
+     "top": 4
+    },
+    "originX": 8,
+    "originY": 19,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": -0.125
+     }
+    ],
+    "sittable": [],
+    "key": "ceramic-planter/brown/Left"
+   }
+  ]
+ },
+ "e9814f8c-eedc-403d-9f51-e9280b8d4394/blue": {
+  "type": "Mug (Regular)",
+  "family": "Coffee",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 12,
+     "height": 13
+    },
+    "offset": {
+     "left": 9,
+     "top": 9
+    },
+    "originX": 6,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 9,
+     "height": 14
+    },
+    "offset": {
+     "left": 12,
+     "top": 9
+    },
+    "originX": 4,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 12,
+     "height": 13
+    },
+    "offset": {
+     "left": 11,
+     "top": 9
+    },
+    "originX": 5,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/blue/Right"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 9,
+     "height": 15
+    },
+    "offset": {
+     "left": 12,
+     "top": 7
+    },
+    "originX": 4,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/blue/Up"
+   }
+  ]
+ },
+ "e9814f8c-eedc-403d-9f51-e9280b8d4394/black": {
+  "type": "Mug (Regular)",
+  "family": "Coffee",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 9,
+     "height": 14
+    },
+    "offset": {
+     "left": 12,
+     "top": 9
+    },
+    "originX": 4,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 12,
+     "height": 13
+    },
+    "offset": {
+     "left": 9,
+     "top": 9
+    },
+    "originX": 6,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 12,
+     "height": 13
+    },
+    "offset": {
+     "left": 11,
+     "top": 9
+    },
+    "originX": 5,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 9,
+     "height": 15
+    },
+    "offset": {
+     "left": 12,
+     "top": 7
+    },
+    "originX": 4,
+    "originY": 11,
+    "collision": [],
+    "sittable": [],
+    "key": "mug-regular/black/Up"
+   }
+  ]
+ },
+ "41253abc-2768-459a-972b-efe092e8089e/green": {
+  "type": "Pine Tree (Small)",
+  "family": "Tree",
+  "color": "green",
+  "rotations": [
+   {
+    "color": "green",
+    "orientation": "Down",
+    "dims": {
+     "width": 46,
+     "height": 82
+    },
+    "offset": {
+     "left": 25,
+     "top": 19
+    },
+    "originX": 23,
+    "originY": 68,
+    "collision": [
+     {
+      "x": 0.21875,
+      "y": 1.40625
+     }
+    ],
+    "sittable": [],
+    "key": "pine-tree-small/green/Down"
+   },
+   {
+    "color": "green",
+    "orientation": "Up",
+    "dims": {
+     "width": 46,
+     "height": 82
+    },
+    "offset": {
+     "left": 26,
+     "top": 19
+    },
+    "originX": 22,
+    "originY": 68,
+    "collision": [
+     {
+      "x": 0.1875,
+      "y": 1.40625
+     }
+    ],
+    "sittable": [],
+    "key": "pine-tree-small/green/Up"
+   }
+  ]
+ },
+ "4b7fba50-0827-442e-85f6-bb8dd262cbcb/green": {
+  "type": "Pine Tree (Large)",
+  "family": "Tree",
+  "color": "green",
+  "rotations": [
+   {
+    "color": "green",
+    "orientation": "Down",
+    "dims": {
+     "width": 62,
+     "height": 113
+    },
+    "offset": {
+     "left": 17,
+     "top": 21
+    },
+    "originX": 31,
+    "originY": 98,
+    "collision": [
+     {
+      "x": 0.46875,
+      "y": 2.34375
+     }
+    ],
+    "sittable": [],
+    "key": "pine-tree-large/green/Down"
+   },
+   {
+    "color": "green",
+    "orientation": "Up",
+    "dims": {
+     "width": 62,
+     "height": 113
+    },
+    "offset": {
+     "left": 17,
+     "top": 21
+    },
+    "originX": 31,
+    "originY": 98,
+    "collision": [
+     {
+      "x": 0.46875,
+      "y": 2.34375
+     }
+    ],
+    "sittable": [],
+    "key": "pine-tree-large/green/Up"
+   }
+  ]
+ },
+ "1ce4efb2-35ff-44cd-9b7e-6f62dfc489c1/blue": {
+  "type": "Window (Modern)",
+  "family": "Window Large",
+  "color": "blue",
+  "rotations": []
+ },
+ "5aa1ddc9-1de4-4401-99a5-e056c86ff5d7/lightgreen": {
+  "type": "Birch Tree",
+  "family": "Tree",
+  "color": "lightgreen",
+  "rotations": [
+   {
+    "color": "lightgreen",
+    "orientation": "Left",
+    "dims": {
+     "width": 133,
+     "height": 158
+    },
+    "offset": {
+     "left": 13,
+     "top": 8
+    },
+    "originX": 67,
+    "originY": 143,
+    "collision": [
+     {
+      "x": 1.59375,
+      "y": 3.75
+     }
+    ],
+    "sittable": [],
+    "key": "birch-tree/lightgreen/Left"
+   },
+   {
+    "color": "lightgreen",
+    "orientation": "Down",
+    "dims": {
+     "width": 127,
+     "height": 150
+    },
+    "offset": {
+     "left": 13,
+     "top": 16
+    },
+    "originX": 67,
+    "originY": 135,
+    "collision": [
+     {
+      "x": 1.59375,
+      "y": 3.5
+     }
+    ],
+    "sittable": [],
+    "key": "birch-tree/lightgreen/Down"
+   },
+   {
+    "color": "lightgreen",
+    "orientation": "Up",
+    "dims": {
+     "width": 133,
+     "height": 158
+    },
+    "offset": {
+     "left": 14,
+     "top": 8
+    },
+    "originX": 66,
+    "originY": 143,
+    "collision": [
+     {
+      "x": 1.5625,
+      "y": 3.75
+     }
+    ],
+    "sittable": [],
+    "key": "birch-tree/lightgreen/Up"
+   },
+   {
+    "color": "lightgreen",
+    "orientation": "Right",
+    "dims": {
+     "width": 127,
+     "height": 150
+    },
+    "offset": {
+     "left": 20,
+     "top": 16
+    },
+    "originX": 60,
+    "originY": 135,
+    "collision": [
+     {
+      "x": 1.375,
+      "y": 3.5
+     }
+    ],
+    "sittable": [],
+    "key": "birch-tree/lightgreen/Right"
+   }
+  ]
+ },
+ "84b2c6d0-e593-4d79-a338-9fbcaf65b7d6/lightgreen": {
+  "type": "Maple Tree",
+  "family": "Tree",
+  "color": "lightgreen",
+  "rotations": [
+   {
+    "color": "lightgreen",
+    "orientation": "Down",
+    "dims": {
+     "width": 114,
+     "height": 140
+    },
+    "offset": {
+     "left": 22,
+     "top": 25
+    },
+    "originX": 58,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.3125,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/lightgreen/Down"
+   },
+   {
+    "color": "lightgreen",
+    "orientation": "Up",
+    "dims": {
+     "width": 114,
+     "height": 140
+    },
+    "offset": {
+     "left": 24,
+     "top": 25
+    },
+    "originX": 56,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.25,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/lightgreen/Up"
+   },
+   {
+    "color": "lightgreen",
+    "orientation": "Left",
+    "dims": {
+     "width": 112,
+     "height": 140
+    },
+    "offset": {
+     "left": 27,
+     "top": 25
+    },
+    "originX": 53,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.15625,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/lightgreen/Left"
+   },
+   {
+    "color": "lightgreen",
+    "orientation": "Right",
+    "dims": {
+     "width": 112,
+     "height": 140
+    },
+    "offset": {
+     "left": 23,
+     "top": 25
+    },
+    "originX": 57,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.28125,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/lightgreen/Right"
+   }
+  ]
+ },
+ "84b2c6d0-e593-4d79-a338-9fbcaf65b7d6/green": {
+  "type": "Maple Tree",
+  "family": "Tree",
+  "color": "green",
+  "rotations": [
+   {
+    "color": "green",
+    "orientation": "Left",
+    "dims": {
+     "width": 112,
+     "height": 140
+    },
+    "offset": {
+     "left": 27,
+     "top": 25
+    },
+    "originX": 53,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.15625,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/green/Left"
+   },
+   {
+    "color": "green",
+    "orientation": "Up",
+    "dims": {
+     "width": 114,
+     "height": 140
+    },
+    "offset": {
+     "left": 24,
+     "top": 25
+    },
+    "originX": 56,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.25,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/green/Up"
+   },
+   {
+    "color": "green",
+    "orientation": "Right",
+    "dims": {
+     "width": 112,
+     "height": 140
+    },
+    "offset": {
+     "left": 23,
+     "top": 25
+    },
+    "originX": 57,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.28125,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/green/Right"
+   },
+   {
+    "color": "green",
+    "orientation": "Down",
+    "dims": {
+     "width": 114,
+     "height": 140
+    },
+    "offset": {
+     "left": 22,
+     "top": 25
+    },
+    "originX": 58,
+    "originY": 126,
+    "collision": [
+     {
+      "x": 1.3125,
+      "y": 3.21875
+     }
+    ],
+    "sittable": [],
+    "key": "maple-tree/green/Down"
+   }
+  ]
+ },
+ "dcd502e6-5239-4198-aff3-5a37111f2689/white": {
+  "type": "Bookcase (Tall)",
+  "family": "Bookcase",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 59,
+     "height": 59
+    },
+    "offset": {
+     "left": 3,
+     "top": 5
+    },
+    "originX": 29,
+    "originY": 51,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.84375
+     },
+     {
+      "x": 0.90625,
+      "y": 0.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 13,
+     "height": 91
+    },
+    "offset": {
+     "left": 4,
+     "top": 5
+    },
+    "originX": 6,
+    "originY": 65,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.84375
+     },
+     {
+      "x": -0.125,
+      "y": 1.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/white/Right"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 13,
+     "height": 91
+    },
+    "offset": {
+     "left": 47,
+     "top": 5
+    },
+    "originX": 6,
+    "originY": 65,
+    "collision": [
+     {
+      "x": -0.46875,
+      "y": 0.84375
+     },
+     {
+      "x": -0.46875,
+      "y": 1.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/white/Left"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 59,
+     "height": 59
+    },
+    "offset": {
+     "left": 3,
+     "top": 5
+    },
+    "originX": 29,
+    "originY": 51,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.84375
+     },
+     {
+      "x": 0.90625,
+      "y": 0.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/white/Up"
+   }
+  ]
+ },
+ "eb3c6286-9681-4444-aba9-aaccd53d4a3f/grey": {
+  "type": "Molecular Lamp",
+  "family": "Floor Lamp",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Up",
+    "dims": {
+     "width": 23,
+     "height": 51
+    },
+    "offset": {
+     "left": 5,
+     "top": 11
+    },
+    "originX": 11,
+    "originY": 45,
+    "collision": [],
+    "sittable": [],
+    "key": "molecular-lamp/grey/Up"
+   },
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 23,
+     "height": 51
+    },
+    "offset": {
+     "left": 5,
+     "top": 11
+    },
+    "originX": 11,
+    "originY": 45,
+    "collision": [],
+    "sittable": [],
+    "key": "molecular-lamp/grey/Down"
+   }
+  ]
+ },
+ "34e3aa90-8289-4218-b196-1d4a08c5a972/black": {
+  "type": "Poster Easel",
+  "family": "Easel",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 32,
+     "height": 42
+    },
+    "offset": {
+     "left": 0,
+     "top": 22
+    },
+    "originX": 16,
+    "originY": 34,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0.3125
+     }
+    ],
+    "sittable": [],
+    "key": "poster-easel/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 31,
+     "height": 48
+    },
+    "offset": {
+     "left": 0,
+     "top": 15
+    },
+    "originX": 16,
+    "originY": 39,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0.53125
+     }
+    ],
+    "sittable": [],
+    "key": "poster-easel/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 31,
+     "height": 48
+    },
+    "offset": {
+     "left": 1,
+     "top": 15
+    },
+    "originX": 15,
+    "originY": 39,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": 0.53125
+     }
+    ],
+    "sittable": [],
+    "key": "poster-easel/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 30,
+     "height": 41
+    },
+    "offset": {
+     "left": 1,
+     "top": 22
+    },
+    "originX": 15,
+    "originY": 32,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": 0.3125
+     }
+    ],
+    "sittable": [],
+    "key": "poster-easel/black/Up"
+   }
+  ]
+ },
+ "fda24f93-e4e1-4ff4-9486-b98d08e828b3/white": {
+  "type": "Arcade Machine",
+  "family": "Arcade Machine",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 32,
+     "height": 67
+    },
+    "offset": {
+     "left": 32,
+     "top": 29
+    },
+    "originX": 16,
+    "originY": 60,
+    "collision": [
+     {
+      "x": 0,
+      "y": 1.09375
+     }
+    ],
+    "sittable": [],
+    "key": "arcade-machine/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 30,
+     "height": 69
+    },
+    "offset": {
+     "left": 34,
+     "top": 27
+    },
+    "originX": 15,
+    "originY": 54,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 1.15625
+     }
+    ],
+    "sittable": [],
+    "key": "arcade-machine/white/Left"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 32,
+     "height": 67
+    },
+    "offset": {
+     "left": 32,
+     "top": 29
+    },
+    "originX": 15,
+    "originY": 53,
+    "collision": [
+     {
+      "x": 0,
+      "y": 1.09375
+     }
+    ],
+    "sittable": [],
+    "key": "arcade-machine/white/Up"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 30,
+     "height": 69
+    },
+    "offset": {
+     "left": 32,
+     "top": 27
+    },
+    "originX": 17,
+    "originY": 54,
+    "collision": [
+     {
+      "x": 0,
+      "y": 1.15625
+     }
+    ],
+    "sittable": [],
+    "key": "arcade-machine/white/Right"
+   }
+  ]
+ },
+ "2b5e8ee9-d636-4d8a-a472-b7759e3ea753/white": {
+  "type": "Tablet and Phone",
+  "family": "Mobile",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 22,
+     "height": 19
+    },
+    "offset": {
+     "left": 5,
+     "top": 7
+    },
+    "originX": 11,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "tablet-and-phone/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 22,
+     "height": 19
+    },
+    "offset": {
+     "left": 5,
+     "top": 4
+    },
+    "originX": 11,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "tablet-and-phone/white/Up"
+   }
+  ]
+ },
+ "3ba73cf6-7c96-4cb8-aed2-c1f7e6d013cf/white": {
+  "type": "Oval Desk",
+  "family": "Desk",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 92,
+     "height": 43
+    },
+    "offset": {
+     "left": 2,
+     "top": 0
+    },
+    "originX": 46,
+    "originY": 28,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0
+     },
+     {
+      "x": 0.9375,
+      "y": 0
+     },
+     {
+      "x": 1.9375,
+      "y": 0
+     }
+    ],
+    "sittable": [],
+    "key": "oval-desk/white/Down"
+   }
+  ]
+ },
+ "d1d5d886-51bb-4625-9022-940c12b62505/blue": {
+  "type": "Gamer Chair",
+  "family": "Chair",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 28,
+     "height": 43
+    },
+    "offset": {
+     "left": 2,
+     "top": 18
+    },
+    "originX": 14,
+    "originY": 36,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.0625,
+      "y": 0.4375
+     }
+    ],
+    "key": "gamer-chair/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 24,
+     "height": 44
+    },
+    "offset": {
+     "left": 30,
+     "top": 17
+    },
+    "originX": 13,
+    "originY": 36,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0.0625,
+      "y": 0.46875
+     }
+    ],
+    "key": "gamer-chair/blue/Right"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 24,
+     "height": 44
+    },
+    "offset": {
+     "left": 10,
+     "top": 17
+    },
+    "originX": 10,
+    "originY": 36,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.3125,
+      "y": 0.46875
+     }
+    ],
+    "key": "gamer-chair/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 28,
+     "height": 32
+    },
+    "offset": {
+     "left": 2,
+     "top": 29
+    },
+    "originX": 14,
+    "originY": 25,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.0625,
+      "y": 0.09375
+     }
+    ],
+    "key": "gamer-chair/blue/Up"
+   }
+  ]
+ },
+ "90aa6ca7-cd77-4654-b9af-0181fd80c59e/white": {
+  "type": "Abstract Painting (Rectangles)",
+  "family": "Painting",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 30,
+     "height": 45
+    },
+    "offset": {
+     "left": 18,
+     "top": 12
+    },
+    "originX": 15,
+    "originY": 25,
+    "collision": [],
+    "sittable": [],
+    "key": "abstract-painting-rectangles/white/Down"
+   }
+  ]
+ },
+ "8bdc93c3-470c-46ab-a755-cf21d083dd97/white": {
+  "type": "Small potted Hosta",
+  "family": "Desk Plant",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 17,
+     "height": 21
+    },
+    "offset": {
+     "left": 7,
+     "top": 8
+    },
+    "originX": 9,
+    "originY": 17,
+    "collision": [],
+    "sittable": [],
+    "key": "small-potted-hosta/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 17,
+     "height": 21
+    },
+    "offset": {
+     "left": 8,
+     "top": 8
+    },
+    "originX": 8,
+    "originY": 17,
+    "collision": [],
+    "sittable": [],
+    "key": "small-potted-hosta/white/Up"
+   }
+  ]
+ },
+ "f66d00cd-dc5e-431b-9855-2265df0854cb/white": {
+  "type": "Cubicle Shelves",
+  "family": "Bookcase",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 72,
+     "height": 54
+    },
+    "offset": {
+     "left": 12,
+     "top": 74
+    },
+    "originX": 36,
+    "originY": 49,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 0.6875
+     },
+     {
+      "x": 0.625,
+      "y": 0.6875
+     },
+     {
+      "x": 1.625,
+      "y": 0.6875
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 17,
+     "height": 104
+    },
+    "offset": {
+     "left": 3,
+     "top": 24
+    },
+    "originX": 8,
+    "originY": 71,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 1.25
+     },
+     {
+      "x": -0.09375,
+      "y": 2.25
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/white/Right"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 17,
+     "height": 104
+    },
+    "offset": {
+     "left": 76,
+     "top": 24
+    },
+    "originX": 8,
+    "originY": 71,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 1.25
+     },
+     {
+      "x": -0.375,
+      "y": 2.25
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/white/Left"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 72,
+     "height": 54
+    },
+    "offset": {
+     "left": 12,
+     "top": 74
+    },
+    "originX": 36,
+    "originY": 49,
+    "collision": [
+     {
+      "x": -0.375,
+      "y": 0.6875
+     },
+     {
+      "x": 0.625,
+      "y": 0.6875
+     },
+     {
+      "x": 1.625,
+      "y": 0.6875
+     }
+    ],
+    "sittable": [],
+    "key": "cubicle-shelves/white/Up"
+   }
+  ]
+ },
+ "1ce4efb2-35ff-44cd-9b7e-6f62dfc489c1/lightblue": {
+  "type": "Window (Modern)",
+  "family": "Window Large",
+  "color": "lightblue",
+  "rotations": []
+ },
+ "7005d57a-7da2-4140-a0e7-75079e574d66/lightblue": {
+  "type": "Hip Wall Art",
+  "family": "Wall Cover",
+  "color": "lightblue",
+  "rotations": [
+   {
+    "color": "lightblue",
+    "orientation": "Down",
+    "dims": {
+     "width": 96,
+     "height": 60
+    },
+    "offset": {
+     "left": 0,
+     "top": 4
+    },
+    "originX": 48,
+    "originY": 59,
+    "collision": [],
+    "sittable": [],
+    "key": "hip-wall-art/lightblue/Down"
+   },
+   {
+    "color": "lightblue",
+    "orientation": "Up",
+    "dims": {
+     "width": 96,
+     "height": 60
+    },
+    "offset": {
+     "left": 0,
+     "top": 4
+    },
+    "originX": 48,
+    "originY": 59,
+    "collision": [],
+    "sittable": [],
+    "key": "hip-wall-art/lightblue/Up"
+   }
+  ]
+ },
+ "d80079f0-8449-4b85-bec0-2585c4c97c3d/grey": {
+  "type": "Television Screen (Wall)",
+  "family": "Mounted Display",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 47,
+     "height": 31
+    },
+    "offset": {
+     "left": 9,
+     "top": 17
+    },
+    "originX": 24,
+    "originY": 15,
+    "collision": [],
+    "sittable": [],
+    "key": "television-screen-wall/grey/Down"
+   }
+  ]
+ },
+ "7274f83a-3e70-49b0-966a-b82c04619226/blue": {
+  "type": "Modular Couch (Segment)",
+  "family": "Couch",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 34,
+     "height": 31
+    },
+    "offset": {
+     "left": 31,
+     "top": 29
+    },
+    "originX": 17,
+    "originY": 20,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0.03125,
+      "y": 0.09375
+     }
+    ],
+    "key": "modular-couch-segment/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 20,
+     "height": 46
+    },
+    "offset": {
+     "left": 32,
+     "top": 16
+    },
+    "originX": 10,
+    "originY": 27,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.5
+     }
+    ],
+    "key": "modular-couch-segment/blue/Right"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 34,
+     "height": 25
+    },
+    "offset": {
+     "left": 31,
+     "top": 36
+    },
+    "originX": 17,
+    "originY": 15,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0.03125,
+      "y": -0.125
+     }
+    ],
+    "key": "modular-couch-segment/blue/Up"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 20,
+     "height": 46
+    },
+    "offset": {
+     "left": 44,
+     "top": 16
+    },
+    "originX": 9,
+    "originY": 27,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.375,
+      "y": 0.5
+     }
+    ],
+    "key": "modular-couch-segment/blue/Left"
+   }
+  ]
+ },
+ "68a06464-342f-4877-aa85-1fdabdb3600e/black": {
+  "type": "Globe",
+  "family": "Globe",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 23,
+     "height": 29
+    },
+    "offset": {
+     "left": 5,
+     "top": 1
+    },
+    "originX": 11,
+    "originY": 24,
+    "collision": [],
+    "sittable": [],
+    "key": "globe/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 23,
+     "height": 29
+    },
+    "offset": {
+     "left": 5,
+     "top": 1
+    },
+    "originX": 10,
+    "originY": 24,
+    "collision": [],
+    "sittable": [],
+    "key": "globe/black/Up"
+   }
+  ]
+ },
+ "07f52b2a-8938-4405-8e83-d7e688419675/blue": {
+  "type": "Modular Couch (Corner)",
+  "family": "Couch",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 64,
+     "height": 31
+    },
+    "offset": {
+     "left": 1,
+     "top": 29
+    },
+    "originX": 47,
+    "originY": 19,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": 0.09375
+     }
+    ],
+    "sittable": [
+     {
+      "x": 0.96875,
+      "y": 0.09375
+     }
+    ],
+    "key": "modular-couch-corner/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 64,
+     "height": 25
+    },
+    "offset": {
+     "left": 31,
+     "top": 36
+    },
+    "originX": 17,
+    "originY": 12,
+    "collision": [
+     {
+      "x": 1.03125,
+      "y": -0.125
+     }
+    ],
+    "sittable": [
+     {
+      "x": 0.03125,
+      "y": -0.125
+     }
+    ],
+    "key": "modular-couch-corner/blue/Up"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 31,
+     "height": 74
+    },
+    "offset": {
+     "left": 33,
+     "top": 3
+    },
+    "originX": 15,
+    "originY": 45,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": -0.09375
+     }
+    ],
+    "sittable": [
+     {
+      "x": -0.03125,
+      "y": 0.90625
+     }
+    ],
+    "key": "modular-couch-corner/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 31,
+     "height": 77
+    },
+    "offset": {
+     "left": 32,
+     "top": 16
+    },
+    "originX": 16,
+    "originY": 32,
+    "collision": [
+     {
+      "x": 0,
+      "y": 1.5
+     }
+    ],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.5
+     }
+    ],
+    "key": "modular-couch-corner/blue/Right"
+   }
+  ]
+ },
+ "6f2a8f60-6def-42ee-9a80-48809c9eab43/black": {
+  "type": "U-Shaped Armchair",
+  "family": "Armchair",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 33
+    },
+    "offset": {
+     "left": 11,
+     "top": 29
+    },
+    "originX": 10,
+    "originY": 21,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.34375,
+      "y": 0.09375
+     }
+    ],
+    "key": "u-shaped-armchair/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 26,
+     "height": 29
+    },
+    "offset": {
+     "left": 3,
+     "top": 34
+    },
+    "originX": 13,
+    "originY": 18,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": -0.0625
+     }
+    ],
+    "key": "u-shaped-armchair/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 26,
+     "height": 30
+    },
+    "offset": {
+     "left": 3,
+     "top": 31
+    },
+    "originX": 13,
+    "originY": 20,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.09375,
+      "y": 0.03125
+     }
+    ],
+    "key": "u-shaped-armchair/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 21,
+     "height": 33
+    },
+    "offset": {
+     "left": 0,
+     "top": 29
+    },
+    "originX": 10,
+    "originY": 21,
+    "collision": [],
+    "sittable": [
+     {
+      "x": 0,
+      "y": 0.09375
+     }
+    ],
+    "key": "u-shaped-armchair/black/Right"
+   }
+  ]
+ },
+ "1177c24b-cf4d-4bd0-81bb-95c0196754b2/white": {
+  "type": "Whiteboard",
+  "family": "Whiteboard",
+  "color": "white",
+  "rotations": []
+ },
+ "c6ef19b6-1515-4c15-a39d-2f983856011b/blue": {
+  "type": "PP501 Chair",
+  "family": "Chair",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 18,
+     "height": 27
+    },
+    "offset": {
+     "left": 5,
+     "top": 3
+    },
+    "originX": 8,
+    "originY": 19,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.15625,
+      "y": -0.09375
+     }
+    ],
+    "key": "pp501-chair/blue/Right"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 18,
+     "height": 27
+    },
+    "offset": {
+     "left": 9,
+     "top": 3
+    },
+    "originX": 9,
+    "originY": 19,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.28125,
+      "y": -0.09375
+     }
+    ],
+    "key": "pp501-chair/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 22,
+     "height": 27
+    },
+    "offset": {
+     "left": 5,
+     "top": 3
+    },
+    "originX": 11,
+    "originY": 16,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.15625,
+      "y": -0.09375
+     }
+    ],
+    "key": "pp501-chair/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 24,
+     "height": 22
+    },
+    "offset": {
+     "left": 4,
+     "top": 10
+    },
+    "originX": 12,
+    "originY": 12,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.125,
+      "y": -0.3125
+     }
+    ],
+    "key": "pp501-chair/blue/Up"
+   }
+  ]
+ },
+ "dc173064-2a72-4703-b056-aa57527f463e/blue": {
+  "type": "Book (Open)",
+  "family": "Book",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 25,
+     "height": 14
+    },
+    "offset": {
+     "left": 4,
+     "top": 9
+    },
+    "originX": 12,
+    "originY": 7,
+    "collision": [],
+    "sittable": [],
+    "key": "book-open/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 14,
+     "height": 23
+    },
+    "offset": {
+     "left": 9,
+     "top": 5
+    },
+    "originX": 7,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "book-open/blue/Right"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 14,
+     "height": 23
+    },
+    "offset": {
+     "left": 9,
+     "top": 5
+    },
+    "originX": 7,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "book-open/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 25,
+     "height": 14
+    },
+    "offset": {
+     "left": 3,
+     "top": 9
+    },
+    "originX": 12,
+    "originY": 7,
+    "collision": [],
+    "sittable": [],
+    "key": "book-open/blue/Up"
+   }
+  ]
+ },
+ "ea33ea8f-3b54-4ce2-91c6-5f2fcfcf76af/black": {
+  "type": "Filing Cabinet",
+  "family": "Cabinet",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 30,
+     "height": 42
+    },
+    "offset": {
+     "left": 1,
+     "top": 22
+    },
+    "originX": 15,
+    "originY": 31,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": 0.3125
+     }
+    ],
+    "sittable": [],
+    "key": "filing-cabinet/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 22,
+     "height": 48
+    },
+    "offset": {
+     "left": 6,
+     "top": 16
+    },
+    "originX": 11,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.1875,
+      "y": 0.5
+     }
+    ],
+    "sittable": [],
+    "key": "filing-cabinet/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 30,
+     "height": 42
+    },
+    "offset": {
+     "left": 1,
+     "top": 22
+    },
+    "originX": 15,
+    "originY": 31,
+    "collision": [
+     {
+      "x": -0.03125,
+      "y": 0.3125
+     }
+    ],
+    "sittable": [],
+    "key": "filing-cabinet/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 22,
+     "height": 48
+    },
+    "offset": {
+     "left": 4,
+     "top": 16
+    },
+    "originX": 11,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.5
+     }
+    ],
+    "sittable": [],
+    "key": "filing-cabinet/black/Right"
+   }
+  ]
+ },
+ "9114c692-d7ce-4c7b-a867-deb8c97dbd61/blue": {
+  "type": "Inkpen Notes",
+  "family": "Handwritten Notes",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 22,
+     "height": 17
+    },
+    "offset": {
+     "left": 6,
+     "top": 6
+    },
+    "originX": 11,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "inkpen-notes/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 22,
+     "height": 17
+    },
+    "offset": {
+     "left": 4,
+     "top": 9
+    },
+    "originX": 11,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "inkpen-notes/blue/Up"
+   }
+  ]
+ },
+ "2b5e8ee9-d636-4d8a-a472-b7759e3ea753/grey": {
+  "type": "Tablet and Phone",
+  "family": "Mobile",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 22,
+     "height": 19
+    },
+    "offset": {
+     "left": 5,
+     "top": 7
+    },
+    "originX": 11,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "tablet-and-phone/grey/Down"
+   },
+   {
+    "color": "grey",
+    "orientation": "Up",
+    "dims": {
+     "width": 22,
+     "height": 19
+    },
+    "offset": {
+     "left": 5,
+     "top": 4
+    },
+    "originX": 11,
+    "originY": 12,
+    "collision": [],
+    "sittable": [],
+    "key": "tablet-and-phone/grey/Up"
+   }
+  ]
+ },
+ "e9600fad-8c74-4edb-96ee-cbcdea49cd2d/grey": {
+  "type": "Filing Cabinet",
+  "family": "Filing Cabinet",
+  "color": "grey",
+  "rotations": []
+ },
+ "be18cf94-4fb9-4d5d-934b-8972a76ee27c/grey": {
+  "type": "Digital Artist Computer",
+  "family": "Computer Set",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 37,
+     "height": 33
+    },
+    "offset": {
+     "left": 33,
+     "top": 26
+    },
+    "originX": 15,
+    "originY": 21,
+    "collision": [],
+    "sittable": [],
+    "key": "digital-artist-computer/grey/Down"
+   },
+   {
+    "color": "grey",
+    "orientation": "Up",
+    "dims": {
+     "width": 38,
+     "height": 30
+    },
+    "offset": {
+     "left": 25,
+     "top": 28
+    },
+    "originX": 23,
+    "originY": 19,
+    "collision": [],
+    "sittable": [],
+    "key": "digital-artist-computer/grey/Up"
+   }
+  ]
+ },
+ "baa74b32-84d8-487b-94d5-97d6654f30ad/purple": {
+  "type": "Portfolio Drawers",
+  "family": "Cabinet",
+  "color": "purple",
+  "rotations": [
+   {
+    "color": "purple",
+    "orientation": "Down",
+    "dims": {
+     "width": 48,
+     "height": 35
+    },
+    "offset": {
+     "left": 8,
+     "top": 29
+    },
+    "originX": 24,
+    "originY": 25,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": 0.09375
+     },
+     {
+      "x": 0.75,
+      "y": 0.09375
+     }
+    ],
+    "sittable": [],
+    "key": "portfolio-drawers/purple/Down"
+   },
+   {
+    "color": "purple",
+    "orientation": "Up",
+    "dims": {
+     "width": 48,
+     "height": 35
+    },
+    "offset": {
+     "left": 8,
+     "top": 29
+    },
+    "originX": 24,
+    "originY": 25,
+    "collision": [
+     {
+      "x": -0.25,
+      "y": 0.09375
+     },
+     {
+      "x": 0.75,
+      "y": 0.09375
+     }
+    ],
+    "sittable": [],
+    "key": "portfolio-drawers/purple/Up"
+   },
+   {
+    "color": "purple",
+    "orientation": "Right",
+    "dims": {
+     "width": 26,
+     "height": 51
+    },
+    "offset": {
+     "left": 4,
+     "top": 13
+    },
+    "originX": 12,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.59375
+     }
+    ],
+    "sittable": [],
+    "key": "portfolio-drawers/purple/Right"
+   },
+   {
+    "color": "purple",
+    "orientation": "Left",
+    "dims": {
+     "width": 26,
+     "height": 51
+    },
+    "offset": {
+     "left": 34,
+     "top": 13
+    },
+    "originX": 14,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.0625,
+      "y": 0.59375
+     }
+    ],
+    "sittable": [],
+    "key": "portfolio-drawers/purple/Left"
+   }
+  ]
+ },
+ "3a461dd5-f111-45f7-9cc2-7a4d76e9cfb6/blue": {
+  "type": "Hardware Dev Computer",
+  "family": "Computer Set",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 49,
+     "height": 38
+    },
+    "offset": {
+     "left": 9,
+     "top": 21
+    },
+    "originX": 23,
+    "originY": 26,
+    "collision": [],
+    "sittable": [],
+    "key": "hardware-dev-computer/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 57,
+     "height": 28
+    },
+    "offset": {
+     "left": 5,
+     "top": 29
+    },
+    "originX": 43,
+    "originY": 18,
+    "collision": [],
+    "sittable": [],
+    "key": "hardware-dev-computer/blue/Up"
+   }
+  ]
+ },
+ "abb317d7-bf40-4c85-a6e8-e6dcc7672c26/white": {
+  "type": "Water Cooler",
+  "family": "Hydration",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 20,
+     "height": 48
+    },
+    "offset": {
+     "left": 6,
+     "top": 15
+    },
+    "originX": 10,
+    "originY": 39,
+    "collision": [
+     {
+      "x": -0.1875,
+      "y": 0.53125
+     }
+    ],
+    "sittable": [],
+    "key": "water-cooler/white/Down"
+   }
+  ]
+ },
+ "3a461dd5-f111-45f7-9cc2-7a4d76e9cfb6/grey": {
+  "type": "Hardware Dev Computer",
+  "family": "Computer Set",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 49,
+     "height": 38
+    },
+    "offset": {
+     "left": 9,
+     "top": 21
+    },
+    "originX": 23,
+    "originY": 26,
+    "collision": [],
+    "sittable": [],
+    "key": "hardware-dev-computer/grey/Down"
+   },
+   {
+    "color": "grey",
+    "orientation": "Up",
+    "dims": {
+     "width": 57,
+     "height": 28
+    },
+    "offset": {
+     "left": 5,
+     "top": 29
+    },
+    "originX": 43,
+    "originY": 18,
+    "collision": [],
+    "sittable": [],
+    "key": "hardware-dev-computer/grey/Up"
+   }
+  ]
+ },
+ "873b5c6a-80ad-4e65-9b15-7e2b2b496eab/white": {
+  "type": "Laptop Computer",
+  "family": "Computer Set",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 20,
+     "height": 28
+    },
+    "offset": {
+     "left": 38,
+     "top": 30
+    },
+    "originX": 10,
+    "originY": 19,
+    "collision": [],
+    "sittable": [],
+    "key": "laptop-computer/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 20,
+     "height": 17
+    },
+    "offset": {
+     "left": 38,
+     "top": 29
+    },
+    "originX": 10,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "laptop-computer/white/Up"
+   }
+  ]
+ },
+ "7192b83c-43e3-4828-9a9d-6a7635a78d71/grey": {
+  "type": "Book (Closed)",
+  "family": "Book",
+  "color": "grey",
+  "rotations": [
+   {
+    "color": "grey",
+    "orientation": "Down",
+    "dims": {
+     "width": 14,
+     "height": 16
+    },
+    "offset": {
+     "left": 9,
+     "top": 8
+    },
+    "originX": 7,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/grey/Down"
+   },
+   {
+    "color": "grey",
+    "orientation": "Left",
+    "dims": {
+     "width": 16,
+     "height": 14
+    },
+    "offset": {
+     "left": 8,
+     "top": 9
+    },
+    "originX": 7,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/grey/Left"
+   },
+   {
+    "color": "grey",
+    "orientation": "Up",
+    "dims": {
+     "width": 14,
+     "height": 16
+    },
+    "offset": {
+     "left": 9,
+     "top": 8
+    },
+    "originX": 6,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/grey/Up"
+   },
+   {
+    "color": "grey",
+    "orientation": "Right",
+    "dims": {
+     "width": 16,
+     "height": 14
+    },
+    "offset": {
+     "left": 8,
+     "top": 9
+    },
+    "originX": 8,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/grey/Right"
+   }
+  ]
+ },
+ "59e890f9-0216-418c-8ebd-f10b7a59797d/white": {
+  "type": "Simple Table 2x3",
+  "family": "2x3 Table",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 96,
+     "height": 74
+    },
+    "offset": {
+     "left": 0,
+     "top": 0
+    },
+    "originX": 47,
+    "originY": 32,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     },
+     {
+      "x": 2,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 1
+     },
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 2,
+      "y": 1
+     }
+    ],
+    "sittable": [],
+    "key": "simple-table-2x3/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 64,
+     "height": 106
+    },
+    "offset": {
+     "left": 32,
+     "top": 0
+    },
+    "originX": 31,
+    "originY": 52,
+    "collision": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 1,
+      "y": 0
+     },
+     {
+      "x": 0,
+      "y": 1
+     },
+     {
+      "x": 1,
+      "y": 1
+     },
+     {
+      "x": 0,
+      "y": 2
+     },
+     {
+      "x": 1,
+      "y": 2
+     }
+    ],
+    "sittable": [],
+    "key": "simple-table-2x3/white/Up"
+   }
+  ]
+ },
+ "cbb277c1-95c6-4b46-8521-ebd3bfdbcf98/red": {
+  "type": "Space Chair",
+  "family": "Chair",
+  "color": "red",
+  "rotations": [
+   {
+    "color": "red",
+    "orientation": "Down",
+    "dims": {
+     "width": 24,
+     "height": 28
+    },
+    "offset": {
+     "left": 4,
+     "top": 0
+    },
+    "originX": 12,
+    "originY": 19,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.125,
+      "y": 0
+     }
+    ],
+    "key": "space-chair/red/Down"
+   },
+   {
+    "color": "red",
+    "orientation": "Right",
+    "dims": {
+     "width": 21,
+     "height": 28
+    },
+    "offset": {
+     "left": 1,
+     "top": 1
+    },
+    "originX": 12,
+    "originY": 21,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.03125,
+      "y": -0.03125
+     }
+    ],
+    "key": "space-chair/red/Right"
+   },
+   {
+    "color": "red",
+    "orientation": "Up",
+    "dims": {
+     "width": 22,
+     "height": 19
+    },
+    "offset": {
+     "left": 5,
+     "top": 12
+    },
+    "originX": 11,
+    "originY": 10,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.15625,
+      "y": -0.375
+     }
+    ],
+    "key": "space-chair/red/Up"
+   },
+   {
+    "color": "red",
+    "orientation": "Left",
+    "dims": {
+     "width": 21,
+     "height": 28
+    },
+    "offset": {
+     "left": 10,
+     "top": 1
+    },
+    "originX": 8,
+    "originY": 21,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.3125,
+      "y": -0.03125
+     }
+    ],
+    "key": "space-chair/red/Left"
+   }
+  ]
+ },
+ "e534be0e-13e9-4703-8781-453347cc774a/blue": {
+  "type": "Z Chair",
+  "family": "Chair",
+  "color": "blue",
+  "rotations": [
+   {
+    "color": "blue",
+    "orientation": "Up",
+    "dims": {
+     "width": 20,
+     "height": 18
+    },
+    "offset": {
+     "left": 6,
+     "top": 14
+    },
+    "originX": 10,
+    "originY": 8,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.1875,
+      "y": -0.4375
+     }
+    ],
+    "key": "z-chair/blue/Up"
+   },
+   {
+    "color": "blue",
+    "orientation": "Left",
+    "dims": {
+     "width": 17,
+     "height": 26
+    },
+    "offset": {
+     "left": 10,
+     "top": 5
+    },
+    "originX": 8,
+    "originY": 17,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.3125,
+      "y": -0.15625
+     }
+    ],
+    "key": "z-chair/blue/Left"
+   },
+   {
+    "color": "blue",
+    "orientation": "Down",
+    "dims": {
+     "width": 20,
+     "height": 28
+    },
+    "offset": {
+     "left": 6,
+     "top": 2
+    },
+    "originX": 10,
+    "originY": 17,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.1875,
+      "y": -0.0625
+     }
+    ],
+    "key": "z-chair/blue/Down"
+   },
+   {
+    "color": "blue",
+    "orientation": "Right",
+    "dims": {
+     "width": 17,
+     "height": 26
+    },
+    "offset": {
+     "left": 5,
+     "top": 5
+    },
+    "originX": 8,
+    "originY": 17,
+    "collision": [],
+    "sittable": [
+     {
+      "x": -0.15625,
+      "y": -0.15625
+     }
+    ],
+    "key": "z-chair/blue/Right"
+   }
+  ]
+ },
+ "8bdc93c3-470c-46ab-a755-cf21d083dd97/orange": {
+  "type": "Small potted Hosta",
+  "family": "Desk Plant",
+  "color": "orange",
+  "rotations": [
+   {
+    "color": "orange",
+    "orientation": "Down",
+    "dims": {
+     "width": 17,
+     "height": 21
+    },
+    "offset": {
+     "left": 7,
+     "top": 8
+    },
+    "originX": 9,
+    "originY": 17,
+    "collision": [],
+    "sittable": [],
+    "key": "small-potted-hosta/orange/Down"
+   },
+   {
+    "color": "orange",
+    "orientation": "Up",
+    "dims": {
+     "width": 17,
+     "height": 21
+    },
+    "offset": {
+     "left": 8,
+     "top": 8
+    },
+    "originX": 8,
+    "originY": 17,
+    "collision": [],
+    "sittable": [],
+    "key": "small-potted-hosta/orange/Up"
+   }
+  ]
+ },
+ "dcd502e6-5239-4198-aff3-5a37111f2689/black": {
+  "type": "Bookcase (Tall)",
+  "family": "Bookcase",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 59,
+     "height": 59
+    },
+    "offset": {
+     "left": 3,
+     "top": 5
+    },
+    "originX": 29,
+    "originY": 51,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.84375
+     },
+     {
+      "x": 0.90625,
+      "y": 0.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 13,
+     "height": 91
+    },
+    "offset": {
+     "left": 4,
+     "top": 5
+    },
+    "originX": 6,
+    "originY": 65,
+    "collision": [
+     {
+      "x": -0.125,
+      "y": 0.84375
+     },
+     {
+      "x": -0.125,
+      "y": 1.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/black/Right"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 13,
+     "height": 91
+    },
+    "offset": {
+     "left": 47,
+     "top": 5
+    },
+    "originX": 6,
+    "originY": 65,
+    "collision": [
+     {
+      "x": -0.46875,
+      "y": 0.84375
+     },
+     {
+      "x": -0.46875,
+      "y": 1.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 59,
+     "height": 59
+    },
+    "offset": {
+     "left": 3,
+     "top": 5
+    },
+    "originX": 29,
+    "originY": 51,
+    "collision": [
+     {
+      "x": -0.09375,
+      "y": 0.84375
+     },
+     {
+      "x": 0.90625,
+      "y": 0.84375
+     }
+    ],
+    "sittable": [],
+    "key": "bookcase-tall/black/Up"
+   }
+  ]
+ },
+ "05deead6-86f2-4540-b47f-c18accd639f1/white": {
+  "type": "Document (Single)",
+  "family": "Document",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 13,
+     "height": 13
+    },
+    "offset": {
+     "left": 10,
+     "top": 9
+    },
+    "originX": 6,
+    "originY": 7,
+    "collision": [],
+    "sittable": [],
+    "key": "document-single/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 15,
+     "height": 12
+    },
+    "offset": {
+     "left": 9,
+     "top": 9
+    },
+    "originX": 7,
+    "originY": 7,
+    "collision": [],
+    "sittable": [],
+    "key": "document-single/white/Right"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 13,
+     "height": 13
+    },
+    "offset": {
+     "left": 10,
+     "top": 9
+    },
+    "originX": 6,
+    "originY": 7,
+    "collision": [],
+    "sittable": [],
+    "key": "document-single/white/Up"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 15,
+     "height": 12
+    },
+    "offset": {
+     "left": 9,
+     "top": 9
+    },
+    "originX": 7,
+    "originY": 7,
+    "collision": [],
+    "sittable": [],
+    "key": "document-single/white/Left"
+   }
+  ]
+ },
+ "7192b83c-43e3-4828-9a9d-6a7635a78d71/green": {
+  "type": "Book (Closed)",
+  "family": "Book",
+  "color": "green",
+  "rotations": [
+   {
+    "color": "green",
+    "orientation": "Down",
+    "dims": {
+     "width": 14,
+     "height": 16
+    },
+    "offset": {
+     "left": 9,
+     "top": 8
+    },
+    "originX": 7,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/green/Down"
+   },
+   {
+    "color": "green",
+    "orientation": "Up",
+    "dims": {
+     "width": 14,
+     "height": 16
+    },
+    "offset": {
+     "left": 9,
+     "top": 8
+    },
+    "originX": 6,
+    "originY": 9,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/green/Up"
+   },
+   {
+    "color": "green",
+    "orientation": "Left",
+    "dims": {
+     "width": 16,
+     "height": 14
+    },
+    "offset": {
+     "left": 8,
+     "top": 9
+    },
+    "originX": 7,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/green/Left"
+   },
+   {
+    "color": "green",
+    "orientation": "Right",
+    "dims": {
+     "width": 16,
+     "height": 14
+    },
+    "offset": {
+     "left": 8,
+     "top": 9
+    },
+    "originX": 8,
+    "originY": 8,
+    "collision": [],
+    "sittable": [],
+    "key": "book-closed/green/Right"
+   }
+  ]
+ },
+ "fba35dfc-2b78-4f77-aa3a-11c55cfc6c17/black": {
+  "type": "Mondrian Painting",
+  "family": "Painting",
+  "color": "black",
+  "rotations": [
+   {
+    "color": "black",
+    "orientation": "Down",
+    "dims": {
+     "width": 50,
+     "height": 43
+    },
+    "offset": {
+     "left": 7,
+     "top": 15
+    },
+    "originX": 25,
+    "originY": 21,
+    "collision": [],
+    "sittable": [],
+    "key": "mondrian-painting/black/Down"
+   },
+   {
+    "color": "black",
+    "orientation": "Left",
+    "dims": {
+     "width": 50,
+     "height": 43
+    },
+    "offset": {
+     "left": 7,
+     "top": 15
+    },
+    "originX": 25,
+    "originY": 21,
+    "collision": [],
+    "sittable": [],
+    "key": "mondrian-painting/black/Left"
+   },
+   {
+    "color": "black",
+    "orientation": "Up",
+    "dims": {
+     "width": 50,
+     "height": 43
+    },
+    "offset": {
+     "left": 7,
+     "top": 15
+    },
+    "originX": 25,
+    "originY": 21,
+    "collision": [],
+    "sittable": [],
+    "key": "mondrian-painting/black/Up"
+   },
+   {
+    "color": "black",
+    "orientation": "Right",
+    "dims": {
+     "width": 50,
+     "height": 43
+    },
+    "offset": {
+     "left": 7,
+     "top": 15
+    },
+    "originX": 25,
+    "originY": 21,
+    "collision": [],
+    "sittable": [],
+    "key": "mondrian-painting/black/Right"
+   }
+  ]
+ },
+ "4b821cba-be73-4859-b1dd-cfd804472b11/white": {
+  "type": "Bamboo Planter",
+  "family": "Room Plant",
+  "color": "white",
+  "rotations": [
+   {
+    "color": "white",
+    "orientation": "Down",
+    "dims": {
+     "width": 18,
+     "height": 41
+    },
+    "offset": {
+     "left": 7,
+     "top": 21
+    },
+    "originX": 9,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.21875,
+      "y": 0.34375
+     }
+    ],
+    "sittable": [],
+    "key": "bamboo-planter/white/Down"
+   },
+   {
+    "color": "white",
+    "orientation": "Right",
+    "dims": {
+     "width": 18,
+     "height": 41
+    },
+    "offset": {
+     "left": 7,
+     "top": 21
+    },
+    "originX": 9,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.21875,
+      "y": 0.34375
+     }
+    ],
+    "sittable": [],
+    "key": "bamboo-planter/white/Right"
+   },
+   {
+    "color": "white",
+    "orientation": "Left",
+    "dims": {
+     "width": 17,
+     "height": 41
+    },
+    "offset": {
+     "left": 7,
+     "top": 21
+    },
+    "originX": 9,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.21875,
+      "y": 0.34375
+     }
+    ],
+    "sittable": [],
+    "key": "bamboo-planter/white/Left"
+   },
+   {
+    "color": "white",
+    "orientation": "Up",
+    "dims": {
+     "width": 17,
+     "height": 41
+    },
+    "offset": {
+     "left": 7,
+     "top": 21
+    },
+    "originX": 9,
+    "originY": 34,
+    "collision": [
+     {
+      "x": -0.21875,
+      "y": 0.34375
+     }
+    ],
+    "sittable": [],
+    "key": "bamboo-planter/white/Up"
+   }
+  ]
+ },
+ "088af47b-ec59-4a33-886b-94f8729eae22/green": {
+  "type": "Sprout",
+  "family": "Desk Plant",
+  "color": "green",
+  "rotations": [
+   {
+    "color": "green",
+    "orientation": "Down",
+    "dims": {
+     "width": 14,
+     "height": 22
+    },
+    "offset": {
+     "left": 9,
+     "top": 5
+    },
+    "originX": 7,
+    "originY": 17,
+    "collision": [],
+    "sittable": [],
+    "key": "sprout/green/Down"
+   }
+  ]
+ }
+}

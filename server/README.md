@@ -1,0 +1,79 @@
+# Local realtime server
+
+Run `node server/index.mjs` after installing the project's dependencies. The default
+address is `127.0.0.1:3001`; `PORT` and `HOST` override it. `GET /health` reports
+whether the server is alive. Browser WebSocket clients must come from a localhost
+origin and connect to `/ws?room=<slug>`. Slugs accept lowercase letters, numbers,
+hyphens, and underscores (1–64 characters).
+
+Send `{ "type": "join", "name": "Ana", "color": "#7968e6" }` first. A `welcome`
+message supplies the server-generated participant ID, current participants,
+office chat history, and placed objects. All room members receive `participants`
+when someone joins, moves, changes their profile, or disconnects.
+
+Supported messages:
+
+- `move`: numeric `x` and `y`, clamped to the 1600 × 1100 map. The server derives
+  `facing` (`north`, `east`, `south`, `west`) from movement. A valid optional
+  `facing` also permits turning while stationary. Seated participants must stand
+  first; movement while seated returns `seat_unavailable`.
+- `seat:sit`: `seatId` from `shared/office-seats.js`. The server validates the
+  chair, a distance of at most 64 map units, a non-away status, a free exit,
+  an unobstructed walking segment to that exit, and exclusive occupancy within
+  the room. Proximity through a wall does not allow sitting. It sets the participant's `seatId`,
+  chair position and facing, then broadcasts `participants`. Invalid requests
+  return `invalid_seat`, `seat_too_far` or `seat_unavailable`. Repeating a request
+  for the participant's current seat is safe. A participant must stand before
+  switching chairs.
+- `seat:stand`: clears `seatId`, moves to the chair's shared walking exit and
+  broadcasts `participants`. Client-supplied coordinates are ignored. Sending
+  it while already standing is safe. There are 30 fixed chairs; placed chairs
+  receive IDs of the form `object:<object-id>`. Deleting an occupied chair also
+  stands its occupant. Disconnecting releases occupancy. Seat assignments are
+  transient and are not saved to disk.
+- `profile`: optional `name`, hex `color`, `status` (`available`, `busy`, `away`,
+  `focus`), and boolean `mic`, `camera`, `screen`.
+- `meeting:lock`: `areaId` of a meeting room and `locked`. Only someone inside the room may change it;
+  a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
+  Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants } }`).
+- `area:rename`: `areaId` of a meeting room and `name` (1–40 characters); persisted and broadcast as `areas`.
+- `chat`: `text` (1–1000 characters) and `channel` (`office`, `nearby` or `meeting`). Meeting messages carry
+  `areaId` and only reach people inside that room; the server also emits `system` lines (joined, locked, unlocked). Nearby
+  messages reach participants within 200 map units at the time of sending when
+  both are outside the meeting area; inside, they reach everyone in that area.
+  Nearby messages never cross the meeting area's boundary.
+  Only office messages enter the in-memory history (last 100).
+- `object:add`: `kind` (a catalog kind from `shared/vivo-catalog.js`, or the aliases
+  `plant`, `chair`, `table`, `lamp`), optional `color` and `facing` (`Up`, `Right`, `Down`,
+  `Left`), `x`, `y` (snapped to the tile that contains the point). Placements
+  overlapping the feet of a standing participant, including the editor, or
+  blocking every exit beside an occupied chair return `invalid_object`. The
+  standing check uses the same object footprint and avatar radius as walking;
+  it only checks the newly placed object, not unrelated static geometry.
+- `object:update`: object `id` plus `rotate: true` (next available facing), an explicit `facing`,
+  or new `x`/`y`. Occupied chairs cannot be edited. Validated like `object:add`. The `id` may
+  also name a base-map object (`shared/vivo-map.js`): the change is stored as an override.
+- `object:remove`: object `id`, placed or base-map (stored as a `removed` override).
+  Edits return `objects` with the current array and the `overrides` map; `welcome` carries both.
+- `signal`: `to` participant ID and `data` object. Relayed with the sender's
+  authoritative `from` ID only when both participants have `available` status
+  and share a conversation area: within 220 map units outside the meeting area,
+  or anywhere inside the meeting area (`x > 1080 && y > 760`). Signals never cross
+  the meeting area's boundary, even if participants stand close together.
+
+Objects are saved atomically in `server/data/<room>.json`. Names, messages, media,
+and participant sessions are not written to disk. A restart clears chat history.
+Invalid messages return `{type: "error", code, message}`. Payload size, room
+capacity, room count, outbound buffering, and message rates are bounded.
+
+This is a **local development prototype**. It has no accounts, authentication,
+room authorization, editor roles, moderation, TLS, TURN relay, or SFU. Anyone
+allowed to connect to a local room can choose their name, move, and edit its
+objects. IDs prevent accidental identity spoofing within the protocol; they are
+not proof of identity. Do not expose this server to the internet as-is. Signaling
+relays peer connection metadata; clients must tear down media peer connections
+when participants leave the conversation area or disconnect. Browser permissions
+still govern camera, microphone, and screen capture.
+
+For tests, `await startServer({port: 0, dataDir})` returns
+`{server, wss, host, port, close}`. Always `await instance.close()` for shutdown.

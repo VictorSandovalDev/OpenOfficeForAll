@@ -1,0 +1,9777 @@
+{
+ "source": "Gather 2.0 desktop 0.55.2, web build edf006d4f (2026-10-28), space \"Vivo\", floor 1; extracted 2026-10-28",
+ "world": {
+  "tilesX": 52,
+  "tilesY": 50,
+  "tileSize": 32,
+  "pixelsX": 1664,
+  "pixelsY": 1600
+ },
+ "areas": [
+  {
+   "id": "932f1f74-7020-4019-9899-7816e2c3ccee",
+   "displayName": "victor's desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "relativeX": 0,
+   "relativeY": 4,
+   "absolutePosition": {
+    "x": 27,
+    "y": 27
+   },
+   "dimensionsInTiles": {
+    "width": 3,
+    "height": 2
+   },
+   "capacity": 3,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 3,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "900985a6-8c68-417c-8afe-3ffc231bae3d",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "relativeX": 0,
+   "relativeY": 0,
+   "absolutePosition": {
+    "x": 27,
+    "y": 23
+   },
+   "dimensionsInTiles": {
+    "width": 3,
+    "height": 2
+   },
+   "capacity": 3,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 3,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "094907c0-c72b-4355-a176-a6c7725d3798",
+   "displayName": "Media room",
+   "mapAreaType": "MeetingRoom",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 29,
+   "relativeY": 34,
+   "absolutePosition": {
+    "x": 29,
+    "y": 34
+   },
+   "dimensionsInTiles": {
+    "width": 11,
+    "height": 9
+   },
+   "capacity": 10,
+   "floorTexture": "WoodSlats",
+   "floorColor": "Wood",
+   "wallsTexture": "PlainIndigo",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 4,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "1": {
+      "origin": {
+       "x": 0,
+       "y": 3
+      },
+      "orientation": "Vertical"
+     }
+    }
+   ]
+  },
+  {
+   "id": "e6db33b1-c540-4159-89ab-cd2f3d01f890",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 12,
+   "relativeY": 14,
+   "absolutePosition": {
+    "x": 12,
+    "y": 14
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 6
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 2,
+       "y": 5
+      },
+      "orientation": "Horizontal"
+     }
+    }
+   ]
+  },
+  {
+   "id": "52ca736f-edc1-433e-982e-9d81d0998680",
+   "displayName": "Fishtank Huddle",
+   "mapAreaType": "MeetingRoom",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 38,
+   "relativeY": 27,
+   "absolutePosition": {
+    "x": 38,
+    "y": 27
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 7
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetStripeGray",
+   "floorColor": "LightGray",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 0,
+       "y": 2
+      },
+      "orientation": "Vertical"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ce876016-3f73-4ff1-b124-77e63bc90906",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 34,
+   "relativeY": 14,
+   "absolutePosition": {
+    "x": 34,
+    "y": 14
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 6
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 1,
+       "y": 5
+      },
+      "orientation": "Horizontal"
+     }
+    }
+   ]
+  },
+  {
+   "id": "be62b275-bf91-4c3c-a430-af16b28ec4a1",
+   "displayName": "Lobby",
+   "mapAreaType": "Lobby",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 13,
+   "relativeY": 34,
+   "absolutePosition": {
+    "x": 13,
+    "y": 34
+   },
+   "dimensionsInTiles": {
+    "width": 16,
+    "height": 9
+   },
+   "capacity": 12,
+   "floorTexture": "WoodSlatsLt",
+   "floorColor": "LightWood",
+   "wallsTexture": "PlainWhite",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 7,
+       "y": 8
+      },
+      "orientation": "Horizontal"
+     },
+     "1": {
+      "origin": {
+       "x": 7,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "2": {
+      "origin": {
+       "x": 15,
+       "y": 3
+      },
+      "orientation": "Vertical"
+     }
+    }
+   ]
+  },
+  {
+   "id": "b5d28fd7-4642-44bb-905b-e197d01be6e5",
+   "displayName": "Data Huddle",
+   "mapAreaType": "MeetingRoom",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 38,
+   "relativeY": 20,
+   "absolutePosition": {
+    "x": 38,
+    "y": 20
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 7
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetCouture",
+   "floorColor": "White",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 0,
+       "y": 2
+      },
+      "orientation": "Vertical"
+     }
+    }
+   ]
+  },
+  {
+   "id": "78e83558-030b-4805-b59d-4b543e597c34",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 17,
+   "relativeY": 14,
+   "absolutePosition": {
+    "x": 17,
+    "y": 14
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 6
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 2,
+       "y": 5
+      },
+      "orientation": "Horizontal"
+     }
+    }
+   ]
+  },
+  {
+   "id": "67a8e126-3c8d-466c-926a-df2e704bbb2a",
+   "displayName": "Lobby Couches",
+   "mapAreaType": "Common",
+   "parentAreaId": "be62b275-bf91-4c3c-a430-af16b28ec4a1",
+   "relativeX": 2,
+   "relativeY": 1,
+   "absolutePosition": {
+    "x": 15,
+    "y": 35
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 3
+   },
+   "capacity": null,
+   "floorTexture": "CarpetDiamond",
+   "floorColor": "LightWhite",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 2,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "b41c5ed9-2ea3-40e0-bef9-396efdc27ba0",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "relativeX": 6,
+   "relativeY": 0,
+   "absolutePosition": {
+    "x": 33,
+    "y": 23
+   },
+   "dimensionsInTiles": {
+    "width": 3,
+    "height": 2
+   },
+   "capacity": 3,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 3,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "f10b86c4-067d-43f4-9a8f-48d9ef83afd7",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "relativeX": 3,
+   "relativeY": 0,
+   "absolutePosition": {
+    "x": 30,
+    "y": 23
+   },
+   "dimensionsInTiles": {
+    "width": 3,
+    "height": 2
+   },
+   "capacity": 3,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 3,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "77ef5c78-d4ff-464b-8218-bddc5205d17a",
+   "displayName": "Study Huddle",
+   "mapAreaType": "MeetingRoom",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 8,
+   "relativeY": 27,
+   "absolutePosition": {
+    "x": 8,
+    "y": 27
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 7
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetWaveGray",
+   "floorColor": "LightGray",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 4,
+       "y": 2
+      },
+      "orientation": "Vertical"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fb64735d-6fa7-4238-9789-92bc99ebe7bd",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "relativeX": 3,
+   "relativeY": 4,
+   "absolutePosition": {
+    "x": 30,
+    "y": 27
+   },
+   "dimensionsInTiles": {
+    "width": 3,
+    "height": 2
+   },
+   "capacity": 3,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 3,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "72cb612c-1145-42e3-bd0d-ff2f7b32a2eb",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "relativeX": 6,
+   "relativeY": 4,
+   "absolutePosition": {
+    "x": 33,
+    "y": 27
+   },
+   "dimensionsInTiles": {
+    "width": 3,
+    "height": 2
+   },
+   "capacity": 3,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 3,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "fe578a4a-f8f7-4c88-a584-fe565826eef5",
+   "displayName": "👥Team",
+   "mapAreaType": "Team",
+   "parentAreaId": "5e4cfa56-cf1e-4a74-84cd-f64d49b21f3f",
+   "relativeX": 14,
+   "relativeY": 3,
+   "absolutePosition": {
+    "x": 27,
+    "y": 23
+   },
+   "dimensionsInTiles": {
+    "width": 9,
+    "height": 6
+   },
+   "capacity": null,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 2,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "fec8bbf1-eeeb-4ebc-bd25-a2397dcacd1d",
+   "displayName": "Central Couches",
+   "mapAreaType": "Common",
+   "parentAreaId": "5e4cfa56-cf1e-4a74-84cd-f64d49b21f3f",
+   "relativeX": 3,
+   "relativeY": 3,
+   "absolutePosition": {
+    "x": 16,
+    "y": 23
+   },
+   "dimensionsInTiles": {
+    "width": 8,
+    "height": 6
+   },
+   "capacity": null,
+   "floorTexture": "CarpetStripeGray",
+   "floorColor": "LightGray",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 2,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "5e4cfa56-cf1e-4a74-84cd-f64d49b21f3f",
+   "displayName": "Public area",
+   "mapAreaType": "Public",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 13,
+   "relativeY": 20,
+   "absolutePosition": {
+    "x": 13,
+    "y": 20
+   },
+   "dimensionsInTiles": {
+    "width": 25,
+    "height": 14
+   },
+   "capacity": null,
+   "floorTexture": "WoodSlatsLt",
+   "floorColor": "LightWood",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 12,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "1": {
+      "origin": {
+       "x": 0,
+       "y": 2
+      },
+      "orientation": "Vertical"
+     },
+     "2": {
+      "origin": {
+       "x": 1,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "3": {
+      "origin": {
+       "x": 24,
+       "y": 9
+      },
+      "orientation": "Vertical"
+     },
+     "4": {
+      "origin": {
+       "x": 18,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "5": {
+      "origin": {
+       "x": 22,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "6": {
+      "origin": {
+       "x": 6,
+       "y": 0
+      },
+      "orientation": "Horizontal"
+     },
+     "7": {
+      "origin": {
+       "x": 0,
+       "y": 9
+      },
+      "orientation": "Vertical"
+     },
+     "8": {
+      "origin": {
+       "x": 20,
+       "y": 13
+      },
+      "orientation": "Horizontal"
+     },
+     "9": {
+      "origin": {
+       "x": 24,
+       "y": 2
+      },
+      "orientation": "Vertical"
+     },
+     "10": {
+      "origin": {
+       "x": 7,
+       "y": 13
+      },
+      "orientation": "Horizontal"
+     }
+    }
+   ]
+  },
+  {
+   "id": "157a5259-4e27-4161-bddc-0d3999d8a6a2",
+   "displayName": "Unclaimed desk",
+   "mapAreaType": "Desk",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 29,
+   "relativeY": 14,
+   "absolutePosition": {
+    "x": 29,
+    "y": 14
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 6
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetWave",
+   "floorColor": "Blue",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 2,
+       "y": 5
+      },
+      "orientation": "Horizontal"
+     }
+    }
+   ]
+  },
+  {
+   "id": "1d86cb31-946a-4f28-9059-b1a8570af674",
+   "displayName": "Coffee Huddle",
+   "mapAreaType": "MeetingRoom",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 8,
+   "relativeY": 20,
+   "absolutePosition": {
+    "x": 8,
+    "y": 20
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 7
+   },
+   "capacity": 4,
+   "floorTexture": "CarpetCouture",
+   "floorColor": "White",
+   "wallsTexture": "PlainBlack",
+   "isWalled": true,
+   "depth": 1,
+   "doorways": [
+    {
+     "0": {
+      "origin": {
+       "x": 4,
+       "y": 2
+      },
+      "orientation": "Vertical"
+     }
+    }
+   ]
+  },
+  {
+   "id": "57ec8b90-8511-43d9-a9e7-4c760571b812",
+   "displayName": "Koi Pond",
+   "mapAreaType": "Common",
+   "parentAreaId": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "relativeX": 23,
+   "relativeY": 12,
+   "absolutePosition": {
+    "x": 23,
+    "y": 12
+   },
+   "dimensionsInTiles": {
+    "width": 5,
+    "height": 5
+   },
+   "capacity": null,
+   "floorTexture": "NewStyleGrass",
+   "floorColor": "Green",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 1,
+   "doorways": [
+    {}
+   ]
+  },
+  {
+   "id": "91fc78fc-05e8-4354-8984-b292bf669454",
+   "displayName": "Public area",
+   "mapAreaType": "Public",
+   "parentAreaId": null,
+   "relativeX": 0,
+   "relativeY": 0,
+   "absolutePosition": {
+    "x": 0,
+    "y": 0
+   },
+   "dimensionsInTiles": {
+    "width": 52,
+    "height": 50
+   },
+   "capacity": null,
+   "floorTexture": "NewStyleGrass",
+   "floorColor": "Green",
+   "wallsTexture": "NewStyleNoWall",
+   "isWalled": false,
+   "depth": 0,
+   "doorways": [
+    {}
+   ]
+  }
+ ],
+ "objects": [
+  {
+   "id": "fe55a7df-a883-41b8-86f5-38d980ba0e91",
+   "parent": "34cdc21e-e62d-441e-96cd-3b79725f3ccf",
+   "family": "Coffee",
+   "type": "Mug (Wide)",
+   "category": "FoodAndDrink",
+   "color": "purple",
+   "orientation": "Right",
+   "abs": {
+    "x": 22.587798506622228,
+    "y": 19.953042843068364
+   },
+   "topLeft": {
+    "x": 22.462798506622228,
+    "y": 19.671792843068364
+   },
+   "dims": {
+    "width": 14,
+    "height": 12
+   },
+   "offset": {
+    "left": 11,
+    "top": 11
+   },
+   "originX": 4,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e488d104-ed9c-406d-a086-6d50e6212223",
+   "parent": "34cdc21e-e62d-441e-96cd-3b79725f3ccf",
+   "family": "Coffee",
+   "type": "Mug (Wide)",
+   "category": "FoodAndDrink",
+   "color": "purple",
+   "orientation": "Right",
+   "abs": {
+    "x": 22.19150364443336,
+    "y": 19.83408217895039
+   },
+   "topLeft": {
+    "x": 22.06650364443336,
+    "y": 19.55283217895039
+   },
+   "dims": {
+    "width": 14,
+    "height": 12
+   },
+   "offset": {
+    "left": 11,
+    "top": 11
+   },
+   "originX": 4,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "2dfed525-035d-44e3-9907-2d8fca2b8a7f",
+   "parent": "34cdc21e-e62d-441e-96cd-3b79725f3ccf",
+   "family": "Coffee",
+   "type": "Single Coffee Machine",
+   "category": "FoodAndDrink",
+   "color": "purple",
+   "orientation": "Down",
+   "abs": {
+    "x": 21.507524993433286,
+    "y": 19.93226514713583
+   },
+   "topLeft": {
+    "x": 21.163774993433286,
+    "y": 19.11976514713583
+   },
+   "dims": {
+    "width": 22,
+    "height": 32
+   },
+   "offset": {
+    "left": 5,
+    "top": 4
+   },
+   "originX": 11,
+   "originY": 26,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "34cdc21e-e62d-441e-96cd-3b79725f3ccf",
+   "parent": null,
+   "family": "Kitchen Counters",
+   "type": "Kitchen Cabinet (Large)",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 21.999002202213113,
+    "y": 20.311760049725798
+   },
+   "topLeft": {
+    "x": 20.999002202213113,
+    "y": 19.624260049725798
+   },
+   "dims": {
+    "width": 64,
+    "height": 32
+   },
+   "offset": {
+    "left": 0,
+    "top": 32
+   },
+   "originX": 32,
+   "originY": 22,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "21/20",
+    "22/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "77d4855c-73ba-4a5b-b997-755a1509dab6",
+   "parent": null,
+   "family": "Wall Cabinet",
+   "type": "Wall Cabinet",
+   "category": "WallDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 21.58025562468069,
+    "y": 18.857795017470025
+   },
+   "topLeft": {
+    "x": 21.08025562468069,
+    "y": 18.295295017470025
+   },
+   "dims": {
+    "width": 32,
+    "height": 24
+   },
+   "offset": {
+    "left": 0,
+    "top": 8
+   },
+   "originX": 16,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e2b67c05-5ea0-4f64-9f87-35014e1dffa4",
+   "parent": null,
+   "family": "Wall Cabinet",
+   "type": "Wall Cabinet",
+   "category": "WallDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 22.59448153770728,
+    "y": 18.85889555966527
+   },
+   "topLeft": {
+    "x": 22.09448153770728,
+    "y": 18.29639555966527
+   },
+   "dims": {
+    "width": 32,
+    "height": 24
+   },
+   "offset": {
+    "left": 0,
+    "top": 8
+   },
+   "originX": 16,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "457ba34f-ca63-4c47-a893-28dc18f3086e",
+   "parent": null,
+   "family": "Fridge",
+   "type": "Mini Fridge",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 23.3961119891093,
+    "y": 20.25
+   },
+   "topLeft": {
+    "x": 23.0211119891093,
+    "y": 19.34375
+   },
+   "dims": {
+    "width": 24,
+    "height": 38
+   },
+   "offset": {
+    "left": 4,
+    "top": 26
+   },
+   "originX": 12,
+   "originY": 29,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "23/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "cd8e7e59-8bd4-4e48-b21a-d1d7bf2489ca",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Fiddle-leaf Fig",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Up",
+   "abs": {
+    "x": 37.45191231537255,
+    "y": 20.25
+   },
+   "topLeft": {
+    "x": 37.04566231537255,
+    "y": 19.125
+   },
+   "dims": {
+    "width": 24,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 17
+   },
+   "originX": 13,
+   "originY": 36,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "37/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a2c8ad89-17aa-472c-bcda-5e2098612ba2",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.5,
+    "y": 23.875
+   },
+   "topLeft": {
+    "x": 33.0625,
+    "y": 23
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "33/23",
+    "34/23",
+    "35/23"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7e0bb940-ed40-4438-91f4-3fadbe729fc9",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 34.5,
+    "y": 24.78125
+   },
+   "topLeft": {
+    "x": 34.125,
+    "y": 24.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 34,
+     "y": 24
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8a8e9632-3ffa-4467-8425-4d046e6e1679",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.5,
+    "y": 23.875
+   },
+   "topLeft": {
+    "x": 30.0625,
+    "y": 23
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "30/23",
+    "31/23",
+    "32/23"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1b553513-0a0a-40ac-8688-2dfa2d8415ea",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 31.5,
+    "y": 24.78125
+   },
+   "topLeft": {
+    "x": 31.125,
+    "y": 24.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 31,
+     "y": 24
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d9f0e937-04b9-42d5-a491-07d6449706d0",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 28.5,
+    "y": 27.875
+   },
+   "topLeft": {
+    "x": 27.0625,
+    "y": 27
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "27/27",
+    "28/27",
+    "29/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "467896ab-7eb5-4e47-b93e-984eb52abdd5",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 28.5,
+    "y": 28.78125
+   },
+   "topLeft": {
+    "x": 28.125,
+    "y": 28.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 28,
+     "y": 28
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "5ea4e7ca-9be8-4f2f-b396-54c5e71a1d49",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 28.5,
+    "y": 23.875
+   },
+   "topLeft": {
+    "x": 27.0625,
+    "y": 23
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "27/23",
+    "28/23",
+    "29/23"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "efece49d-a1cc-43bf-9e28-50dc4b549002",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 28.5,
+    "y": 24.78125
+   },
+   "topLeft": {
+    "x": 28.125,
+    "y": 24.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 28,
+     "y": 24
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "811b6106-430e-42e3-96e6-c3dc129f1943",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.5,
+    "y": 27.875
+   },
+   "topLeft": {
+    "x": 30.0625,
+    "y": 27
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "30/27",
+    "31/27",
+    "32/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "75a3b7ca-ba77-4efa-ad3a-d12e71f339ef",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 31.5,
+    "y": 28.78125
+   },
+   "topLeft": {
+    "x": 31.125,
+    "y": 28.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 31,
+     "y": 28
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f0a621ae-8ed9-4257-b386-ab8b9adedcb6",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.5,
+    "y": 27.875
+   },
+   "topLeft": {
+    "x": 33.0625,
+    "y": 27
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "33/27",
+    "34/27",
+    "35/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "896f5532-3036-4101-a18e-95827de5ec0a",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 34.5,
+    "y": 28.78125
+   },
+   "topLeft": {
+    "x": 34.125,
+    "y": 28.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 34,
+     "y": 28
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7c77568a-1ca9-4373-ad69-e19956e05e6c",
+   "parent": null,
+   "family": "Bookcase",
+   "type": "Cubicle Shelves",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 22.5,
+    "y": 23.84375
+   },
+   "topLeft": {
+    "x": 21.375,
+    "y": 22.3125
+   },
+   "dims": {
+    "width": 72,
+    "height": 54
+   },
+   "offset": {
+    "left": 12,
+    "top": 74
+   },
+   "originX": 36,
+   "originY": 49,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "21/23",
+    "22/23",
+    "23/23"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a1746e09-f2d2-46d6-b05c-44541992b25f",
+   "parent": null,
+   "family": "Bookcase",
+   "type": "Cubicle Shelves",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 17.5,
+    "y": 23.84375
+   },
+   "topLeft": {
+    "x": 16.375,
+    "y": 22.3125
+   },
+   "dims": {
+    "width": 72,
+    "height": 54
+   },
+   "offset": {
+    "left": 12,
+    "top": 74
+   },
+   "originX": 36,
+   "originY": 49,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "16/23",
+    "17/23",
+    "18/23"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "579e98d8-7001-477d-b7fb-e1d31e2065bb",
+   "parent": "18903743-37ad-4b68-8f4a-ff4ee6c61fdf",
+   "family": "Duck",
+   "type": "Rubber Ducky",
+   "category": "RoomDecor",
+   "color": "yellow",
+   "orientation": "Left",
+   "abs": {
+    "x": 22.461685788469964,
+    "y": 27.4375
+   },
+   "topLeft": {
+    "x": 22.211685788469964,
+    "y": 27.25
+   },
+   "dims": {
+    "width": 13,
+    "height": 10
+   },
+   "offset": {
+    "left": 7,
+    "top": 11
+   },
+   "originX": 8,
+   "originY": 6,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "18903743-37ad-4b68-8f4a-ff4ee6c61fdf",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Mid Century Side Table",
+   "category": "Table",
+   "color": "lightcoffee",
+   "orientation": "Up",
+   "abs": {
+    "x": 22.46875,
+    "y": 27.78125
+   },
+   "topLeft": {
+    "x": 22.125,
+    "y": 27.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 24
+   },
+   "offset": {
+    "left": 4,
+    "top": 8
+   },
+   "originX": 11,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "22/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "3eb6ce1e-cee2-4471-bd1e-d43b1763dacc",
+   "parent": null,
+   "family": "Couch",
+   "type": "Mid Century Leather Couch",
+   "category": "Seating",
+   "color": "brown",
+   "orientation": "Down",
+   "abs": {
+    "x": 20,
+    "y": 24.71875
+   },
+   "topLeft": {
+    "x": 19,
+    "y": 23.71875
+   },
+   "dims": {
+    "width": 64,
+    "height": 37
+   },
+   "offset": {
+    "left": 0,
+    "top": 55
+   },
+   "originX": 32,
+   "originY": 32,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 19,
+     "y": 24
+    },
+    {
+     "x": 20,
+     "y": 24
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "3e150cb3-e67a-44cb-927b-329120d53b26",
+   "parent": null,
+   "family": "Chair",
+   "type": "Beanbag Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Right",
+   "abs": {
+    "x": 17.34375,
+    "y": 25.46875
+   },
+   "topLeft": {
+    "x": 17,
+    "y": 25.0625
+   },
+   "dims": {
+    "width": 23,
+    "height": 23
+   },
+   "offset": {
+    "left": 0,
+    "top": 2
+   },
+   "originX": 11,
+   "originY": 13,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 17,
+     "y": 25
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "17d3ffe4-ea8a-44a1-a651-17cbd6d4e161",
+   "parent": null,
+   "family": "Chair",
+   "type": "Beanbag Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Left",
+   "abs": {
+    "x": 22.625,
+    "y": 26.46875
+   },
+   "topLeft": {
+    "x": 22.28125,
+    "y": 26.0625
+   },
+   "dims": {
+    "width": 23,
+    "height": 23
+   },
+   "offset": {
+    "left": 9,
+    "top": 2
+   },
+   "originX": 11,
+   "originY": 13,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 22,
+     "y": 26
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "2d11784f-f758-4e2f-b5d1-8b3b1f192cf5",
+   "parent": "98313d3a-b8e5-43b3-b42f-19ee1b64d00f",
+   "family": "Coffee",
+   "type": "Mug (Wide)",
+   "category": "FoodAndDrink",
+   "color": "coffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 19.560045966957688,
+    "y": 25.322078894988152
+   },
+   "topLeft": {
+    "x": 19.403795966957688,
+    "y": 24.978328894988152
+   },
+   "dims": {
+    "width": 11,
+    "height": 14
+   },
+   "offset": {
+    "left": 10,
+    "top": 9
+   },
+   "originX": 5,
+   "originY": 11,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "98313d3a-b8e5-43b3-b42f-19ee1b64d00f",
+   "parent": null,
+   "family": "Coffee Table",
+   "type": "Round Coffee Table",
+   "category": "Table",
+   "color": "coffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 20,
+    "y": 25.5
+   },
+   "topLeft": {
+    "x": 19.15625,
+    "y": 25
+   },
+   "dims": {
+    "width": 54,
+    "height": 37
+   },
+   "offset": {
+    "left": 5,
+    "top": 0
+   },
+   "originX": 27,
+   "originY": 16,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "19/25",
+    "20/25"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "b7564e9b-a102-4db1-8798-75ccba6d9cc3",
+   "parent": null,
+   "family": "Chair",
+   "type": "Beanbag Chair",
+   "category": "Seating",
+   "color": "purple",
+   "orientation": "Left",
+   "abs": {
+    "x": 22.625,
+    "y": 25.46875
+   },
+   "topLeft": {
+    "x": 22.28125,
+    "y": 25.0625
+   },
+   "dims": {
+    "width": 23,
+    "height": 23
+   },
+   "offset": {
+    "left": 9,
+    "top": 2
+   },
+   "originX": 11,
+   "originY": 13,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 22,
+     "y": 25
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f5f8680c-9ebb-4b9e-b2d8-1fa60b82495d",
+   "parent": null,
+   "family": "Chair",
+   "type": "Beanbag Chair",
+   "category": "Seating",
+   "color": "pink",
+   "orientation": "Right",
+   "abs": {
+    "x": 17.34375,
+    "y": 26.46875
+   },
+   "topLeft": {
+    "x": 17,
+    "y": 26.0625
+   },
+   "dims": {
+    "width": 23,
+    "height": 23
+   },
+   "offset": {
+    "left": 0,
+    "top": 2
+   },
+   "originX": 11,
+   "originY": 13,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 17,
+     "y": 26
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "cafbd37f-5909-4103-93fe-5597449c1259",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Bird of Paradise (Green)",
+   "category": "RoomDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 22.5,
+    "y": 24.71875
+   },
+   "topLeft": {
+    "x": 21.96875,
+    "y": 23.375
+   },
+   "dims": {
+    "width": 36,
+    "height": 50
+   },
+   "offset": {
+    "left": 31,
+    "top": 12
+   },
+   "originX": 17,
+   "originY": 43,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "22/24"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8269d6d2-04b2-495e-a536-002c7a028b0c",
+   "parent": "79f21241-0c7d-40a4-99fa-5a15d0c48daa",
+   "family": "Room Plant",
+   "type": "Ceramic Planter",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 17.49884911027229,
+    "y": 24.4799673661024
+   },
+   "topLeft": {
+    "x": 17.24884911027229,
+    "y": 23.8549673661024
+   },
+   "dims": {
+    "width": 16,
+    "height": 26
+   },
+   "offset": {
+    "left": 8,
+    "top": 3
+   },
+   "originX": 8,
+   "originY": 20,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "17/24"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "79f21241-0c7d-40a4-99fa-5a15d0c48daa",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Mid Century Side Table",
+   "category": "Table",
+   "color": "lightcoffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 17.46875,
+    "y": 24.78125
+   },
+   "topLeft": {
+    "x": 17.125,
+    "y": 24.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 24
+   },
+   "offset": {
+    "left": 4,
+    "top": 8
+   },
+   "originX": 11,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "17/24"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "69531572-7660-4736-aa3c-e6a5a610920c",
+   "parent": null,
+   "family": "Couch",
+   "type": "Mid Century Leather Couch",
+   "category": "Seating",
+   "color": "brown",
+   "orientation": "Up",
+   "abs": {
+    "x": 21,
+    "y": 27.71875
+   },
+   "topLeft": {
+    "x": 20,
+    "y": 27
+   },
+   "dims": {
+    "width": 64,
+    "height": 28
+   },
+   "offset": {
+    "left": 0,
+    "top": 64
+   },
+   "originX": 32,
+   "originY": 23,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 20,
+     "y": 27
+    },
+    {
+     "x": 21,
+     "y": 27
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8fcefcf4-f031-4bfe-af78-103e528b1165",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Bird of Paradise (Green)",
+   "category": "RoomDecor",
+   "color": "green",
+   "orientation": "Up",
+   "abs": {
+    "x": 17.5,
+    "y": 27.71875
+   },
+   "topLeft": {
+    "x": 16.90625,
+    "y": 26.375
+   },
+   "dims": {
+    "width": 36,
+    "height": 50
+   },
+   "offset": {
+    "left": 29,
+    "top": 12
+   },
+   "originX": 19,
+   "originY": 43,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "17/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9c7d11f2-7a75-410e-a636-ea714f78f594",
+   "parent": null,
+   "family": "Couch",
+   "type": "Mid Century Leather Couch",
+   "category": "Seating",
+   "color": "brown",
+   "orientation": "Up",
+   "abs": {
+    "x": 19,
+    "y": 27.71875
+   },
+   "topLeft": {
+    "x": 18,
+    "y": 27
+   },
+   "dims": {
+    "width": 64,
+    "height": 28
+   },
+   "offset": {
+    "left": 0,
+    "top": 64
+   },
+   "originX": 32,
+   "originY": 23,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 18,
+     "y": 27
+    },
+    {
+     "x": 19,
+     "y": 27
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "282ee631-42df-4474-b35a-97a704fe0976",
+   "parent": null,
+   "family": "Chair",
+   "type": "Lawn Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 24.5,
+    "y": 12.625
+   },
+   "topLeft": {
+    "x": 24.125,
+    "y": 11.71875
+   },
+   "dims": {
+    "width": 24,
+    "height": 38
+   },
+   "offset": {
+    "left": 4,
+    "top": 23
+   },
+   "originX": 12,
+   "originY": 29,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 24,
+     "y": 12
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "286440f2-6b7f-4384-bae2-3b4cc91259b2",
+   "parent": null,
+   "family": "Chair",
+   "type": "Lawn Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Up",
+   "abs": {
+    "x": 26.5,
+    "y": 16.625
+   },
+   "topLeft": {
+    "x": 26.125,
+    "y": 16.0625
+   },
+   "dims": {
+    "width": 24,
+    "height": 27
+   },
+   "offset": {
+    "left": 4,
+    "top": 34
+   },
+   "originX": 12,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 26,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "46e9207a-ae42-4588-a43d-98c251ab88a7",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 25.5,
+    "y": 12.59375
+   },
+   "topLeft": {
+    "x": 25.1875,
+    "y": 11.96875
+   },
+   "dims": {
+    "width": 20,
+    "height": 29
+   },
+   "offset": {
+    "left": 6,
+    "top": 31
+   },
+   "originX": 10,
+   "originY": 20,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 25,
+     "y": 12
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "694aa2df-a6b0-4d44-a347-cd02eba4eeea",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 26.5,
+    "y": 12.59375
+   },
+   "topLeft": {
+    "x": 26.1875,
+    "y": 11.96875
+   },
+   "dims": {
+    "width": 20,
+    "height": 29
+   },
+   "offset": {
+    "left": 6,
+    "top": 31
+   },
+   "originX": 10,
+   "originY": 20,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 26,
+     "y": 12
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "03d03b6e-8866-4a0a-bb20-2e006dcf25ee",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Up",
+   "abs": {
+    "x": 24.5,
+    "y": 16.6875
+   },
+   "topLeft": {
+    "x": 24.1875,
+    "y": 16.25
+   },
+   "dims": {
+    "width": 20,
+    "height": 21
+   },
+   "offset": {
+    "left": 6,
+    "top": 40
+   },
+   "originX": 10,
+   "originY": 14,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 24,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "634bdffa-375b-4f5e-b10f-6e4a4d36b7e3",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Up",
+   "abs": {
+    "x": 25.5,
+    "y": 16.6875
+   },
+   "topLeft": {
+    "x": 25.1875,
+    "y": 16.25
+   },
+   "dims": {
+    "width": 20,
+    "height": 21
+   },
+   "offset": {
+    "left": 6,
+    "top": 40
+   },
+   "originX": 10,
+   "originY": 14,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 25,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1cb3fc64-ecc6-4dc7-93f8-5efd4145b156",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 26.563106333529575,
+    "y": 15.744685561826614
+   },
+   "topLeft": {
+    "x": 26.156856333529575,
+    "y": 15.369685561826614
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1ea624b2-b6d2-4f8f-af68-2128506f62ac",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 23.40625,
+    "y": 16.465839434432233
+   },
+   "topLeft": {
+    "x": 23,
+    "y": 16.090839434432233
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9285dec7-9a5a-4401-b2d3-72787e4ded3c",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 23.43810621890526,
+    "y": 13.316800857387719
+   },
+   "topLeft": {
+    "x": 23.03185621890526,
+    "y": 12.941800857387719
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8322676c-d55a-4c00-87a4-8f4ff74f17c6",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 27.5625,
+    "y": 12.547570059941734
+   },
+   "topLeft": {
+    "x": 27.15625,
+    "y": 12.172570059941734
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7cb662e7-c1fa-4a39-8435-31cae2f13be2",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 27.52872231988681,
+    "y": 14.1204450570401
+   },
+   "topLeft": {
+    "x": 27.12247231988681,
+    "y": 13.7454450570401
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d0c0e5da-d383-4884-9e22-a2b9d75bb1a2",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 27.5625,
+    "y": 15.0579450570401
+   },
+   "topLeft": {
+    "x": 27.15625,
+    "y": 14.6829450570401
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "aee822f8-81bb-4ac9-be21-649da600eebc",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 23.40625,
+    "y": 15.070445057040097
+   },
+   "topLeft": {
+    "x": 23,
+    "y": 14.695445057040097
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "08e55563-7ba9-4c4a-a663-7a22c16fb0eb",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 23.40625,
+    "y": 13.653384746050534
+   },
+   "topLeft": {
+    "x": 23,
+    "y": 13.278384746050534
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e1be2224-10e4-433c-bfe5-81de8e7e1046",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 25.75,
+    "y": 12.375
+   },
+   "topLeft": {
+    "x": 25.34375,
+    "y": 12
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "426a83f2-3ae7-486f-88f9-4aaed85b28aa",
+   "parent": null,
+   "family": "Ground Plant",
+   "type": "Fern",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 27.375129529396062,
+    "y": 12.980307798285295
+   },
+   "topLeft": {
+    "x": 26.968879529396062,
+    "y": 12.605307798285295
+   },
+   "dims": {
+    "width": 27,
+    "height": 20
+   },
+   "offset": {
+    "left": 3,
+    "top": 6
+   },
+   "originX": 13,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "184c16e4-9ba0-4a10-a667-12b0baf7a203",
+   "parent": null,
+   "family": "Pond",
+   "type": "Koi Pond",
+   "category": "Nature",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 25.46875,
+    "y": 14.5
+   },
+   "topLeft": {
+    "x": 24,
+    "y": 13
+   },
+   "dims": {
+    "width": 96,
+    "height": 95
+   },
+   "offset": {
+    "left": 0,
+    "top": 0
+   },
+   "originX": 47,
+   "originY": 48,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "24/13",
+    "25/13",
+    "26/13",
+    "24/14",
+    "26/14",
+    "25/14"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "00bc89bb-4ddb-4ddd-887e-83ae367ea5a3",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 19.5,
+    "y": 15.875
+   },
+   "topLeft": {
+    "x": 18.0625,
+    "y": 15
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "18/15",
+    "19/15",
+    "20/15"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "b1249725-94ac-462b-a3f9-b0a5eece35f2",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 19.44796159952113,
+    "y": 13.982843069180234
+   },
+   "topLeft": {
+    "x": 17.88546159952113,
+    "y": 12.201593069180234
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "74a3350f-38ae-48a7-802c-e388e32fbb3b",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ficus",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 21.428890306122447,
+    "y": 14.21875
+   },
+   "topLeft": {
+    "x": 21.022640306122447,
+    "y": 13
+   },
+   "dims": {
+    "width": 26,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 16
+   },
+   "originX": 13,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "21/14"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "add67483-a3a7-4e55-82d9-e6b90f4cef88",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 19.5,
+    "y": 16.78125
+   },
+   "topLeft": {
+    "x": 19.125,
+    "y": 16.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 19,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "117a0657-e4bf-40e3-813b-d04f8aa2de38",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 36.5,
+    "y": 15.875
+   },
+   "topLeft": {
+    "x": 35.0625,
+    "y": 15
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "35/15",
+    "36/15",
+    "37/15"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f5a6a42f-5dc7-4f77-bb78-bde8e39a9f64",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 36.44796159952113,
+    "y": 13.982843069180234
+   },
+   "topLeft": {
+    "x": 34.88546159952113,
+    "y": 12.201593069180234
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7b71a1be-5b59-4dc5-bf0d-eac6daf69d1e",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ficus",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 38.42889030612245,
+    "y": 14.21875
+   },
+   "topLeft": {
+    "x": 38.02264030612245,
+    "y": 13
+   },
+   "dims": {
+    "width": 26,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 16
+   },
+   "originX": 13,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "38/14"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "657c8fd9-46ef-427e-8a33-40e863ba4887",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 36.5,
+    "y": 16.78125
+   },
+   "topLeft": {
+    "x": 36.125,
+    "y": 16.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 36,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8b5f1db1-bf36-43a5-b95b-c3ddc6b3dbc3",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.5,
+    "y": 15.875
+   },
+   "topLeft": {
+    "x": 30.0625,
+    "y": 15
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "30/15",
+    "31/15",
+    "32/15"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "628eba7b-909b-4482-9a8d-30d78e19e44b",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.44796159952113,
+    "y": 13.982843069180234
+   },
+   "topLeft": {
+    "x": 29.88546159952113,
+    "y": 12.201593069180234
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "de5f3458-cf40-49a8-81c1-e99e061221c6",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ficus",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 33.42889030612245,
+    "y": 14.21875
+   },
+   "topLeft": {
+    "x": 33.02264030612245,
+    "y": 13
+   },
+   "dims": {
+    "width": 26,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 16
+   },
+   "originX": 13,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "33/14"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "16c69e1d-2eee-46cc-b9f9-e3f75a74f5e0",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 31.5,
+    "y": 16.78125
+   },
+   "topLeft": {
+    "x": 31.125,
+    "y": 16.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 31,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8e5ca2eb-ebc6-44b3-9578-b002d897349e",
+   "parent": null,
+   "family": "Wall Clock",
+   "type": "Wall Clock (Minimal Face)",
+   "category": "WallDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 29.45314230072418,
+    "y": 19.100850579464364
+   },
+   "topLeft": {
+    "x": 29.14064230072418,
+    "y": 18.757100579464364
+   },
+   "dims": {
+    "width": 21,
+    "height": 21
+   },
+   "offset": {
+    "left": 6,
+    "top": 23
+   },
+   "originX": 10,
+   "originY": 11,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "2ef203d0-bb6a-4967-9dac-ab80292f4955",
+   "parent": null,
+   "family": "Chair",
+   "type": "Barcelona Chair",
+   "category": "Seating",
+   "color": "teal",
+   "orientation": "Up",
+   "abs": {
+    "x": 40.5,
+    "y": 30.6875
+   },
+   "topLeft": {
+    "x": 40.15625,
+    "y": 30.28125
+   },
+   "dims": {
+    "width": 22,
+    "height": 23
+   },
+   "offset": {
+    "left": 5,
+    "top": 41
+   },
+   "originX": 11,
+   "originY": 13,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 40,
+     "y": 30
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "af3ead48-e73c-40c0-aabd-8cb03ae4e4df",
+   "parent": null,
+   "family": "Chair",
+   "type": "Barcelona Chair",
+   "category": "Seating",
+   "color": "teal",
+   "orientation": "Right",
+   "abs": {
+    "x": 39.40625,
+    "y": 29.6875
+   },
+   "topLeft": {
+    "x": 39,
+    "y": 28.9375
+   },
+   "dims": {
+    "width": 22,
+    "height": 33
+   },
+   "offset": {
+    "left": 0,
+    "top": 30
+   },
+   "originX": 13,
+   "originY": 24,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 39,
+     "y": 29
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "416ca300-4cf6-408e-bea0-34b5f2d93913",
+   "parent": null,
+   "family": "Chair",
+   "type": "Barcelona Chair",
+   "category": "Seating",
+   "color": "teal",
+   "orientation": "Left",
+   "abs": {
+    "x": 41.5625,
+    "y": 29.6875
+   },
+   "topLeft": {
+    "x": 41.3125,
+    "y": 28.9375
+   },
+   "dims": {
+    "width": 22,
+    "height": 33
+   },
+   "offset": {
+    "left": 10,
+    "top": 30
+   },
+   "originX": 8,
+   "originY": 24,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 41,
+     "y": 29
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "95288d3c-7f19-4806-9f53-78946d58b13a",
+   "parent": null,
+   "family": "Chair",
+   "type": "Barcelona Chair",
+   "category": "Seating",
+   "color": "teal",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.5,
+    "y": 28.59375
+   },
+   "topLeft": {
+    "x": 40.15625,
+    "y": 27.8125
+   },
+   "dims": {
+    "width": 23,
+    "height": 36
+   },
+   "offset": {
+    "left": 5,
+    "top": 26
+   },
+   "originX": 11,
+   "originY": 25,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 40,
+     "y": 28
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "750289be-e8f1-463c-b34a-73e7228b7347",
+   "parent": null,
+   "family": "Floor Lamp",
+   "type": "Molecular Lamp",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 42.40577550537037,
+    "y": 27.181085263804313
+   },
+   "topLeft": {
+    "x": 42.06202550537037,
+    "y": 25.774835263804313
+   },
+   "dims": {
+    "width": 23,
+    "height": 51
+   },
+   "offset": {
+    "left": 5,
+    "top": 11
+   },
+   "originX": 11,
+   "originY": 45,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9cc4bc59-e6bf-4acc-bb7f-faeb0cfad4f4",
+   "parent": "ee782bb3-ecc5-4b2e-bdba-39bfb25022c5",
+   "family": "Desk Plant",
+   "type": "Aloe Vera",
+   "category": "RoomDecor",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 39.42352704275403,
+    "y": 27.171938535395576
+   },
+   "topLeft": {
+    "x": 39.14227704275403,
+    "y": 26.515688535395576
+   },
+   "dims": {
+    "width": 19,
+    "height": 25
+   },
+   "offset": {
+    "left": 7,
+    "top": 3
+   },
+   "originX": 9,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a491d5bc-c7fb-42a4-8f6c-10a8a8c1d0d1",
+   "parent": "ee782bb3-ecc5-4b2e-bdba-39bfb25022c5",
+   "family": "Small Fishtank",
+   "type": "Small Fishtank",
+   "category": "RoomDecor",
+   "color": "lightteal",
+   "orientation": "Down",
+   "abs": {
+    "x": 38.69436034297367,
+    "y": 27.27610520679277
+   },
+   "topLeft": {
+    "x": 38.22561034297367,
+    "y": 26.33860520679277
+   },
+   "dims": {
+    "width": 29,
+    "height": 40
+   },
+   "offset": {
+    "left": 1,
+    "top": 24
+   },
+   "originX": 15,
+   "originY": 30,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "38/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ee782bb3-ecc5-4b2e-bdba-39bfb25022c5",
+   "parent": null,
+   "family": "Coffee Table",
+   "type": "Simple Coffee Table",
+   "category": "Table",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 38.96061440145802,
+    "y": 27.375
+   },
+   "topLeft": {
+    "x": 38.11686440145802,
+    "y": 26.90625
+   },
+   "dims": {
+    "width": 54,
+    "height": 30
+   },
+   "offset": {
+    "left": 5,
+    "top": 1
+   },
+   "originX": 27,
+   "originY": 15,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "38/27",
+    "39/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "3a6560c0-a0a6-40e0-ab46-7270ed831c88",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Round Table",
+   "category": "Table",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.5,
+    "y": 29.59375
+   },
+   "topLeft": {
+    "x": 40.0625,
+    "y": 29.03125
+   },
+   "dims": {
+    "width": 28,
+    "height": 31
+   },
+   "offset": {
+    "left": 2,
+    "top": 1
+   },
+   "originX": 14,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "40/29"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "4caac257-12da-4c37-90f3-f398438fb871",
+   "parent": null,
+   "family": "Shelf",
+   "type": "Floating Bookshelf",
+   "category": "WallDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.502810842073316,
+    "y": 26.50660863245389
+   },
+   "topLeft": {
+    "x": 39.815310842073316,
+    "y": 26.13160863245389
+   },
+   "dims": {
+    "width": 44,
+    "height": 21
+   },
+   "offset": {
+    "left": 26,
+    "top": 16
+   },
+   "originX": 22,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e8f36257-c7ec-4e4d-a16a-e7d2df5254ff",
+   "parent": null,
+   "family": "Desk",
+   "type": "Office Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 14.5,
+    "y": 15.875
+   },
+   "topLeft": {
+    "x": 13.0625,
+    "y": 15
+   },
+   "dims": {
+    "width": 92,
+    "height": 41
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "13/15",
+    "14/15",
+    "15/15"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e3e4462e-e0f6-44ba-b964-3b5e64d8e79c",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 14.447961599521129,
+    "y": 13.982843069180234
+   },
+   "topLeft": {
+    "x": 12.885461599521129,
+    "y": 12.201593069180234
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7f293c2a-ffa8-40be-89c6-aef41f939814",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ficus",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 16.428890306122447,
+    "y": 14.21875
+   },
+   "topLeft": {
+    "x": 16.022640306122447,
+    "y": 13
+   },
+   "dims": {
+    "width": 26,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 16
+   },
+   "originX": 13,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "16/14"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e21ff8a9-b5ea-447d-b65c-95a949567eaf",
+   "parent": null,
+   "family": "Chair",
+   "type": "Aeron Chair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 14.5,
+    "y": 16.78125
+   },
+   "topLeft": {
+    "x": 14.125,
+    "y": 16.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 23
+   },
+   "offset": {
+    "left": 4,
+    "top": 40
+   },
+   "originX": 12,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 14,
+     "y": 16
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "6a436b5d-5dd2-4e51-b119-71791836fbbf",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Philodendron",
+   "category": "RoomDecor",
+   "color": "orange",
+   "orientation": "Right",
+   "abs": {
+    "x": 12.306268151809903,
+    "y": 20.21875
+   },
+   "topLeft": {
+    "x": 11.962518151809903,
+    "y": 19.21875
+   },
+   "dims": {
+    "width": 25,
+    "height": 39
+   },
+   "offset": {
+    "left": 5,
+    "top": 23
+   },
+   "originX": 11,
+   "originY": 32,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "12/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a7897bd3-bbc5-43cc-9f2b-0a3dba7333b5",
+   "parent": "1dde2a23-0278-4f07-9ed0-123af6423075",
+   "family": "Coffee",
+   "type": "Espresso Machine",
+   "category": "FoodAndDrink",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 9.629935507368117,
+    "y": 19.809615385185182
+   },
+   "topLeft": {
+    "x": 9.161185507368117,
+    "y": 18.809615385185182
+   },
+   "dims": {
+    "width": 30,
+    "height": 39
+   },
+   "offset": {
+    "left": 1,
+    "top": 8
+   },
+   "originX": 15,
+   "originY": 32,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1dde2a23-0278-4f07-9ed0-123af6423075",
+   "parent": null,
+   "family": "Kitchen Counters",
+   "type": "Kitchen Cabinet (Large)",
+   "category": "CabinetsAndShelves",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.081324408214734,
+    "y": 20.313087620744867
+   },
+   "topLeft": {
+    "x": 9.081324408214734,
+    "y": 19.625587620744867
+   },
+   "dims": {
+    "width": 64,
+    "height": 32
+   },
+   "offset": {
+    "left": 0,
+    "top": 32
+   },
+   "originX": 32,
+   "originY": 22,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "9/20",
+    "10/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1e220d08-356c-4260-9390-4c8b575a6a6f",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.602157741548062,
+    "y": 19.97975428741153
+   },
+   "topLeft": {
+    "x": 9.039657741548062,
+    "y": 18.19850428741153
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "46db4c8c-bb6c-4729-914e-a8398f4fc18e",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Right",
+   "abs": {
+    "x": 9.40625,
+    "y": 22.6875
+   },
+   "topLeft": {
+    "x": 9.09375,
+    "y": 21.9375
+   },
+   "dims": {
+    "width": 22,
+    "height": 31
+   },
+   "offset": {
+    "left": 3,
+    "top": 30
+   },
+   "originX": 10,
+   "originY": 24,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 9,
+     "y": 22
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8043b7e4-9d83-4695-806a-ad44c80b8c4b",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Left",
+   "abs": {
+    "x": 11.5625,
+    "y": 22.6875
+   },
+   "topLeft": {
+    "x": 11.21875,
+    "y": 21.9375
+   },
+   "dims": {
+    "width": 22,
+    "height": 31
+   },
+   "offset": {
+    "left": 7,
+    "top": 30
+   },
+   "originX": 11,
+   "originY": 24,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 11,
+     "y": 22
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "fbffea85-374c-45d8-8c7f-59f472e6ebfd",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Up",
+   "abs": {
+    "x": 10.5,
+    "y": 23.6875
+   },
+   "topLeft": {
+    "x": 10.1875,
+    "y": 23.25
+   },
+   "dims": {
+    "width": 20,
+    "height": 21
+   },
+   "offset": {
+    "left": 6,
+    "top": 40
+   },
+   "originX": 10,
+   "originY": 14,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 10,
+     "y": 23
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "147f76da-3cdd-4875-a51a-61de4f973745",
+   "parent": null,
+   "family": "Chair",
+   "type": "Simple Chair",
+   "category": "Seating",
+   "color": "coffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.5,
+    "y": 21.59375
+   },
+   "topLeft": {
+    "x": 10.1875,
+    "y": 20.96875
+   },
+   "dims": {
+    "width": 20,
+    "height": 29
+   },
+   "offset": {
+    "left": 6,
+    "top": 31
+   },
+   "originX": 10,
+   "originY": 20,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 10,
+     "y": 21
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "4148f205-568e-4285-80e5-f86ae88fb9c6",
+   "parent": null,
+   "family": "Cabinet",
+   "type": "Office Cabinet",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 8.561364878974672,
+    "y": 20.297196234059932
+   },
+   "topLeft": {
+    "x": 8.061364878974672,
+    "y": 18.734696234059932
+   },
+   "dims": {
+    "width": 32,
+    "height": 58
+   },
+   "offset": {
+    "left": 0,
+    "top": 37
+   },
+   "originX": 16,
+   "originY": 50,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "8/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "3a380f68-53e5-4299-9bf1-c3e45c1f0c03",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ceramic Planter",
+   "category": "RoomDecor",
+   "color": "brown",
+   "orientation": "Down",
+   "abs": {
+    "x": 12.5,
+    "y": 19.71875
+   },
+   "topLeft": {
+    "x": 12.25,
+    "y": 19.09375
+   },
+   "dims": {
+    "width": 16,
+    "height": 26
+   },
+   "offset": {
+    "left": 8,
+    "top": 3
+   },
+   "originX": 8,
+   "originY": 20,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "12/19"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9d558538-4021-4cba-bb72-f15b1846bc95",
+   "parent": "9e8e0892-35c3-4251-ac2b-a0e6afc056a3",
+   "family": "Coffee",
+   "type": "Mug (Regular)",
+   "category": "FoodAndDrink",
+   "color": "blue",
+   "orientation": "Left",
+   "abs": {
+    "x": 10.281903963325774,
+    "y": 22.384332427118338
+   },
+   "topLeft": {
+    "x": 10.094403963325774,
+    "y": 22.103082427118338
+   },
+   "dims": {
+    "width": 12,
+    "height": 13
+   },
+   "offset": {
+    "left": 9,
+    "top": 9
+   },
+   "originX": 6,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "64ab1ebb-429f-4da2-a5db-20a9acc74cb8",
+   "parent": "9e8e0892-35c3-4251-ac2b-a0e6afc056a3",
+   "family": "Coffee",
+   "type": "Mug (Regular)",
+   "category": "FoodAndDrink",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.583987296659103,
+    "y": 22.571832427118338
+   },
+   "topLeft": {
+    "x": 10.458987296659103,
+    "y": 22.290582427118338
+   },
+   "dims": {
+    "width": 9,
+    "height": 14
+   },
+   "offset": {
+    "left": 12,
+    "top": 9
+   },
+   "originX": 4,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9e8e0892-35c3-4251-ac2b-a0e6afc056a3",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Round Table",
+   "category": "Table",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.5,
+    "y": 22.59375
+   },
+   "topLeft": {
+    "x": 10.0625,
+    "y": 22.03125
+   },
+   "dims": {
+    "width": 28,
+    "height": 31
+   },
+   "offset": {
+    "left": 2,
+    "top": 1
+   },
+   "originX": 14,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "10/22"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "c8a1b722-fafc-4e23-b973-bafc0f199d47",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 42.5,
+    "y": 41.71875
+   },
+   "topLeft": {
+    "x": 41.78125,
+    "y": 39.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "42/41"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "19f1fba1-2da8-4958-a470-c2ad95b5b268",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 24.5,
+    "y": 8.71875
+   },
+   "topLeft": {
+    "x": 23.53125,
+    "y": 5.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "24/8"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "46b27786-d02c-4e91-a6c2-c5e0db2e2e37",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 43.5,
+    "y": 19.71875
+   },
+   "topLeft": {
+    "x": 42.53125,
+    "y": 16.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "43/19"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "dbce95ba-e587-4f5f-bc9f-f2a24626096c",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.5,
+    "y": 33.96875
+   },
+   "topLeft": {
+    "x": 38.9375,
+    "y": 32.1875
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "933fa315-f68a-42fb-8c12-5b92664d81ce",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Left",
+   "abs": {
+    "x": 28.5,
+    "y": 45.71875
+   },
+   "topLeft": {
+    "x": 26.40625,
+    "y": 41.25
+   },
+   "dims": {
+    "width": 133,
+    "height": 158
+   },
+   "offset": {
+    "left": 13,
+    "top": 8
+   },
+   "originX": 67,
+   "originY": 143,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "28/45"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1a0d419a-f322-47f4-be79-739af72eec06",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.5,
+    "y": 42.96875
+   },
+   "topLeft": {
+    "x": 29.9375,
+    "y": 41.1875
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "2549bee7-a545-4f86-ad9d-847116c1de62",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Up",
+   "abs": {
+    "x": 45.5,
+    "y": 30.71875
+   },
+   "topLeft": {
+    "x": 43.4375,
+    "y": 26.25
+   },
+   "dims": {
+    "width": 133,
+    "height": 158
+   },
+   "offset": {
+    "left": 14,
+    "top": 8
+   },
+   "originX": 66,
+   "originY": 143,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "45/30"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f9815eef-d0bc-4a24-85e5-41652a988458",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Left",
+   "abs": {
+    "x": 44.5,
+    "y": 40.71875
+   },
+   "topLeft": {
+    "x": 42.40625,
+    "y": 36.25
+   },
+   "dims": {
+    "width": 133,
+    "height": 158
+   },
+   "offset": {
+    "left": 13,
+    "top": 8
+   },
+   "originX": 67,
+   "originY": 143,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "44/40"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "417c4eb8-2860-4225-a4a3-2d78d0883d8e",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Left",
+   "abs": {
+    "x": 30.5,
+    "y": 8.71875
+   },
+   "topLeft": {
+    "x": 28.40625,
+    "y": 4.25
+   },
+   "dims": {
+    "width": 133,
+    "height": 158
+   },
+   "offset": {
+    "left": 13,
+    "top": 8
+   },
+   "originX": 67,
+   "originY": 143,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "30/8"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "b2e53643-06e4-4e72-985a-77277a2749ac",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 9.5,
+    "y": 38.71875
+   },
+   "topLeft": {
+    "x": 8.53125,
+    "y": 35.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "9/38"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "075cbda0-a8d9-4f41-93a0-990d8bd0ec11",
+   "parent": null,
+   "family": "Tree",
+   "type": "Maple Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Down",
+   "abs": {
+    "x": 5.5,
+    "y": 32.71875
+   },
+   "topLeft": {
+    "x": 3.6875,
+    "y": 28.78125
+   },
+   "dims": {
+    "width": 114,
+    "height": 140
+   },
+   "offset": {
+    "left": 22,
+    "top": 25
+   },
+   "originX": 58,
+   "originY": 126,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "5/32"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "907d7a5c-a814-4b02-9ac7-a0b887eed7d5",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Down",
+   "abs": {
+    "x": 11.5,
+    "y": 44.71875
+   },
+   "topLeft": {
+    "x": 9.40625,
+    "y": 40.5
+   },
+   "dims": {
+    "width": 127,
+    "height": 150
+   },
+   "offset": {
+    "left": 13,
+    "top": 16
+   },
+   "originX": 67,
+   "originY": 135,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "11/44"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "b7351fb8-15f1-4017-8992-8ca30841b934",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.5,
+    "y": 43.71875
+   },
+   "topLeft": {
+    "x": 33.78125,
+    "y": 41.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "34/43"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ebcf8b49-02d6-4128-bfd3-65b2d2800801",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.5,
+    "y": 16.71875
+   },
+   "topLeft": {
+    "x": 39.78125,
+    "y": 14.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "40/16"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "cedf850c-592c-49bb-802a-e9c709360941",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 29.5,
+    "y": 11.71875
+   },
+   "topLeft": {
+    "x": 28.53125,
+    "y": 8.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "29/11"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "cd15c463-0eab-42e9-8b67-778a42c04aa1",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Up",
+   "abs": {
+    "x": 41.5,
+    "y": 15.71875
+   },
+   "topLeft": {
+    "x": 39.4375,
+    "y": 11.25
+   },
+   "dims": {
+    "width": 133,
+    "height": 158
+   },
+   "offset": {
+    "left": 14,
+    "top": 8
+   },
+   "originX": 66,
+   "originY": 143,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "41/15"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7c60adb1-a124-4c99-92d0-8feffd794858",
+   "parent": null,
+   "family": "Tree",
+   "type": "Maple Tree",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Left",
+   "abs": {
+    "x": 42.5,
+    "y": 36.71875
+   },
+   "topLeft": {
+    "x": 40.84375,
+    "y": 32.78125
+   },
+   "dims": {
+    "width": 112,
+    "height": 140
+   },
+   "offset": {
+    "left": 27,
+    "top": 25
+   },
+   "originX": 53,
+   "originY": 126,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "42/36"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a953112b-e65d-4e44-8b21-ccc9f9349b6a",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 16.5,
+    "y": 11.71875
+   },
+   "topLeft": {
+    "x": 15.53125,
+    "y": 8.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "16/11"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "fbde84ac-86d7-454d-bdc2-cb8a6a1ddd0d",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 4.5,
+    "y": 15.71875
+   },
+   "topLeft": {
+    "x": 3.78125,
+    "y": 13.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "4/15"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "31e689e0-96bf-49e3-94d0-57333ed910a8",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 5.5,
+    "y": 17.71875
+   },
+   "topLeft": {
+    "x": 4.78125,
+    "y": 15.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "5/17"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "2219acce-73fa-461e-b369-e2ea954755af",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.5,
+    "y": 35.71875
+   },
+   "topLeft": {
+    "x": 9.78125,
+    "y": 33.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "10/35"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "df4af61f-36e5-4817-9cc8-f95882e1d518",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 41.5,
+    "y": 43.71875
+   },
+   "topLeft": {
+    "x": 40.53125,
+    "y": 40.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "41/43"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "23c98783-cffb-4ec7-aff6-9a7468960f5d",
+   "parent": null,
+   "family": "Bookcase",
+   "type": "Bookcase (Tall)",
+   "category": "CabinetsAndShelves",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 18.04946129915563,
+    "y": 20.218749999999993
+   },
+   "topLeft": {
+    "x": 17.14321129915563,
+    "y": 18.624999999999993
+   },
+   "dims": {
+    "width": 59,
+    "height": 59
+   },
+   "offset": {
+    "left": 3,
+    "top": 5
+   },
+   "originX": 29,
+   "originY": 51,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "17/19",
+    "18/19"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "04adea9e-5f95-469e-97aa-d78de6fbabe2",
+   "parent": null,
+   "family": "Floor Lamp",
+   "type": "Molecular Lamp",
+   "category": "RoomDecor",
+   "color": "grey",
+   "orientation": "Up",
+   "abs": {
+    "x": 30.29997207508899,
+    "y": 20.16373373207884
+   },
+   "topLeft": {
+    "x": 29.95622207508899,
+    "y": 18.75748373207884
+   },
+   "dims": {
+    "width": 23,
+    "height": 51
+   },
+   "offset": {
+    "left": 5,
+    "top": 11
+   },
+   "originX": 11,
+   "originY": 45,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "5163991a-9001-48da-a862-5177e601d4f2",
+   "parent": null,
+   "family": "Easel",
+   "type": "Poster Easel",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 28.65527721797596,
+    "y": 20.375
+   },
+   "topLeft": {
+    "x": 28.15527721797596,
+    "y": 19.3125
+   },
+   "dims": {
+    "width": 32,
+    "height": 42
+   },
+   "offset": {
+    "left": 0,
+    "top": 22
+   },
+   "originX": 16,
+   "originY": 34,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "28/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "72136c06-ce51-435c-a7d9-8314d8fd1f5b",
+   "parent": null,
+   "family": "Arcade Machine",
+   "type": "Arcade Machine",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 16.620877941737376,
+    "y": 20.34375
+   },
+   "topLeft": {
+    "x": 16.120877941737376,
+    "y": 18.46875
+   },
+   "dims": {
+    "width": 32,
+    "height": 67
+   },
+   "offset": {
+    "left": 32,
+    "top": 29
+   },
+   "originX": 16,
+   "originY": 60,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "16/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "21d37419-cf8c-46f2-988a-ee6d1cef993e",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 7.5,
+    "y": 36.71875
+   },
+   "topLeft": {
+    "x": 6.53125,
+    "y": 33.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "7/36"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "6821bb42-44fa-4753-99bc-2405888a792b",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 25.5,
+    "y": 9.71875
+   },
+   "topLeft": {
+    "x": 24.78125,
+    "y": 7.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "25/9"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "926c146c-5753-402e-9587-9bda877f764d",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Small)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 30.5,
+    "y": 10.71875
+   },
+   "topLeft": {
+    "x": 29.78125,
+    "y": 8.59375
+   },
+   "dims": {
+    "width": 46,
+    "height": 82
+   },
+   "offset": {
+    "left": 25,
+    "top": 19
+   },
+   "originX": 23,
+   "originY": 68,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "30/10"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d5a6a894-1527-48f8-ae58-3651ebff1e53",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 35.5,
+    "y": 11.71875
+   },
+   "topLeft": {
+    "x": 34.53125,
+    "y": 8.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "35/11"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f72ccb35-a561-4d88-b5c5-ceac1eabb915",
+   "parent": null,
+   "family": "Tree",
+   "type": "Pine Tree (Large)",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 6.5,
+    "y": 18.71875
+   },
+   "topLeft": {
+    "x": 5.53125,
+    "y": 15.65625
+   },
+   "dims": {
+    "width": 62,
+    "height": 113
+   },
+   "offset": {
+    "left": 17,
+    "top": 21
+   },
+   "originX": 31,
+   "originY": 98,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "6/18"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "dc531d8c-3aba-4e33-b75e-6c0ca4329084",
+   "parent": null,
+   "family": "Tree",
+   "type": "Maple Tree",
+   "category": "Nature",
+   "color": "green",
+   "orientation": "Left",
+   "abs": {
+    "x": 10.5,
+    "y": 40.71875
+   },
+   "topLeft": {
+    "x": 8.84375,
+    "y": 36.78125
+   },
+   "dims": {
+    "width": 112,
+    "height": 140
+   },
+   "offset": {
+    "left": 27,
+    "top": 25
+   },
+   "originX": 53,
+   "originY": 126,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "10/40"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "30f955c3-62a9-42e5-a6a9-2cc1b8ab23c1",
+   "parent": null,
+   "family": "Tree",
+   "type": "Birch Tree",
+   "category": "Nature",
+   "color": "lightgreen",
+   "orientation": "Left",
+   "abs": {
+    "x": 9.5,
+    "y": 16.71875
+   },
+   "topLeft": {
+    "x": 7.40625,
+    "y": 12.25
+   },
+   "dims": {
+    "width": 133,
+    "height": 158
+   },
+   "offset": {
+    "left": 13,
+    "top": 8
+   },
+   "originX": 67,
+   "originY": 143,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "9/16"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "fbd93f7a-205f-4075-a721-d921f2c9f69f",
+   "parent": null,
+   "family": "Floor Lamp",
+   "type": "Molecular Lamp",
+   "category": "RoomDecor",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 25.9220786676992,
+    "y": 34.311023579144944
+   },
+   "topLeft": {
+    "x": 25.5783286676992,
+    "y": 32.904773579144944
+   },
+   "dims": {
+    "width": 23,
+    "height": 51
+   },
+   "offset": {
+    "left": 5,
+    "top": 11
+   },
+   "originX": 11,
+   "originY": 45,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a9d714fa-0570-44a3-8234-c44e2be058be",
+   "parent": "f0feded3-10cf-4908-9493-ba80fce90fd7",
+   "family": "Mobile",
+   "type": "Tablet and Phone",
+   "category": "Machine",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 25.135962452661346,
+    "y": 35.30790837654695
+   },
+   "topLeft": {
+    "x": 24.792212452661346,
+    "y": 35.02665837654695
+   },
+   "dims": {
+    "width": 22,
+    "height": 19
+   },
+   "offset": {
+    "left": 5,
+    "top": 7
+   },
+   "originX": 11,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f0feded3-10cf-4908-9493-ba80fce90fd7",
+   "parent": null,
+   "family": "Desk",
+   "type": "Oval Desk",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 24.5,
+    "y": 35.875
+   },
+   "topLeft": {
+    "x": 23.0625,
+    "y": 35
+   },
+   "dims": {
+    "width": 92,
+    "height": 43
+   },
+   "offset": {
+    "left": 2,
+    "top": 0
+   },
+   "originX": 46,
+   "originY": 28,
+   "isDesk": true,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "23/35",
+    "24/35",
+    "25/35"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "b34830e2-acc7-4e76-b59d-e2785e6c542c",
+   "parent": null,
+   "family": "Chair",
+   "type": "Gamer Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 24.5,
+    "y": 34.28125
+   },
+   "topLeft": {
+    "x": 24.0625,
+    "y": 33.15625
+   },
+   "dims": {
+    "width": 28,
+    "height": 43
+   },
+   "offset": {
+    "left": 2,
+    "top": 18
+   },
+   "originX": 14,
+   "originY": 36,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 24,
+     "y": 34
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a8e075ed-5034-46aa-9fd4-6d42703606f4",
+   "parent": null,
+   "family": "Painting",
+   "type": "Abstract Painting (Rectangles)",
+   "category": "WallDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 22.718953794979953,
+    "y": 33.1912319569748
+   },
+   "topLeft": {
+    "x": 22.250203794979953,
+    "y": 32.4099819569748
+   },
+   "dims": {
+    "width": 30,
+    "height": 45
+   },
+   "offset": {
+    "left": 18,
+    "top": 12
+   },
+   "originX": 15,
+   "originY": 25,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f1f04c0a-e68b-4369-9a91-f15d5b358e87",
+   "parent": "45e0cf5f-8524-423a-bc67-55b7926a2e9a",
+   "family": "Desk Plant",
+   "type": "Small potted Hosta",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 26.952016089543797,
+    "y": 32.83194169470892
+   },
+   "topLeft": {
+    "x": 26.670766089543797,
+    "y": 32.30069169470892
+   },
+   "dims": {
+    "width": 17,
+    "height": 21
+   },
+   "offset": {
+    "left": 7,
+    "top": 8
+   },
+   "originX": 9,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "45e0cf5f-8524-423a-bc67-55b7926a2e9a",
+   "parent": null,
+   "family": "Bookcase",
+   "type": "Cubicle Shelves",
+   "category": "CabinetsAndShelves",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 27.577016089543783,
+    "y": 34.15625
+   },
+   "topLeft": {
+    "x": 26.452016089543783,
+    "y": 32.625
+   },
+   "dims": {
+    "width": 72,
+    "height": 54
+   },
+   "offset": {
+    "left": 12,
+    "top": 74
+   },
+   "originX": 36,
+   "originY": 49,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "26/33",
+    "27/33",
+    "28/33"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "4521f9da-9bca-4104-8d8d-1f7a517e613c",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "lightblue",
+   "orientation": "Down",
+   "abs": {
+    "x": 24.5,
+    "y": 42.96875
+   },
+   "topLeft": {
+    "x": 22.9375,
+    "y": 41.1875
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "3c1c03bc-9d13-482d-9af0-1ebe7a483198",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "lightblue",
+   "orientation": "Down",
+   "abs": {
+    "x": 17.5,
+    "y": 42.96875
+   },
+   "topLeft": {
+    "x": 15.9375,
+    "y": 41.1875
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ca5c5112-a198-4367-aa57-e5cedef9cb90",
+   "parent": null,
+   "family": "Wall Cover",
+   "type": "Hip Wall Art",
+   "category": "WallDecor",
+   "color": "lightblue",
+   "orientation": "Down",
+   "abs": {
+    "x": 18.455538754555576,
+    "y": 33.974977783461355
+   },
+   "topLeft": {
+    "x": 16.955538754555576,
+    "y": 32.131227783461355
+   },
+   "dims": {
+    "width": 96,
+    "height": 60
+   },
+   "offset": {
+    "left": 0,
+    "top": 4
+   },
+   "originX": 48,
+   "originY": 59,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "692f8906-bcc6-4724-a813-e657c7606fbc",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Fiddle-leaf Fig",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 13.511892543490852,
+    "y": 34.21875
+   },
+   "topLeft": {
+    "x": 13.199392543490852,
+    "y": 33.09375
+   },
+   "dims": {
+    "width": 24,
+    "height": 46
+   },
+   "offset": {
+    "left": 6,
+    "top": 17
+   },
+   "originX": 10,
+   "originY": 36,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "13/34"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "489f12f9-d313-4698-b027-1eac1d8d896c",
+   "parent": null,
+   "family": "Mounted Display",
+   "type": "Television Screen (Wall)",
+   "category": "WallDecor",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 15.699392543490852,
+    "y": 33.1269549129517
+   },
+   "topLeft": {
+    "x": 14.949392543490852,
+    "y": 32.6582049129517
+   },
+   "dims": {
+    "width": 47,
+    "height": 31
+   },
+   "offset": {
+    "left": 9,
+    "top": 17
+   },
+   "originX": 24,
+   "originY": 15,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d8fe8680-6c65-4911-a5d7-72700995567e",
+   "parent": null,
+   "family": "Couch",
+   "type": "Modular Couch (Segment)",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 17.5,
+    "y": 35.53125
+   },
+   "topLeft": {
+    "x": 16.96875,
+    "y": 34.90625
+   },
+   "dims": {
+    "width": 34,
+    "height": 31
+   },
+   "offset": {
+    "left": 31,
+    "top": 29
+   },
+   "originX": 17,
+   "originY": 20,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 17,
+     "y": 35
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "88544309-a45c-45fd-b8f9-5a7262967d31",
+   "parent": null,
+   "family": "Couch",
+   "type": "Modular Couch (Segment)",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Right",
+   "abs": {
+    "x": 15.3125,
+    "y": 36.34375
+   },
+   "topLeft": {
+    "x": 15,
+    "y": 35.5
+   },
+   "dims": {
+    "width": 20,
+    "height": 46
+   },
+   "offset": {
+    "left": 32,
+    "top": 16
+   },
+   "originX": 10,
+   "originY": 27,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 15,
+     "y": 36
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "995f4c32-194d-4131-81d0-714884e59c95",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Mid Century Side Table",
+   "category": "Table",
+   "color": "lightcoffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 19.46875,
+    "y": 37.78125
+   },
+   "topLeft": {
+    "x": 19.125,
+    "y": 37.25
+   },
+   "dims": {
+    "width": 24,
+    "height": 24
+   },
+   "offset": {
+    "left": 4,
+    "top": 8
+   },
+   "originX": 11,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "19/37"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "4aefd515-f92f-42bc-9dcd-be07c2d077da",
+   "parent": "e854b580-1c33-4b3e-9121-a716ad590827",
+   "family": "Globe",
+   "type": "Globe",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 16.716841028395812,
+    "y": 36.50943151830535
+   },
+   "topLeft": {
+    "x": 16.373091028395812,
+    "y": 35.75943151830535
+   },
+   "dims": {
+    "width": 23,
+    "height": 29
+   },
+   "offset": {
+    "left": 5,
+    "top": 1
+   },
+   "originX": 11,
+   "originY": 24,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e854b580-1c33-4b3e-9121-a716ad590827",
+   "parent": null,
+   "family": "Coffee Table",
+   "type": "Round Coffee Table",
+   "category": "Table",
+   "color": "coffee",
+   "orientation": "Down",
+   "abs": {
+    "x": 17,
+    "y": 36.5
+   },
+   "topLeft": {
+    "x": 16.15625,
+    "y": 36
+   },
+   "dims": {
+    "width": 54,
+    "height": 37
+   },
+   "offset": {
+    "left": 5,
+    "top": 0
+   },
+   "originX": 27,
+   "originY": 16,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "16/36",
+    "17/36"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d2fa8c1c-6054-4273-bb4c-99835b58246f",
+   "parent": null,
+   "family": "Couch",
+   "type": "Modular Couch (Corner)",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 16.5,
+    "y": 35.5
+   },
+   "topLeft": {
+    "x": 15.03125,
+    "y": 34.90625
+   },
+   "dims": {
+    "width": 64,
+    "height": 31
+   },
+   "offset": {
+    "left": 1,
+    "top": 29
+   },
+   "originX": 47,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 16,
+     "y": 35
+    }
+   ],
+   "collisionTiles": [
+    "15/35"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "24c48737-4ad3-48f8-82b1-4b263a5dde05",
+   "parent": null,
+   "family": "Armchair",
+   "type": "U-Shaped Armchair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Left",
+   "abs": {
+    "x": 19.65625,
+    "y": 36.5625
+   },
+   "topLeft": {
+    "x": 19.34375,
+    "y": 35.90625
+   },
+   "dims": {
+    "width": 21,
+    "height": 33
+   },
+   "offset": {
+    "left": 11,
+    "top": 29
+   },
+   "originX": 10,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 19,
+     "y": 36
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "52e00cff-9d16-414f-9634-76e05af48886",
+   "parent": null,
+   "family": "Armchair",
+   "type": "U-Shaped Armchair",
+   "category": "Seating",
+   "color": "black",
+   "orientation": "Up",
+   "abs": {
+    "x": 17.5,
+    "y": 37.625
+   },
+   "topLeft": {
+    "x": 17.09375,
+    "y": 37.0625
+   },
+   "dims": {
+    "width": 26,
+    "height": 29
+   },
+   "offset": {
+    "left": 3,
+    "top": 34
+   },
+   "originX": 13,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 17,
+     "y": 37
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a66481fe-1da1-4375-8d28-afe8d3f25efc",
+   "parent": null,
+   "family": "Whiteboard",
+   "type": "Whiteboard",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 39.22303269555616,
+    "y": 20.285700787001716
+   },
+   "topLeft": {
+    "x": 38.25428269555616,
+    "y": 18.879450787001716
+   },
+   "dims": {
+    "width": 62,
+    "height": 51
+   },
+   "offset": {
+    "left": 1,
+    "top": 13
+   },
+   "originX": 31,
+   "originY": 45,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "38/19",
+    "39/19"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "81acd8ea-27a6-42a2-ad66-5efb54a34ad4",
+   "parent": null,
+   "family": "Chair",
+   "type": "PP501 Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.5,
+    "y": 21.59375
+   },
+   "topLeft": {
+    "x": 40.15625,
+    "y": 21.09375
+   },
+   "dims": {
+    "width": 22,
+    "height": 27
+   },
+   "offset": {
+    "left": 5,
+    "top": 3
+   },
+   "originX": 11,
+   "originY": 16,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 40,
+     "y": 21
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "83ecc57f-8db0-4e87-b275-ada505d7baad",
+   "parent": null,
+   "family": "Chair",
+   "type": "PP501 Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Right",
+   "abs": {
+    "x": 39.40625,
+    "y": 22.6875
+   },
+   "topLeft": {
+    "x": 39.15625,
+    "y": 22.09375
+   },
+   "dims": {
+    "width": 18,
+    "height": 27
+   },
+   "offset": {
+    "left": 5,
+    "top": 3
+   },
+   "originX": 8,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 39,
+     "y": 22
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a70e3285-ac0c-4299-b684-7656ba46440a",
+   "parent": null,
+   "family": "Chair",
+   "type": "PP501 Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Up",
+   "abs": {
+    "x": 40.5,
+    "y": 23.6875
+   },
+   "topLeft": {
+    "x": 40.125,
+    "y": 23.3125
+   },
+   "dims": {
+    "width": 24,
+    "height": 22
+   },
+   "offset": {
+    "left": 4,
+    "top": 10
+   },
+   "originX": 12,
+   "originY": 12,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 40,
+     "y": 23
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e791de89-d72d-4611-a7a6-05b37bc1fdb6",
+   "parent": "c4e0700b-4d07-44d2-9047-7d63b6a00a21",
+   "family": "Book",
+   "type": "Book (Open)",
+   "category": "RoomDecor",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 42.33281213659453,
+    "y": 19.55704728687091
+   },
+   "topLeft": {
+    "x": 41.95781213659453,
+    "y": 19.33829728687091
+   },
+   "dims": {
+    "width": 25,
+    "height": 14
+   },
+   "offset": {
+    "left": 4,
+    "top": 9
+   },
+   "originX": 12,
+   "originY": 7,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "c4e0700b-4d07-44d2-9047-7d63b6a00a21",
+   "parent": null,
+   "family": "Cabinet",
+   "type": "Filing Cabinet",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 42.33552691096929,
+    "y": 20.306415086100884
+   },
+   "topLeft": {
+    "x": 41.86677691096929,
+    "y": 19.337665086100884
+   },
+   "dims": {
+    "width": 30,
+    "height": 42
+   },
+   "offset": {
+    "left": 1,
+    "top": 22
+   },
+   "originX": 15,
+   "originY": 31,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "42/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "17710584-f2f0-40c4-8e36-79ced8b6c35d",
+   "parent": null,
+   "family": "Chair",
+   "type": "PP501 Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Left",
+   "abs": {
+    "x": 41.5625,
+    "y": 22.6875
+   },
+   "topLeft": {
+    "x": 41.28125,
+    "y": 22.09375
+   },
+   "dims": {
+    "width": 18,
+    "height": 27
+   },
+   "offset": {
+    "left": 9,
+    "top": 3
+   },
+   "originX": 9,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 41,
+     "y": 22
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "392c4680-9ab4-439c-bee4-24c7c42a8065",
+   "parent": "ce9e5c3d-18b0-4017-8a20-f9d49c748335",
+   "family": "Handwritten Notes",
+   "type": "Inkpen Notes",
+   "category": "RoomDecor",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.524776391518145,
+    "y": 22.324904476864383
+   },
+   "topLeft": {
+    "x": 40.181026391518145,
+    "y": 22.074904476864383
+   },
+   "dims": {
+    "width": 22,
+    "height": 17
+   },
+   "offset": {
+    "left": 6,
+    "top": 6
+   },
+   "originX": 11,
+   "originY": 8,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ce9e5c3d-18b0-4017-8a20-f9d49c748335",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Round Table",
+   "category": "Table",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.5,
+    "y": 22.59375
+   },
+   "topLeft": {
+    "x": 40.0625,
+    "y": 22.03125
+   },
+   "dims": {
+    "width": 28,
+    "height": 31
+   },
+   "offset": {
+    "left": 2,
+    "top": 1
+   },
+   "originX": 14,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "40/22"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a8b2f083-833d-4203-b7da-897cd32d26cb",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 40.47562439122436,
+    "y": 19.975919134794818
+   },
+   "topLeft": {
+    "x": 38.91312439122436,
+    "y": 18.194669134794818
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "00236f4e-ccba-4ac9-9aab-7f0e22dcf21e",
+   "parent": null,
+   "family": "Easel",
+   "type": "Poster Easel",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Left",
+   "abs": {
+    "x": 41.33390493016563,
+    "y": 20.25
+   },
+   "topLeft": {
+    "x": 40.83390493016563,
+    "y": 19.03125
+   },
+   "dims": {
+    "width": 31,
+    "height": 48
+   },
+   "offset": {
+    "left": 0,
+    "top": 15
+   },
+   "originX": 16,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "41/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f0674088-e0b5-425c-ace8-d4ea3393f6f5",
+   "parent": null,
+   "family": "Mounted Display",
+   "type": "Television Screen (Wall)",
+   "category": "WallDecor",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.790061503771113,
+    "y": 33.06452046805064
+   },
+   "topLeft": {
+    "x": 31.040061503771113,
+    "y": 32.59577046805064
+   },
+   "dims": {
+    "width": 47,
+    "height": 31
+   },
+   "offset": {
+    "left": 9,
+    "top": 17
+   },
+   "originX": 24,
+   "originY": 15,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1a090ed2-1837-4822-b20e-4ba6e4a8dde0",
+   "parent": "8accce05-be42-4ca5-a792-64321c3612a0",
+   "family": "Mobile",
+   "type": "Tablet and Phone",
+   "category": "Machine",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 37.516938987854886,
+    "y": 33.51160955459022
+   },
+   "topLeft": {
+    "x": 37.173188987854886,
+    "y": 33.23035955459022
+   },
+   "dims": {
+    "width": 22,
+    "height": 19
+   },
+   "offset": {
+    "left": 5,
+    "top": 7
+   },
+   "originX": 11,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8accce05-be42-4ca5-a792-64321c3612a0",
+   "parent": null,
+   "family": "Filing Cabinet",
+   "type": "Filing Cabinet",
+   "category": "CabinetsAndShelves",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 37.531213606547226,
+    "y": 34.30208331401701
+   },
+   "topLeft": {
+    "x": 37.062463606547226,
+    "y": 33.27083331401701
+   },
+   "dims": {
+    "width": 30,
+    "height": 42
+   },
+   "offset": {
+    "left": 1,
+    "top": 0
+   },
+   "originX": 15,
+   "originY": 33,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9a11718d-8ed0-49fc-8885-9705114d6c01",
+   "parent": "84794f45-0d7d-4c37-a6ed-5603697b5ea6",
+   "family": "Computer Set",
+   "type": "Digital Artist Computer",
+   "category": "Machine",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 29.852561454100567,
+    "y": 33.668687167831
+   },
+   "topLeft": {
+    "x": 29.383811454100567,
+    "y": 33.012437167831
+   },
+   "dims": {
+    "width": 37,
+    "height": 33
+   },
+   "offset": {
+    "left": 33,
+    "top": 26
+   },
+   "originX": 15,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "84794f45-0d7d-4c37-a6ed-5603697b5ea6",
+   "parent": null,
+   "family": "Cabinet",
+   "type": "Portfolio Drawers",
+   "category": "CabinetsAndShelves",
+   "color": "purple",
+   "orientation": "Down",
+   "abs": {
+    "x": 29.915061454100567,
+    "y": 34.31452050116433
+   },
+   "topLeft": {
+    "x": 29.165061454100567,
+    "y": 33.53327050116433
+   },
+   "dims": {
+    "width": 48,
+    "height": 35
+   },
+   "offset": {
+    "left": 8,
+    "top": 29
+   },
+   "originX": 24,
+   "originY": 25,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "29/34",
+    "30/34"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9b9cbe4e-655c-4e92-a896-cce4887e4610",
+   "parent": "55611b82-c0d8-40be-a1e9-62bfdcbae6ef",
+   "family": "Computer Set",
+   "type": "Hardware Dev Computer",
+   "category": "Machine",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.49145038806087,
+    "y": 34.092529840713134
+   },
+   "topLeft": {
+    "x": 30.77270038806087,
+    "y": 33.280029840713134
+   },
+   "dims": {
+    "width": 49,
+    "height": 38
+   },
+   "offset": {
+    "left": 9,
+    "top": 21
+   },
+   "originX": 23,
+   "originY": 26,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "55611b82-c0d8-40be-a1e9-62bfdcbae6ef",
+   "parent": null,
+   "family": "Coffee Table",
+   "type": "Simple Coffee Table",
+   "category": "Table",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 31.61645038806087,
+    "y": 34.375
+   },
+   "topLeft": {
+    "x": 30.77270038806087,
+    "y": 33.90625
+   },
+   "dims": {
+    "width": 54,
+    "height": 30
+   },
+   "offset": {
+    "left": 5,
+    "top": 1
+   },
+   "originX": 27,
+   "originY": 15,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "31/34",
+    "32/34"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d9536c91-06ed-4a3a-9bf5-a8bdd7bd768b",
+   "parent": null,
+   "family": "Cabinet",
+   "type": "Office Cabinet",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 36.51228385108951,
+    "y": 34.383964947448426
+   },
+   "topLeft": {
+    "x": 36.01228385108951,
+    "y": 32.821464947448426
+   },
+   "dims": {
+    "width": 32,
+    "height": 58
+   },
+   "offset": {
+    "left": 0,
+    "top": 37
+   },
+   "originX": 16,
+   "originY": 50,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "36/34"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "5ec2468e-9897-4948-8a85-a32178c21f59",
+   "parent": null,
+   "family": "Hydration",
+   "type": "Water Cooler",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 39.4636728181635,
+    "y": 34.245076054880236
+   },
+   "topLeft": {
+    "x": 39.1511728181635,
+    "y": 33.026326054880236
+   },
+   "dims": {
+    "width": 20,
+    "height": 48
+   },
+   "offset": {
+    "left": 6,
+    "top": 15
+   },
+   "originX": 10,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "39/34"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "5c1334f9-8244-454c-ad48-c48cf9d779fc",
+   "parent": "89da3700-49f3-4b0d-913a-cb81b3a0831d",
+   "family": "Mobile",
+   "type": "Tablet and Phone",
+   "category": "Machine",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 33.45153548607101,
+    "y": 37.56007014784085
+   },
+   "topLeft": {
+    "x": 33.10778548607101,
+    "y": 37.27882014784085
+   },
+   "dims": {
+    "width": 22,
+    "height": 19
+   },
+   "offset": {
+    "left": 5,
+    "top": 7
+   },
+   "originX": 11,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "0b6b7ebc-fcd2-4aeb-b609-b13ad4d8da9f",
+   "parent": "89da3700-49f3-4b0d-913a-cb81b3a0831d",
+   "family": "Computer Set",
+   "type": "Hardware Dev Computer",
+   "category": "Machine",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.7496124567611,
+    "y": 38.44949325738777
+   },
+   "topLeft": {
+    "x": 34.0308624567611,
+    "y": 37.63699325738777
+   },
+   "dims": {
+    "width": 49,
+    "height": 38
+   },
+   "offset": {
+    "left": 9,
+    "top": 21
+   },
+   "originX": 23,
+   "originY": 26,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "4e3c307e-4cc3-4431-aef5-73ee6929f602",
+   "parent": "89da3700-49f3-4b0d-913a-cb81b3a0831d",
+   "family": "Computer Set",
+   "type": "Laptop Computer",
+   "category": "Machine",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 33.37942009881044,
+    "y": 38.497570182228145
+   },
+   "topLeft": {
+    "x": 33.06692009881044,
+    "y": 37.903820182228145
+   },
+   "dims": {
+    "width": 20,
+    "height": 28
+   },
+   "offset": {
+    "left": 38,
+    "top": 30
+   },
+   "originX": 10,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "c2c024d0-f4e8-46a3-8dec-d54ffe03fe8f",
+   "parent": "89da3700-49f3-4b0d-913a-cb81b3a0831d",
+   "family": "Computer Set",
+   "type": "Laptop Computer",
+   "category": "Machine",
+   "color": "white",
+   "orientation": "Up",
+   "abs": {
+    "x": 34.46115090771886,
+    "y": 37.39180091089954
+   },
+   "topLeft": {
+    "x": 34.14865090771886,
+    "y": 37.11055091089954
+   },
+   "dims": {
+    "width": 20,
+    "height": 17
+   },
+   "offset": {
+    "left": 38,
+    "top": 29
+   },
+   "originX": 10,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "6e034370-4c40-4a2b-8f49-6c11f5fd98c0",
+   "parent": "89da3700-49f3-4b0d-913a-cb81b3a0831d",
+   "family": "Book",
+   "type": "Book (Closed)",
+   "category": "RoomDecor",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 35.44672786694653,
+    "y": 37.34372398605917
+   },
+   "topLeft": {
+    "x": 35.22797786694653,
+    "y": 37.06247398605917
+   },
+   "dims": {
+    "width": 14,
+    "height": 16
+   },
+   "offset": {
+    "left": 9,
+    "top": 8
+   },
+   "originX": 7,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "89da3700-49f3-4b0d-913a-cb81b3a0831d",
+   "parent": null,
+   "family": "2x3 Table",
+   "type": "Simple Table 2x3",
+   "category": "Table",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.46875,
+    "y": 38
+   },
+   "topLeft": {
+    "x": 33,
+    "y": 37
+   },
+   "dims": {
+    "width": 96,
+    "height": 74
+   },
+   "offset": {
+    "left": 0,
+    "top": 0
+   },
+   "originX": 47,
+   "originY": 32,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "33/37",
+    "34/37",
+    "35/37",
+    "33/38",
+    "34/38",
+    "35/38"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1b2804ff-367b-410b-a8e1-06d523a1b944",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Down",
+   "abs": {
+    "x": 33.5,
+    "y": 36.59375
+   },
+   "topLeft": {
+    "x": 33.125,
+    "y": 36
+   },
+   "dims": {
+    "width": 24,
+    "height": 28
+   },
+   "offset": {
+    "left": 4,
+    "top": 0
+   },
+   "originX": 12,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 33,
+     "y": 36
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "207753ac-4566-4917-b202-2aaeecc69ac5",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.5,
+    "y": 36.59375
+   },
+   "topLeft": {
+    "x": 34.125,
+    "y": 36
+   },
+   "dims": {
+    "width": 24,
+    "height": 28
+   },
+   "offset": {
+    "left": 4,
+    "top": 0
+   },
+   "originX": 12,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 34,
+     "y": 36
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "675d4b76-9b15-4313-b443-f871d3ce8a34",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Down",
+   "abs": {
+    "x": 35.5,
+    "y": 36.59375
+   },
+   "topLeft": {
+    "x": 35.125,
+    "y": 36
+   },
+   "dims": {
+    "width": 24,
+    "height": 28
+   },
+   "offset": {
+    "left": 4,
+    "top": 0
+   },
+   "originX": 12,
+   "originY": 19,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 35,
+     "y": 36
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "53ceee93-7501-4393-8baf-a84082912bed",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Left",
+   "abs": {
+    "x": 36.5625,
+    "y": 37.6875
+   },
+   "topLeft": {
+    "x": 36.3125,
+    "y": 37.03125
+   },
+   "dims": {
+    "width": 21,
+    "height": 28
+   },
+   "offset": {
+    "left": 10,
+    "top": 1
+   },
+   "originX": 8,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 36,
+     "y": 37
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "deda387b-57ce-4444-be27-93d7b48a925e",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Left",
+   "abs": {
+    "x": 36.5625,
+    "y": 38.6875
+   },
+   "topLeft": {
+    "x": 36.3125,
+    "y": 38.03125
+   },
+   "dims": {
+    "width": 21,
+    "height": 28
+   },
+   "offset": {
+    "left": 10,
+    "top": 1
+   },
+   "originX": 8,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 36,
+     "y": 38
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "28eb9617-3b62-4815-aac6-915e2427d894",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Up",
+   "abs": {
+    "x": 35.5,
+    "y": 39.6875
+   },
+   "topLeft": {
+    "x": 35.15625,
+    "y": 39.375
+   },
+   "dims": {
+    "width": 22,
+    "height": 19
+   },
+   "offset": {
+    "left": 5,
+    "top": 12
+   },
+   "originX": 11,
+   "originY": 10,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 35,
+     "y": 39
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9c0332ab-1aee-4d4f-9570-8ea9042f8c2f",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Up",
+   "abs": {
+    "x": 34.5,
+    "y": 39.6875
+   },
+   "topLeft": {
+    "x": 34.15625,
+    "y": 39.375
+   },
+   "dims": {
+    "width": 22,
+    "height": 19
+   },
+   "offset": {
+    "left": 5,
+    "top": 12
+   },
+   "originX": 11,
+   "originY": 10,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 34,
+     "y": 39
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "90bd6cfb-5ded-4395-90ab-195035f8f36b",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Up",
+   "abs": {
+    "x": 33.5,
+    "y": 39.6875
+   },
+   "topLeft": {
+    "x": 33.15625,
+    "y": 39.375
+   },
+   "dims": {
+    "width": 22,
+    "height": 19
+   },
+   "offset": {
+    "left": 5,
+    "top": 12
+   },
+   "originX": 11,
+   "originY": 10,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 33,
+     "y": 39
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1d1536b6-3507-4cba-a99a-4a97cef34c87",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Right",
+   "abs": {
+    "x": 32.40625,
+    "y": 37.6875
+   },
+   "topLeft": {
+    "x": 32.03125,
+    "y": 37.03125
+   },
+   "dims": {
+    "width": 21,
+    "height": 28
+   },
+   "offset": {
+    "left": 1,
+    "top": 1
+   },
+   "originX": 12,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 32,
+     "y": 37
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9fe39123-22f6-4f36-b17d-196dffa4291d",
+   "parent": null,
+   "family": "Chair",
+   "type": "Space Chair",
+   "category": "Seating",
+   "color": "red",
+   "orientation": "Right",
+   "abs": {
+    "x": 32.40625,
+    "y": 38.6875
+   },
+   "topLeft": {
+    "x": 32.03125,
+    "y": 38.03125
+   },
+   "dims": {
+    "width": 21,
+    "height": 28
+   },
+   "offset": {
+    "left": 1,
+    "top": 1
+   },
+   "originX": 12,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 32,
+     "y": 38
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "e38ab389-892b-467a-b354-7ad3f9c23eb3",
+   "parent": null,
+   "family": "Filing Cabinet",
+   "type": "Filing Cabinet",
+   "category": "CabinetsAndShelves",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 38.427046939880555,
+    "y": 34.30208331401701
+   },
+   "topLeft": {
+    "x": 37.958296939880555,
+    "y": 33.27083331401701
+   },
+   "dims": {
+    "width": 30,
+    "height": 42
+   },
+   "offset": {
+    "left": 1,
+    "top": 0
+   },
+   "originX": 15,
+   "originY": 33,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "7c7e7d9d-9d94-4553-b5dc-91cf00317b6a",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 37.5,
+    "y": 42.96875
+   },
+   "topLeft": {
+    "x": 35.9375,
+    "y": 41.1875
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "820fa6e4-2ec9-4b22-9362-76d63b0d2b3d",
+   "parent": null,
+   "family": "Chair",
+   "type": "Z Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Right",
+   "abs": {
+    "x": 9.40625,
+    "y": 29.6875
+   },
+   "topLeft": {
+    "x": 9.15625,
+    "y": 29.15625
+   },
+   "dims": {
+    "width": 17,
+    "height": 26
+   },
+   "offset": {
+    "left": 5,
+    "top": 5
+   },
+   "originX": 8,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 9,
+     "y": 29
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ed7b1fef-658c-4250-bd6e-3ef5930dfafa",
+   "parent": null,
+   "family": "Chair",
+   "type": "Z Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.5,
+    "y": 28.59375
+   },
+   "topLeft": {
+    "x": 10.1875,
+    "y": 28.0625
+   },
+   "dims": {
+    "width": 20,
+    "height": 28
+   },
+   "offset": {
+    "left": 6,
+    "top": 2
+   },
+   "originX": 10,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 10,
+     "y": 28
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "0e2b610b-d7d2-453a-bfec-e0cbd0e928d1",
+   "parent": null,
+   "family": "Chair",
+   "type": "Z Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Up",
+   "abs": {
+    "x": 10.5,
+    "y": 30.6875
+   },
+   "topLeft": {
+    "x": 10.1875,
+    "y": 30.4375
+   },
+   "dims": {
+    "width": 20,
+    "height": 18
+   },
+   "offset": {
+    "left": 6,
+    "top": 14
+   },
+   "originX": 10,
+   "originY": 8,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 10,
+     "y": 30
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "2a091179-bdcd-481a-90e8-9567af07bcef",
+   "parent": null,
+   "family": "Chair",
+   "type": "Z Chair",
+   "category": "Seating",
+   "color": "blue",
+   "orientation": "Left",
+   "abs": {
+    "x": 11.5625,
+    "y": 29.6875
+   },
+   "topLeft": {
+    "x": 11.3125,
+    "y": 29.15625
+   },
+   "dims": {
+    "width": 17,
+    "height": 26
+   },
+   "offset": {
+    "left": 10,
+    "top": 5
+   },
+   "originX": 8,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": true,
+   "sitTiles": [
+    {
+     "x": 11,
+     "y": 29
+    }
+   ],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "64afe5b0-6820-4978-818a-64c9ad033d3b",
+   "parent": "9486b07b-3437-450e-8041-0743367d552a",
+   "family": "Desk Plant",
+   "type": "Small potted Hosta",
+   "category": "RoomDecor",
+   "color": "orange",
+   "orientation": "Down",
+   "abs": {
+    "x": 12.46464483802373,
+    "y": 26.58994309064512
+   },
+   "topLeft": {
+    "x": 12.18339483802373,
+    "y": 26.05869309064512
+   },
+   "dims": {
+    "width": 17,
+    "height": 21
+   },
+   "offset": {
+    "left": 7,
+    "top": 8
+   },
+   "originX": 9,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "9486b07b-3437-450e-8041-0743367d552a",
+   "parent": null,
+   "family": "Cabinet",
+   "type": "Filing Cabinet",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 12.429922614881683,
+    "y": 27.276748664394802
+   },
+   "topLeft": {
+    "x": 11.961172614881683,
+    "y": 26.307998664394802
+   },
+   "dims": {
+    "width": 30,
+    "height": 42
+   },
+   "offset": {
+    "left": 1,
+    "top": 22
+   },
+   "originX": 15,
+   "originY": 31,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "12/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a3c283d2-3a5c-4e91-b52f-79e8d47e3262",
+   "parent": null,
+   "family": "Bookcase",
+   "type": "Bookcase (Tall)",
+   "category": "CabinetsAndShelves",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 9.058276508243921,
+    "y": 27.37898007261761
+   },
+   "topLeft": {
+    "x": 8.152026508243921,
+    "y": 25.78523007261761
+   },
+   "dims": {
+    "width": 59,
+    "height": 59
+   },
+   "offset": {
+    "left": 3,
+    "top": 5
+   },
+   "originX": 29,
+   "originY": 51,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "8/27",
+    "9/27"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "f27a84ea-3316-468c-8e03-d3cab7a036db",
+   "parent": "46090a37-2849-489c-bc66-6e36d2eb6a3f",
+   "family": "Document",
+   "type": "Document (Single)",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.356960261671489,
+    "y": 29.32068158693731
+   },
+   "topLeft": {
+    "x": 10.169460261671489,
+    "y": 29.10193158693731
+   },
+   "dims": {
+    "width": 13,
+    "height": 13
+   },
+   "offset": {
+    "left": 10,
+    "top": 9
+   },
+   "originX": 6,
+   "originY": 7,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "c1fb6f16-8493-48c7-b40c-3353a8cba2c5",
+   "parent": "46090a37-2849-489c-bc66-6e36d2eb6a3f",
+   "family": "Book",
+   "type": "Book (Closed)",
+   "category": "RoomDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.687842605331667,
+    "y": 29.357446291788435
+   },
+   "topLeft": {
+    "x": 10.469092605331667,
+    "y": 29.076196291788435
+   },
+   "dims": {
+    "width": 14,
+    "height": 16
+   },
+   "offset": {
+    "left": 9,
+    "top": 8
+   },
+   "originX": 7,
+   "originY": 9,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "46090a37-2849-489c-bc66-6e36d2eb6a3f",
+   "parent": null,
+   "family": "1x1 Table",
+   "type": "Round Table",
+   "category": "Table",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.5,
+    "y": 29.59375
+   },
+   "topLeft": {
+    "x": 10.0625,
+    "y": 29.03125
+   },
+   "dims": {
+    "width": 28,
+    "height": 31
+   },
+   "offset": {
+    "left": 2,
+    "top": 1
+   },
+   "originX": 14,
+   "originY": 18,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "10/29"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "d7abeffa-60c3-4a8c-879d-f5c8577ccffe",
+   "parent": null,
+   "family": "Window Large",
+   "type": "Window (Modern)",
+   "category": "WallDecor",
+   "color": "blue",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.5,
+    "y": 33.96875
+   },
+   "topLeft": {
+    "x": 8.9375,
+    "y": 32.1875
+   },
+   "dims": {
+    "width": 100,
+    "height": 58
+   },
+   "offset": {
+    "left": 30,
+    "top": 6
+   },
+   "originX": 50,
+   "originY": 57,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ea887d25-b03e-4043-8c98-c9560843a981",
+   "parent": null,
+   "family": "Painting",
+   "type": "Mondrian Painting",
+   "category": "WallDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 10.94573557028501,
+    "y": 26.18528460940948
+   },
+   "topLeft": {
+    "x": 10.16448557028501,
+    "y": 25.52903460940948
+   },
+   "dims": {
+    "width": 50,
+    "height": 43
+   },
+   "offset": {
+    "left": 7,
+    "top": 15
+   },
+   "originX": 25,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "1f120421-a63d-4b38-8cda-32916f5bb30e",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Bamboo Planter",
+   "category": "RoomDecor",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 13.52965561224488,
+    "y": 20.21875
+   },
+   "topLeft": {
+    "x": 13.24840561224488,
+    "y": 19.15625
+   },
+   "dims": {
+    "width": 18,
+    "height": 41
+   },
+   "offset": {
+    "left": 7,
+    "top": 21
+   },
+   "originX": 9,
+   "originY": 34,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "13/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "930ac9a1-9434-43e1-86e7-a5e3c3416517",
+   "parent": "23c98783-cffb-4ec7-aff6-9a7468960f5d",
+   "family": "Desk Plant",
+   "type": "Sprout",
+   "category": "RoomDecor",
+   "color": "green",
+   "orientation": "Down",
+   "abs": {
+    "x": 18.654053135890308,
+    "y": 18.812499999999993
+   },
+   "topLeft": {
+    "x": 18.435303135890308,
+    "y": 18.281249999999993
+   },
+   "dims": {
+    "width": 14,
+    "height": 22
+   },
+   "offset": {
+    "left": 9,
+    "top": 5
+   },
+   "originX": 7,
+   "originY": 17,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "30325bf9-22a0-4d43-939c-99a4415358a0",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ficus",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 27.57466016691524,
+    "y": 20.21875
+   },
+   "topLeft": {
+    "x": 27.16841016691524,
+    "y": 19
+   },
+   "dims": {
+    "width": 26,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 16
+   },
+   "originX": 13,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "27/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "8fffafac-7569-4b5c-94c6-d9ca52a58c98",
+   "parent": null,
+   "family": "Room Plant",
+   "type": "Ficus",
+   "category": "RoomDecor",
+   "color": "black",
+   "orientation": "Down",
+   "abs": {
+    "x": 24.3016338100547,
+    "y": 20.21875
+   },
+   "topLeft": {
+    "x": 23.8953838100547,
+    "y": 19
+   },
+   "dims": {
+    "width": 26,
+    "height": 46
+   },
+   "offset": {
+    "left": 3,
+    "top": 16
+   },
+   "originX": 13,
+   "originY": 39,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "24/20"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "a7e1d061-2f02-4c57-95c3-948e15841b4d",
+   "parent": "ad4e79ed-3510-46c0-b482-a42a922b6885",
+   "family": "Desk Plant",
+   "type": "Aloe Vera",
+   "category": "RoomDecor",
+   "color": "grey",
+   "orientation": "Down",
+   "abs": {
+    "x": 33.45904166110141,
+    "y": 18.876453478413715
+   },
+   "topLeft": {
+    "x": 33.17779166110141,
+    "y": 18.220203478413715
+   },
+   "dims": {
+    "width": 19,
+    "height": 25
+   },
+   "offset": {
+    "left": 7,
+    "top": 3
+   },
+   "originX": 9,
+   "originY": 21,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  },
+  {
+   "id": "ad4e79ed-3510-46c0-b482-a42a922b6885",
+   "parent": null,
+   "family": "Bookcase",
+   "type": "Bookcase (Tall)",
+   "category": "CabinetsAndShelves",
+   "color": "white",
+   "orientation": "Down",
+   "abs": {
+    "x": 34.01707738489041,
+    "y": 20.229523206588595
+   },
+   "topLeft": {
+    "x": 33.11082738489041,
+    "y": 18.635773206588595
+   },
+   "dims": {
+    "width": 59,
+    "height": 59
+   },
+   "offset": {
+    "left": 3,
+    "top": 5
+   },
+   "originX": 29,
+   "originY": 51,
+   "isDesk": false,
+   "isSeat": false,
+   "sitTiles": [],
+   "collisionTiles": [
+    "33/19",
+    "34/19"
+   ],
+   "coll": {
+    "keys": [
+     "points"
+    ]
+   },
+   "sit": {
+    "keys": [
+     "points"
+    ],
+    "tiles": null
+   }
+  }
+ ]
+}
