@@ -28,6 +28,14 @@ services:
       -n --listening-port=3478 --fingerprint --lt-cred-mech
       --user=${TURN_USERNAME}:${TURN_PASSWORD} --realm=${OFFICE_DOMAIN}
       --min-port=49160 --max-port=49200 --no-cli --no-tlsv1 --no-tlsv1_1
+  livekit:
+    # Media server for meeting rooms: everyone publishes once and receives the others from here.
+    image: livekit/livekit-server:v1.13
+    restart: unless-stopped
+    network_mode: host
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./deploy/livekit.yaml:/etc/livekit.yaml:ro
 volumes:
   office-data:
   caddy-data:

@@ -9,7 +9,7 @@ This guide puts your office on the internet with HTTPS, an invite key, admin-onl
 - A server with a public IP address (1 vCPU and 1 GB of RAM are enough for a small team).
 - A domain or subdomain whose DNS record points to that server, for example `office.example.org`.
 - Docker with the Compose plugin.
-- Open ports: `80` and `443` (TCP, HTTPS), `3478` (TCP and UDP, TURN) and `49160-49200` (UDP, TURN relay).
+- Open ports: `80` and `443` (TCP, HTTPS), `3478` (TCP and UDP, TURN), `49160-49200` (UDP, TURN relay), and for the media server `7881` (TCP) and `50000-50100` (UDP).
 
 ## Steps
 
@@ -48,6 +48,7 @@ This guide puts your office on the internet with HTTPS, an invite key, admin-onl
 | `ALLOWED_ORIGINS` | Extra origins allowed to open the WebSocket. The office's own domain is always allowed. |
 | `HOST`, `PORT` | Listening address of the Node process (`0.0.0.0:3001` in Docker). |
 | `SERVE_CLIENT` | Set to `false` if another web server hosts the built client. |
+| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | Media server for meeting rooms. With it, a meeting of 20 people needs one connection per person instead of 19. Point a `livekit.` subdomain to the server and keep the key in `deploy/livekit.yaml` in sync. |
 | `ACCOUNTS` | `off` (names only, default), `optional` (accounts or guests) or `required` (e-mail and password to enter). Passwords are hashed with scrypt; sessions last 30 days. |
 
 Office data (decorations, room names, channels, messages and the calendar) lives in the `office-data` volume. Back it up with `docker run --rm -v openofficeforall_office-data:/data -v "$PWD":/backup alpine tar czf /backup/office-data.tgz -C /data .`.
@@ -65,4 +66,4 @@ Put any HTTPS reverse proxy in front of port 3001 and forward WebSocket upgrades
 
 - The invite key protects the office; anyone with the link can enter, so rotate the key if it leaks (change `OFFICE_ACCESS_KEY` and restart).
 - Identities are names chosen by each person, remembered per browser. There are no passwords or accounts yet.
-- Calls are peer to peer. For large meetings (more than about eight people with cameras on) a media server (SFU) is still on the roadmap.
+- Proximity calls are peer to peer. Meeting rooms use the LiveKit media server when it is configured, which keeps large meetings smooth.

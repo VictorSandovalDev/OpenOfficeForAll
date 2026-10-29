@@ -94,3 +94,24 @@ test('meeting rooms can be renamed and the name survives a restart', async t => 
   const later = await connect(server.port, 'Later');
   assert.equal(later.welcome.areaNames[MEDIA_ROOM], 'Sala Vivo');
 });
+
+test('inside a meeting room the server issues a LiveKit token for that room only', async t => {
+  const dataDir = await mkdtemp(join(tmpdir(), 'open-office-sfu-'));
+  const server = await startServer({ port: 0, dataDir, livekit: { url: 'ws://127.0.0.1:7880', key: 'devkey', secret: 'secret-secret-secret-secret-secret' } });
+  t.after(async () => { await server.close(); await rm(dataDir, { recursive: true, force: true }); });
+  assert.equal((await (await fetch(`http://127.0.0.1:${server.port}/config`)).json()).sfu, true);
+  const host = await connect(server.port, 'Host');
+  host.send({ type: 'media:token' });
+  assert.equal((await host.next('error')).code, 'sfu_unavailable', 'not outside a meeting room');
+  await host.moveTo(TABLE_SEAT.standX, TABLE_SEAT.standY);
+  host.send({ type: 'media:token' });
+  const reply = await host.next('media:token');
+  assert.equal(reply.room, `meetings--${MEDIA_ROOM}`);
+  const [head, body, signature] = reply.token.split('.');
+  const claims = JSON.parse(Buffer.from(body, 'base64url').toString());
+  assert.equal(claims.iss, 'devkey');
+  assert.equal(claims.sub, host.id);
+  assert.deepEqual(claims.video, { room: `meetings--${MEDIA_ROOM}`, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false });
+  const { createHmac } = await import('node:crypto');
+  assert.equal(signature, createHmac('sha256', 'secret-secret-secret-secret-secret').update(`${head}.${body}`).digest('base64url'));
+});

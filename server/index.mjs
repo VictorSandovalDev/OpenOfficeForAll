@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,6 +89,13 @@ function validOrigin(origin, host, allowedOrigins = []) {
     return false;
   }
 }
+/** A LiveKit access token (JWT, HS256) for one meeting room; the API secret never leaves the server. */
+function livekitToken({ key, secret, identity, name, room, ttlSeconds = 6 * 3600 }) {
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
+  const now = Math.floor(Date.now() / 1000);
+  const body = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ iss: key, sub: identity, name, nbf: now - 10, exp: now + ttlSeconds, video: { room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false } })}`;
+  return `${body}.${createHmac('sha256', secret).update(body).digest('base64url')}`;
+}
 const sameSecret = (given, expected) => {
   if (typeof given !== 'string' || !expected) return false;
   const a = Buffer.from(given), b = Buffer.from(expected);
@@ -120,6 +127,8 @@ export async function startServer({
   staticDir = process.env.SERVE_CLIENT === 'false' ? null : resolve(dirname(fileURLToPath(import.meta.url)), '..', 'dist'),
   // Personal accounts: 'off' (names only), 'optional' (guests or accounts) or 'required'.
   accounts: accountMode = ['optional', 'required'].includes(process.env.ACCOUNTS) ? process.env.ACCOUNTS : 'off',
+  // Media server for meeting rooms (LiveKit). Without it, calls are peer to peer everywhere.
+  livekit = process.env.LIVEKIT_URL && process.env.LIVEKIT_API_KEY && process.env.LIVEKIT_API_SECRET ? { url: process.env.LIVEKIT_URL, key: process.env.LIVEKIT_API_KEY, secret: process.env.LIVEKIT_API_SECRET } : null,
 } = {}) {
   const accounts = accountMode === 'off' ? null : createAccounts(dataDir);
   const loginRate = new Map();
@@ -296,7 +305,7 @@ export async function startServer({
     const security = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'SAMEORIGIN' };
     if (request.method === 'GET' && request.url === '/config') {
       response.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security });
-      response.end(JSON.stringify({ accessRequired: !!accessKey, editPolicy, iceServers, accounts: accountMode }));
+      response.end(JSON.stringify({ accessRequired: !!accessKey, editPolicy, iceServers, accounts: accountMode, sfu: !!livekit }));
       return;
     }
     if (request.url?.startsWith('/api/') && accounts) {
@@ -489,6 +498,13 @@ export async function startServer({
           room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
           persistChat(room);
           broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'media:token': {
+          const area = meetingRoomOf(participant);
+          if (!livekit || !area) return error(socket, 'sfu_unavailable', 'The media server is only used inside meeting rooms.');
+          const roomName = `${room.slug}--${area.id}`;
+          send(socket, { type: 'media:token', url: livekit.url, room: roomName, areaId: area.id, token: livekitToken({ key: livekit.key, secret: livekit.secret, identity: participant.id, name: participant.name, room: roomName }) });
           break;
         }
         case 'react': {

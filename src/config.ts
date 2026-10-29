@@ -1,7 +1,7 @@
 /** Runtime configuration from the server (/config): invite requirement, edit policy and STUN/TURN servers.
     Keys arrive once in the URL (?key=, ?admin=), are kept per office in this browser and removed from the address bar. */
-export type OfficeConfig = { accessRequired: boolean; editPolicy: 'everyone' | 'admins'; iceServers: RTCIceServer[]; accounts: 'off' | 'optional' | 'required' };
-let current: OfficeConfig = { accessRequired: false, editPolicy: 'everyone', iceServers: [], accounts: 'off' };
+export type OfficeConfig = { accessRequired: boolean; editPolicy: 'everyone' | 'admins'; iceServers: RTCIceServer[]; accounts: 'off' | 'optional' | 'required'; sfu?: boolean };
+let current: OfficeConfig = { accessRequired: false, editPolicy: 'everyone', iceServers: [], accounts: 'off', sfu: false };
 export const officeConfig = () => current;
 export async function loadConfig(): Promise<OfficeConfig> {
   try { const response = await fetch('/config', { cache: 'no-store' }); if (response.ok) current = { ...current, ...(await response.json()) }; } catch { /* development without the server: defaults */ }

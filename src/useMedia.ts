@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Participant, Send, Signal } from './types';
 import { MEDIA_RADIUS, sharesConversationArea } from '../shared/office-world.js';
+import { meetingRoomOf } from '../shared/office-meetings.js';
 import { locale, t } from './i18n';
 import { officeConfig } from './config';
 
@@ -10,6 +11,8 @@ type MediaOptions = {
   send: Send;
   subscribeSignal: (listener: (signal: Signal) => void) => () => void;
   onError: (message: string) => void;
+  /** People in this meeting room reach each other through the media server, not peer to peer. */
+  sfuRoom?: string | null;
 };
 
 type Peer = {
@@ -40,7 +43,8 @@ function mediaError(error: unknown, kind: string): string {
   return t('No se pudo activar {kind}. {detail}', { kind, detail: error instanceof Error ? error.message : t('Inténtalo de nuevo.') });
 }
 
-export function useMedia({ selfId, participants, send, subscribeSignal, onError }: MediaOptions) {
+export function useMedia({ selfId, participants, send, subscribeSignal, onError, sfuRoom = null }: MediaOptions) {
+  const sfu = useRef(sfuRoom); sfu.current = sfuRoom;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream>>({});
   const [mic, setMic] = useState(false);
@@ -67,6 +71,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
     const state = current.current;
     const self = state.participants.find(person => person.id === state.selfId);
     const other = state.participants.find(person => person.id === id);
+    if (sfu.current && self && other && meetingRoomOf(self)?.id === sfu.current && meetingRoomOf(other)?.id === sfu.current) return false;
     return Boolean(self && other && canHearEachOther(self, other));
   }, []);
 
@@ -294,7 +299,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
       stopped.current = false;
     }
     reconcilePeers();
-  }, [participants, reconcilePeers, release, selfId]);
+  }, [participants, reconcilePeers, release, selfId, sfuRoom]);
 
   return { localStream, remoteStreams, mic, camera, screen, toggleMic, toggleCamera, toggleScreen, stop };
 }

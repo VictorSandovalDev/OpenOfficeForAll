@@ -24,7 +24,7 @@ function open(port, headers = {}) {
 test('an invite key is required to enter, and only admins decorate when an admin key is set', async t => {
   const server = await fixture(t, { accessKey: 'invite-123', adminKey: 'admin-456' });
   const config = await (await fetch(`http://127.0.0.1:${server.port}/config`)).json();
-  assert.deepEqual(config, { accessRequired: true, editPolicy: 'admins', iceServers: [], accounts: 'off' });
+  assert.deepEqual(config, { accessRequired: true, editPolicy: 'admins', iceServers: [], accounts: 'off', sfu: false });
   const stranger = open(server.port); await stranger.ready;
   stranger.send({ type: 'join', name: 'Intruso', accessKey: 'wrong' });
   assert.equal((await stranger.next('error')).code, 'access_denied');
