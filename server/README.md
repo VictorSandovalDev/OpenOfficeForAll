@@ -48,6 +48,10 @@ Supported messages:
 - `channel:create`: `name` and optional `topic` (160 characters). The visible name keeps accents (`diseño`) and the
   id is its ASCII slug (`diseno`); every office starts with `#general` and `#social`. Broadcast as `channels`.
 - `channel:update`: `channelId` and `topic`.
+- `event:create`: `title` (120), `start` and `end` (ISO dates, end after start, at most one day), optional
+  `areaId` (a meeting room) and `description`. Stored in `server/data/<room>.calendar.json` and broadcast as
+  `events`; `welcome` includes `events`.
+- `event:delete`: `id`. Only the organizer (same `userId`) may cancel.
 - `object:add`: `kind` (a catalog kind from `shared/vivo-catalog.js`, or the aliases
   `plant`, `chair`, `table`, `lamp`), optional `color` and `facing` (`Up`, `Right`, `Down`,
   `Left`), `x`, `y` (snapped to the tile that contains the point). Placements

@@ -10,3 +10,4 @@ export type MeetingState = { active: boolean; locked: boolean; participants: num
 export type Meetings = Record<string, MeetingState>;
 export type Send = (message: Record<string, unknown>) => void;
 export type Signal = { from: string; data: { description?: RTCSessionDescriptionInit; candidate?: RTCIceCandidateInit } };
+export type CalendarEvent = { id: string; title: string; description: string; start: string; end: string; areaId: string | null; organizer: string; organizerId: string };

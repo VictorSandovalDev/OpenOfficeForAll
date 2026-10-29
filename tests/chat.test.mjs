@@ -83,3 +83,25 @@ test('direct messages reach only their two people, also after reconnecting', asy
   const outsider = await connect(server.port, 'Dani', 'user-dani-0001');
   assert.equal(outsider.welcome.messages.some(entry => entry.text === 'Solo para ti'), false);
 });
+
+test('scheduled meetings are shared, tied to a room, validated, cancellable by their organizer and persisted', async t => {
+  const server = await fixture(t);
+  const ana = await connect(server.port, 'Ana', 'user-ana-0001');
+  const bruno = await connect(server.port, 'Bruno', 'user-bruno-001');
+  const start = new Date(Date.now() + 3_600_000).toISOString(), end = new Date(Date.now() + 7_200_000).toISOString();
+  ana.send({ type: 'event:create', title: 'Planeación semanal', start, end, areaId: '094907c0', description: 'Revisar la hoja de ruta' });
+  const created = await bruno.next('events');
+  const event = created.events.find(candidate => candidate.id === created.created);
+  assert.equal(event.title, 'Planeación semanal');
+  assert.equal(event.areaId, '094907c0');
+  assert.equal(event.organizer, 'Ana');
+  ana.send({ type: 'event:create', title: 'Al revés', start: end, end: start });
+  assert.equal((await ana.next('error')).code, 'invalid_event');
+  bruno.send({ type: 'event:delete', id: event.id });
+  assert.equal((await bruno.next('error')).code, 'invalid_event', 'only the organizer cancels');
+  await server.restart();
+  const later = await connect(server.port, 'Ana', 'user-ana-0001');
+  assert.equal(later.welcome.events.length, 1);
+  later.send({ type: 'event:delete', id: event.id });
+  assert.deepEqual((await later.next('events')).events, []);
+});

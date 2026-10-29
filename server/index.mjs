@@ -20,6 +20,8 @@ const COLOR = /^#[0-9a-f]{6}$/i;
 const MAX_OBJECTS = 250;
 const MAX_HISTORY = 200;
 const MAX_CHANNELS = 40;
+const MAX_EVENTS = 300;
+const isoTime = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : null;
 const USER_ID = /^[A-Za-z0-9_-]{8,64}$/;
 /** Company channels every office starts with, as in the reference. */
 const DEFAULT_CHANNELS = [
@@ -132,7 +134,7 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
@@ -177,6 +179,16 @@ export async function startServer({
       } catch (cause) {
         if (cause.code !== 'ENOENT') console.warn(`Could not load chat for room ${slug}: ${cause.message}`);
       }
+      try {
+        const saved = JSON.parse(await readFile(join(dataDir, `${slug}.calendar.json`), 'utf8'));
+        if (Array.isArray(saved.events)) room.events = saved.events.slice(0, MAX_EVENTS).flatMap((event) => {
+          const start = isoTime(event?.start), end = isoTime(event?.end);
+          if (!start || !end || end <= start || typeof event.id !== 'string' || !cleanText(event.title, 120)) return [];
+          return [{ id: event.id, title: cleanText(event.title, 120), description: cleanText(event.description, 1000), start, end, areaId: typeof event.areaId === 'string' && meetingRoom(event.areaId) ? event.areaId : null, organizer: displayName(event.organizer) || 'Invitado', organizerId: String(event.organizerId ?? '') }];
+        });
+      } catch (cause) {
+        if (cause.code !== 'ENOENT') console.warn(`Could not load calendar for room ${slug}: ${cause.message}`);
+      }
     })();
     rooms.set(slug, room);
     await room.loaded;
@@ -206,6 +218,16 @@ export async function startServer({
       await writeFile(temporary, snapshot, { mode: 0o600 });
       await rename(temporary, destination);
     }).catch((cause) => console.error(`Could not save chat for room ${room.slug}: ${cause.message}`));
+  }
+  function persistEvents(room) {
+    const snapshot = JSON.stringify({ version: 1, events: room.events });
+    room.chatWrite = room.chatWrite.then(async () => {
+      await mkdir(dataDir, { recursive: true });
+      const destination = join(dataDir, `${room.slug}.calendar.json`);
+      const temporary = `${destination}.${randomUUID()}.tmp`;
+      await writeFile(temporary, snapshot, { mode: 0o600 });
+      await rename(temporary, destination);
+    }).catch((cause) => console.error(`Could not save calendar for room ${room.slug}: ${cause.message}`));
   }
   /** The history a member may read: every channel, plus direct messages that include them. */
   const visibleHistory = (room, userId) => Object.entries(room.history).filter(([key]) => !key.startsWith('dm:') || key.split(':').slice(1).includes(userId)).flatMap(([, messages]) => messages).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
@@ -264,7 +286,7 @@ export async function startServer({
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
         persistChat(room);
-        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
+        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
         broadcastParticipants(room);
         return;
       }
@@ -358,6 +380,27 @@ export async function startServer({
           room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
           persistChat(room);
           broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'event:create': {
+          if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
+          const title = cleanText(payload.title, 120), start = isoTime(payload.start), end = isoTime(payload.end);
+          if (!title || !start || !end || end <= start || Date.parse(end) - Date.parse(start) > 24 * 3_600_000) return error(socket, 'invalid_event', 'Give the meeting a title and a start before its end, within one day.');
+          if (payload.areaId != null && !(typeof payload.areaId === 'string' && meetingRoom(payload.areaId))) return error(socket, 'invalid_event', 'Choose a meeting room of this office.');
+          if (room.events.length >= MAX_EVENTS) room.events.sort((a, b) => a.end.localeCompare(b.end)).shift();
+          const event = { id: randomUUID(), title, description: cleanText(payload.description, 1000), start, end, areaId: payload.areaId ?? null, organizer: participant.name, organizerId: participant.userId };
+          room.events.push(event);
+          persistEvents(room);
+          broadcast(room, { type: 'events', events: room.events, created: event.id, by: participant.id });
+          break;
+        }
+        case 'event:delete': {
+          const index = room.events.findIndex((event) => event.id === payload.id);
+          if (index === -1) return error(socket, 'invalid_event', 'Unknown meeting.');
+          if (room.events[index].organizerId !== participant.userId) return error(socket, 'invalid_event', 'Only the organizer can cancel this meeting.');
+          room.events.splice(index, 1);
+          persistEvents(room);
+          broadcast(room, { type: 'events', events: room.events });
           break;
         }
         case 'channel:update': {
