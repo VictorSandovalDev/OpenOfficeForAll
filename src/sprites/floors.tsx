@@ -1,6 +1,6 @@
 import { px, type PixelSprite } from './pixel';
 import { spritePaths } from './pixel';
-import { REFERENCE_FLOORS } from './referenceFloors';
+import { REFERENCE_FLOORS } from './referenceArt';
 import { artPack } from './artPack';
 
 /** Floor textures of the reference office, 32 × 32 tiles. Keys follow the area data (`floor` + `floorColor`). */

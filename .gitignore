@@ -8,3 +8,6 @@ server/data/
 *.log
 .playwright-mcp/
 tsconfig.tsbuildinfo
+
+# Reference office art: a local transcription that must never be published.
+src/sprites/reference/

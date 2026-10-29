@@ -1,8 +1,8 @@
-/** Which art draws the office: the pixel-exact transcription of the reference ("reference", the default), or the
-    project's own art ("original": PixelLab-generated furniture and code-drawn floors) that can be redistributed freely. */
+import { hasReferenceArt } from './referenceArt';
+
+/** Which art draws the office. There is no choice in the interface: the local reference art when it is installed,
+    otherwise the project's own art. `?art=original` shows the own art (used for public screenshots). */
 export type ArtPack = 'reference' | 'original';
-let current: ArtPack = (() => { try { return localStorage.getItem('office-art') === 'original' ? 'original' : 'reference'; } catch { return 'reference'; } })();
-const listeners = new Set<() => void>();
+const forced = (() => { try { return new URLSearchParams(location.search).get('art') === 'original'; } catch { return false; } })();
+const current: ArtPack = hasReferenceArt && !forced ? 'reference' : 'original';
 export const artPack = () => current;
-export function setArtPack(next: ArtPack) { current = next; try { localStorage.setItem('office-art', next); } catch { /* storage unavailable */ } listeners.forEach(listener => listener()); }
-export const onArtPackChange = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; };
