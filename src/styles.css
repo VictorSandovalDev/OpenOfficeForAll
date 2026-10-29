@@ -614,3 +614,19 @@ button .avatar { pointer-events: none; }
 .history-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
 .history-buttons .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; border-radius: 10px; font-size: 12px; }
 .edit-banner .edit-exit:disabled { opacity: .4; cursor: default; }
+
+.meeting-tile.is-screen video { object-fit: contain; background: #000; }
+.video-tile.is-screen video { object-fit: contain; background: #000; }
+
+.reaction-wrap { position: relative; display: inline-flex; }
+.reaction-menu { position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 6px; border-radius: 14px; background: #262626f2; box-shadow: 0 8px 24px #0006; z-index: 30; }
+.reaction-menu button { width: 34px; height: 34px; border-radius: 10px; background: transparent; font-size: 20px; display: grid; place-items: center; }
+.reaction-menu button:hover { background: #ffffff14; transform: scale(1.12); }
+.meeting-tile-reaction { position: absolute; top: 12px; right: 14px; font-size: 34px; animation: tile-reaction 3.2s ease-out forwards; pointer-events: none; }
+@keyframes tile-reaction { 0% { opacity: 0; transform: translateY(10px) scale(.6); } 12% { opacity: 1; transform: scale(1.15); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px); } }
+
+.auth-tabs { margin: 4px 0 12px; }
+.auth-signed { font-size: 12px; color: var(--muted); margin: 4px 0 10px; }
+.link-button { background: transparent; color: var(--accent); padding: 0; font-size: 12px; text-decoration: underline; }
+.status-menu-signout { position: absolute; top: 14px; right: 46px; height: 28px; padding: 0 10px; border-radius: 8px; background: #ffffff08; color: #ffffffcc; font-size: 12px; }
+.welcome-modal label + label { margin-top: 12px; }

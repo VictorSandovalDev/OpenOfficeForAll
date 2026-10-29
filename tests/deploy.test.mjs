@@ -24,7 +24,7 @@ function open(port, headers = {}) {
 test('an invite key is required to enter, and only admins decorate when an admin key is set', async t => {
   const server = await fixture(t, { accessKey: 'invite-123', adminKey: 'admin-456' });
   const config = await (await fetch(`http://127.0.0.1:${server.port}/config`)).json();
-  assert.deepEqual(config, { accessRequired: true, editPolicy: 'admins', iceServers: [] });
+  assert.deepEqual(config, { accessRequired: true, editPolicy: 'admins', iceServers: [], accounts: 'off' });
   const stranger = open(server.port); await stranger.ready;
   stranger.send({ type: 'join', name: 'Intruso', accessKey: 'wrong' });
   assert.equal((await stranger.next('error')).code, 'access_denied');
@@ -61,4 +61,28 @@ test('browsers connect from the server host or listed origins, ICE servers come 
   const listed = open(server.port, { Origin: 'https://office.example.org' }); await listed.ready; listed.socket.close();
   const foreign = new WebSocket(`ws://127.0.0.1:${server.port}/ws?room=deploy`, { headers: { Origin: 'https://evil.example.com' } });
   await assert.rejects(new Promise((resolve, reject) => { foreign.once('open', resolve); foreign.once('error', reject); }));
+});
+
+test('personal accounts: register, sign in, required login and logout', async t => {
+  const server = await fixture(t, { accounts: 'required' });
+  const base = `http://127.0.0.1:${server.port}`;
+  const post = (path, body) => fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  assert.equal((await (await fetch(`${base}/config`)).json()).accounts, 'required');
+  assert.equal((await post('/api/register', { email: 'ana@example.org', password: 'short', name: 'Ana' })).status, 400);
+  const registered = await (await post('/api/register', { email: 'Ana@Example.org', password: 'una-clave-larga', name: 'Ana Pérez' })).json();
+  assert.equal(registered.user.email, 'ana@example.org');
+  assert.equal(registered.token.length, 64);
+  assert.equal((await post('/api/register', { email: 'ana@example.org', password: 'otra-clave-larga', name: 'Otra' })).status, 400, 'e-mail already taken');
+  assert.equal((await post('/api/login', { email: 'ana@example.org', password: 'mal' })).status, 401);
+  const login = await (await post('/api/login', { email: 'ana@example.org', password: 'una-clave-larga' })).json();
+  const guest = open(server.port); await guest.ready;
+  guest.send({ type: 'join', name: 'Invitado' });
+  assert.equal((await guest.next('error')).code, 'login_required');
+  const member = open(server.port); await member.ready;
+  member.send({ type: 'join', sessionToken: login.token });
+  const welcome = await member.next('welcome');
+  assert.equal(welcome.participants[0].name, 'Ana Pérez');
+  assert.equal(welcome.userId, `acct-${login.user.id}`, 'the account is the identity, on any device');
+  assert.equal((await post('/api/logout', { token: login.token })).status, 200);
+  assert.equal((await post('/api/me', { token: login.token })).status, 401);
 });

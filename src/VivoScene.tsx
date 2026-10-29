@@ -23,7 +23,7 @@ type Props = {
   navigationTarget?: Point & { nonce: number }; resetViewKey?: number;
   onMove: (x: number, y: number) => void; onPlace: (x: number, y: number) => void;
   onSelect: (id: string) => void; onSelectObject: (id: string | null) => void; onMoveObject: (id: string, x: number, y: number) => void; onRemove: (id: string) => void;
-  meetings: Meetings; areaNames: Record<string, string>; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
+  meetings: Meetings; areaNames: Record<string, string>; reactions?: { participantId: string; emoji: string }[]; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
@@ -81,14 +81,15 @@ const STATIC: Layer[] = [
 
 ];
 
-function Avatar({ person, self, facing, moving, frame, frames, onSelect }: { person: Participant; self: boolean; facing: Facing; moving: boolean; frame: number; frames?: Record<string, string>; onSelect: () => void }) {
+function Avatar({ person, self, facing, moving, frame, frames, reaction, onSelect }: { person: Participant; self: boolean; facing: Facing; moving: boolean; frame: number; frames?: Record<string, string>; reaction?: string; onSelect: () => void }) {
   const url = avatarFrame(facing, moving, frame, !!person.seatId);
   const name = person.name.length > 22 ? `${person.name.slice(0, 21)}…` : person.name;
   const width = Math.max(56, name.length * 7 + 30);
   return <g className={`scene-avatar${self ? ' is-self' : ''}${person.status === 'away' ? ' is-away' : ''}${moving ? ' is-walking' : ''}${person.seatId ? ' is-seated' : ''}`} tabIndex={0} role="button" aria-label={`${person.name}${self ? t(', tú') : ''}${person.seatId ? t(', sentado') : ''}. ${STATUS_LABEL[person.status]}`} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onSelect(); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}>
     <title>{person.name} · {STATUS_LABEL[person.status]}</title>
     <image className="pixel-resource character-resource" href={frames?.[url] ?? url} x={-AVATAR_SPRITE.foot.x * AVATAR_SPRITE.renderScale} y={-AVATAR_SPRITE.foot.y * AVATAR_SPRITE.renderScale} width={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} height={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} />
-    <g className="scene-nameplate" transform={`translate(0 ${AVATAR_SPRITE.nameplateY})`} shapeRendering="auto"><rect x={-width / 2} y="-20" width={width} height="20" rx="6" fill={self ? '#6f3fd6' : '#2b2b33'} /><circle cx={-width / 2 + 10} cy="-10" r="3" fill={STATUS_COLOR[person.status]} /><text x="5" y="-6" textAnchor="middle" fontSize="12" fontWeight="500" fill="#fff">{name}</text></g>
+    <g className="scene-nameplate" transform={`translate(0 ${AVATAR_SPRITE.nameplateY})`} shapeRendering="auto"><rect x={-width / 2} y="-20" width={width} height="20" rx="6" fill={self ? '#6f3fd6' : '#2b2b33'} /><circle cx={-width / 2 + 10} cy="-10" r="3" fill={STATUS_COLOR[person.status]} /><text x="5" y="-6" textAnchor="middle" fontSize="12" fontWeight="500" fill="#fff">{name}</text>{person.handRaised && <text x={width / 2 + 10} y="-4" fontSize="15" textAnchor="middle">✋</text>}</g>
+    {reaction && <g transform={`translate(0 ${AVATAR_SPRITE.nameplateY - 30})`} pointerEvents="none"><text key={reaction} className="scene-reaction" textAnchor="middle" fontSize="22" y="0">{reaction}</text></g>}
   </g>;
 }
 
@@ -126,7 +127,7 @@ function Ghost({ item, tile }: { item: EditItem; tile: Tile }) {
   </g>;
 }
 
-export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, areaNames = {}, seatTarget, onAreaClick }: Props) {
+export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, areaNames = {}, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
   const [hoverTile, setHoverTile] = useState<Tile | null>(null);
   const editingMode = editorOpen || editItem !== null || selectedObject !== null;
@@ -428,7 +429,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   };
   const avatarLayer = (person: Participant, position: Point, facing: Facing, moving: boolean, frame: number): Layer => ({
     key: `person-${person.id}`, y: seatObjectY(person) ?? position.y + TILE / 2 - 1, order: 3,
-    node: <g transform={`translate(${Math.round(position.x)} ${Math.round(footOf(position).y) + (person.seatId ? -2 : 0)})`}><Avatar person={person} self={person.id === selfId} facing={facing} moving={moving} frame={frame} frames={lookMaps[lookKey(sanitizeLook(person.avatar))]} onSelect={() => person.id === selfId && person.seatId ? requestStand() : onSelect(person.id)} /></g>,
+    node: <g transform={`translate(${Math.round(position.x)} ${Math.round(footOf(position).y) + (person.seatId ? -2 : 0)})`}><Avatar person={person} self={person.id === selfId} facing={facing} moving={moving} frame={frame} frames={lookMaps[lookKey(sanitizeLook(person.avatar))]} reaction={reactions.filter(item => item.participantId === person.id).at(-1)?.emoji} onSelect={() => person.id === selfId && person.seatId ? requestStand() : onSelect(person.id)} /></g>,
   });
   // Door artwork follows the reference: wooden doors only on the large meeting room, a light marker on huddle doorways, bare gaps elsewhere.
   const doorLayers: Layer[] = DOORWAYS.flatMap(door => {

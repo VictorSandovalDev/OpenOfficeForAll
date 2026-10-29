@@ -4,11 +4,13 @@ import { PixelPond } from '../PixelPond';
 import { shade } from './pixel';
 import { Pixel } from './PixelSprite';
 import { furnitureSprite } from './furniture';
-import { objectAssetUrl } from './assets';
+import { objectAsset, objectAssetUrl } from './assets';
 import { asMapObject } from '../../shared/office-objects.js';
 import { REFERENCE_OBJECTS } from './referenceObjects';
 import { REFERENCE_FOREGROUNDS } from './referenceForegrounds';
 import { artPack } from './artPack';
+import { ASSET_SIZES } from './assetSizes';
+import { spritePaths } from './pixel';
 
 export type MapObjectData = { id: string; parent?: string | null; kind: string; family: string; color: string; facing: 'Up' | 'Down' | 'Left' | 'Right'; x: number; y: number; w: number; h: number; originX: number; originY: number; desk?: boolean; seat?: number[][]; blocks?: number[][]; wall?: boolean };
 
@@ -47,12 +49,27 @@ function Placeholder({ object }: { object: MapObjectData }) {
 }
 
 /** Draws an object with its sprite origin at (0, 0): the image's top-left is at (-originX, -originY). */
+/** An original PNG drawn at its own pixel size, bottom-centred in the object's box (sprites are padded to multiples of 4). */
+function assetBox(object: MapObjectData, href: string) {
+  const [w, h] = ASSET_SIZES[href.split('/').pop() ?? ''] ?? [object.w, object.h];
+  // PixelLab pads sprites to multiples of 4: within that padding draw 1:1, otherwise fit the box as before.
+  if (w >= object.w && w - object.w < 4 && h >= object.h && h - object.h < 4) return { x: Math.round((object.w - w) / 2), y: object.h - h, w, h };
+  const scale = Math.min(object.w / w, object.h / h);
+  const fw = Math.round(w * scale), fh = Math.round(h * scale);
+  return { x: Math.round((object.w - fw) / 2), y: object.h - fh, w: fw, h: fh };
+}
+function AssetImage({ object, href, clip, flip = false }: { object: MapObjectData; href: string; clip?: string; flip?: boolean }) {
+  const box = assetBox(object, href);
+  const mirror = flip || (object.facing === 'Left' && object.kind === 'maple-tree');
+  return <image className="pixel-resource" href={href} x={box.x} y={box.y} width={box.w} height={box.h} clipPath={clip} transform={mirror ? `translate(${object.w} 0) scale(-1 1)` : undefined} />;
+}
 export function ObjectArt({ object }: { object: MapObjectData }) {
   const reference = artPack() === 'reference' ? REFERENCE_OBJECTS[`${object.kind}/${object.color}/${object.facing}`] : undefined;
-  const asset = reference ? null : objectAssetUrl(object.kind, object.color, object.facing);
+  const found = reference ? null : objectAsset(object.kind, object.color, object.facing);
+  const asset = found?.url ?? null;
   const sprite = reference ?? (asset ? null : furnitureSprite(object.kind, object.color, object.facing));
   const art = sprite ? <Pixel sprite={sprite} x={Math.round((object.w - sprite.w) / 2)} y={object.h - sprite.h} />
-    : asset ? <image className="pixel-resource" href={asset} x={0} y={0} width={object.w} height={object.h} preserveAspectRatio="xMidYMax meet" transform={object.facing === 'Left' && object.kind === 'maple-tree' ? `translate(${object.w} 0) scale(-1 1)` : undefined} />
+    : asset ? <AssetImage object={object} href={asset} flip={found?.mirror} />
     : legacy(object);
   return <g transform={`translate(${-object.originX} ${-object.originY})`}>{art ?? <Placeholder object={object} />}</g>;
 }
@@ -71,8 +88,19 @@ function asMapObjectForThumb(item: { kind: string; color: string; facing: string
 
 /** Part of a seat drawn above its occupant, or null when the object has none. */
 export function ObjectForeground({ object }: { object: MapObjectData }) {
-  const sprite = artPack() === 'reference' ? REFERENCE_FOREGROUNDS[`${object.kind}/${object.color}/${object.facing}`] : undefined;
+  const key = `${object.kind}/${object.color}/${object.facing}`;
+  if (artPack() === 'original') {
+    // Only the silhouette of the reference's front part is used, as a mask over the project's own sprite.
+    const mask = REFERENCE_FOREGROUNDS[key], asset = objectAssetUrl(object.kind, object.color, object.facing);
+    if (!mask || !asset) return null;
+    const id = `fg-${key.replace(/[^a-z0-9]/gi, '-')}`, x = Math.round((object.w - mask.w) / 2), y = object.h - mask.h;
+    return <g transform={`translate(${-object.originX} ${-object.originY})`}>
+      <clipPath id={id}><path transform={`translate(${x} ${y})`} d={spritePaths(mask).map(path => path.d).join(' ')} /></clipPath>
+      <AssetImage object={object} href={asset} clip={`url(#${id})`} />
+    </g>;
+  }
+  const sprite = REFERENCE_FOREGROUNDS[key];
   if (!sprite) return null;
   return <g transform={`translate(${-object.originX} ${-object.originY})`}><Pixel sprite={sprite} x={Math.round((object.w - sprite.w) / 2)} y={object.h - sprite.h} /></g>;
 }
-export const hasForeground = (object: { kind: string; color: string; facing: string }) => artPack() === 'reference' && `${object.kind}/${object.color}/${object.facing}` in REFERENCE_FOREGROUNDS;
+export const hasForeground = (object: { kind: string; color: string; facing: string }) => `${object.kind}/${object.color}/${object.facing}` in REFERENCE_FOREGROUNDS && (artPack() === 'reference' || !!objectAssetUrl(object.kind, object.color, object.facing));

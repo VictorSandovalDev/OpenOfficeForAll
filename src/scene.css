@@ -4,3 +4,5 @@
 .scene-base-object.is-editable{cursor:pointer}.scene-base-object.is-editable:hover{filter:brightness(1.15)}
 
 .scene-tooltip{position:absolute;z-index:5;pointer-events:none;background:#171717f2;color:#ffffffe6;font-size:11px;font-weight:500;padding:5px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 8px #00000040}
+
+.scene-reaction{animation:reaction-rise 3.2s ease-out forwards;pointer-events:none}@keyframes reaction-rise{0%{opacity:0;transform:translateY(8px) scale(.6)}12%{opacity:1;transform:translateY(0) scale(1.15)}20%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}

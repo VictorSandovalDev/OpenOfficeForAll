@@ -8,6 +8,7 @@ import { OFFICE_SIZE as MAP, MEDIA_RADIUS, CHAT_RADIUS, SPAWN, sharesConversatio
 import { canApproachSeat, canExitSeat, getOfficeSeat, getOfficeSeats, SEAT_INTERACTION_RADIUS } from '../shared/office-seats.js';
 import { baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
 import { meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
+import { createAccounts } from './accounts.mjs';
 
 const OBJECT_KIND = /^[a-z0-9-]{1,64}$/;
 const OBJECT_COLOR = /^[a-z]{1,24}$/;
@@ -21,6 +22,7 @@ const MAX_OBJECTS = 250;
 const MAX_HISTORY = 200;
 const MAX_CHANNELS = 40;
 const MAX_EVENTS = 300;
+const REACTIONS = new Set(['👍', '❤️', '😂', '🎉', '👏', '😮', '🙌', '🔥']);
 /** Avatar looks: one palette index per zone plus accessories (sizes match src/avatarLook.ts). */
 const LOOK_SIZES = { skin: 5, hair: 9, top: 11, bottom: 8, shoes: 6, glasses: 4, hat: 3 };
 const sanitizeLook = (value) => {
@@ -106,7 +108,11 @@ export async function startServer({
   allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map((value) => value.trim()).filter(Boolean),
   iceServers = parseIceServers(process.env.ICE_SERVERS),
   staticDir = process.env.SERVE_CLIENT === 'false' ? null : resolve(dirname(fileURLToPath(import.meta.url)), '..', 'dist'),
+  // Personal accounts: 'off' (names only), 'optional' (guests or accounts) or 'required'.
+  accounts: accountMode = ['optional', 'required'].includes(process.env.ACCOUNTS) ? process.env.ACCOUNTS : 'off',
 } = {}) {
+  const accounts = accountMode === 'off' ? null : createAccounts(dataDir);
+  const loginRate = new Map();
   editPolicy ??= adminKey ? 'admins' : 'everyone'; // with an admin key, decorating defaults to admins
   const canEdit = (participant) => editPolicy === 'everyone' || participant.role === 'admin';
   const rooms = new Map();
@@ -277,7 +283,25 @@ export async function startServer({
     const security = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'SAMEORIGIN' };
     if (request.method === 'GET' && request.url === '/config') {
       response.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security });
-      response.end(JSON.stringify({ accessRequired: !!accessKey, editPolicy, iceServers }));
+      response.end(JSON.stringify({ accessRequired: !!accessKey, editPolicy, iceServers, accounts: accountMode }));
+      return;
+    }
+    if (request.url?.startsWith('/api/') && accounts) {
+      const reply = (status, body) => { response.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security }); response.end(JSON.stringify(body)); };
+      if (request.method !== 'POST' || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
+      const ip = request.socket.remoteAddress ?? 'unknown';
+      const bucket = loginRate.get(ip) ?? { tokens: 10, at: Date.now() }; loginRate.set(ip, bucket);
+      if (!takeToken(bucket, 10, 0.2)) return reply(429, { error: 'too_many_attempts' });
+      let body = '';
+      request.on('data', (chunk) => { body += chunk; if (body.length > 4096) request.destroy(); });
+      request.on('end', async () => {
+        let payload; try { payload = JSON.parse(body || '{}'); } catch { return reply(400, { error: 'invalid_json' }); }
+        if (request.url === '/api/register') { const result = await accounts.register(payload); return reply(result.error ? 400 : 200, result); }
+        if (request.url === '/api/login') { const result = await accounts.login(payload); return reply(result.error ? 401 : 200, result); }
+        if (request.url === '/api/logout') { await accounts.logout(payload.token); return reply(200, { ok: true }); }
+        if (request.url === '/api/me') { const user = await accounts.session(payload.token); return reply(user ? 200 : 401, user ? { user } : { error: 'invalid_session' }); }
+        return reply(404, { error: 'Not found' });
+      });
       return;
     }
     if ((request.method === 'GET' || request.method === 'HEAD') && staticDir) {
@@ -337,6 +361,8 @@ export async function startServer({
       if (payload.type === 'join') {
         if (client.participant) return error(socket, 'already_joined', 'This connection already joined a room.');
         if (accessKey && !sameSecret(payload.accessKey, accessKey)) { error(socket, 'access_denied', 'This office needs a valid invite key.'); socket.close(1008, 'Access denied'); return; }
+        const account = accounts ? await accounts.session(payload.sessionToken) : null;
+        if (accountMode === 'required' && !account) { error(socket, 'login_required', 'Sign in to enter this office.'); socket.close(1008, 'Login required'); return; }
         const room = await getRoom(slug);
         if (!room) return error(socket, 'server_full', 'No rooms are currently available.');
         if (socket.readyState !== WebSocket.OPEN) return;
@@ -344,9 +370,10 @@ export async function startServer({
         clearTimeout(joinTimeout);
         client.room = room;
         const participantId = randomUUID();
-        client.participant = { id: participantId, userId: typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
+        client.participant = { id: participantId, userId: account ? `acct-${account.id}` : typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || account?.name || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
         const look = sanitizeLook(payload.avatar); if (look) client.participant.avatar = look;
         client.participant.role = adminKey && sameSecret(payload.adminKey, adminKey) ? 'admin' : 'member';
+        if (account) client.participant.verified = true;
         room.users[client.participant.userId] = { name: client.participant.name, color: client.participant.color };
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
@@ -396,6 +423,7 @@ export async function startServer({
           if (typeof payload.color === 'string' && COLOR.test(payload.color)) { participant.color = payload.color; changed = true; }
           if (STATUSES.has(payload.status)) { participant.status = payload.status; changed = true; }
           if (payload.avatar !== undefined) { const look = sanitizeLook(payload.avatar); if (look) { participant.avatar = look; changed = true; } }
+          if (typeof payload.handRaised === 'boolean') { if (payload.handRaised) participant.handRaised = true; else delete participant.handRaised; changed = true; }
           if (typeof payload.statusText === 'string') { const text = cleanText(payload.statusText, 60); if (text) participant.statusText = text; else delete participant.statusText; changed = true; }
           for (const key of ['mic', 'camera', 'screen']) if (typeof payload[key] === 'boolean') { participant[key] = payload[key]; changed = true; }
           if (changed) {
@@ -448,6 +476,12 @@ export async function startServer({
           room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
           persistChat(room);
           broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'react': {
+          if (!takeToken(client.chatRate, 8, 0.8)) return error(socket, 'chat_rate_limit', 'Wait a moment before reacting again.');
+          if (!REACTIONS.has(payload.emoji)) return error(socket, 'invalid_reaction', 'Choose one of the available reactions.');
+          broadcast(room, { type: 'reaction', participantId: participant.id, emoji: payload.emoji, at: Date.now() });
           break;
         }
         case 'event:create': {
@@ -663,6 +697,7 @@ export async function startServer({
         new Promise((done) => wss.close(done)),
         new Promise((done) => server.close(done)),
         ...[...rooms.values()].flatMap((room) => [room.writeQueue, room.chatWrite]),
+        accounts?.writing,
       ]);
     },
   };

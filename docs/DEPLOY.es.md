@@ -48,6 +48,7 @@ Esta guía pone tu oficina en internet con HTTPS, clave de invitación, decoraci
 | `ALLOWED_ORIGINS` | Orígenes adicionales que pueden abrir el WebSocket. El dominio propio siempre está permitido. |
 | `HOST`, `PORT` | Dirección de escucha del proceso Node (`0.0.0.0:3001` en Docker). |
 | `SERVE_CLIENT` | Ponlo en `false` si otro servidor web aloja el cliente compilado. |
+| `ACCOUNTS` | `off` (solo nombres, por defecto), `optional` (cuentas o invitados) o `required` (correo y contraseña para entrar). Las contraseñas se guardan con scrypt; las sesiones duran 30 días. |
 
 Los datos de la oficina (decoración, nombres de salas, canales, mensajes y calendario) viven en el volumen `office-data`. Haz copias con `docker run --rm -v openofficeforall_office-data:/data -v "$PWD":/backup alpine tar czf /backup/office-data.tgz -C /data .`.
 

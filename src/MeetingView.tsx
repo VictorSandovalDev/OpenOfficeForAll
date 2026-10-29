@@ -6,6 +6,7 @@ import { locale, t } from './i18n';
 export type MeetingPanel = 'chat' | 'people' | 'details' | null;
 
 type Props = {
+  reactions: { participantId: string; emoji: string }[];
   roomName: string;
   meeting: MeetingState | undefined;
   people: Participant[];
@@ -39,17 +40,17 @@ function startedLabel(startedAt: number | undefined, now: number) {
 }
 
 /** One participant tile: their camera, or their initial on a coloured disc when the camera is off. */
-function Tile({ person, stream, self }: { person: Participant; stream?: MediaStream; self: boolean }) {
+function Tile({ person, stream, self, reaction }: { person: Participant; stream?: MediaStream; self: boolean; reaction?: string }) {
   // Peers always negotiate a video transceiver; only a participant with the camera (or a screen) on has a picture.
   const video = !!stream && (person.camera || person.screen) && stream.getVideoTracks().some(track => track.readyState === 'live');
-  return <div className={`meeting-tile${video ? ' has-video' : ''}`}>
+  return <div className={`meeting-tile${video ? ' has-video' : ''}${person.screen ? ' is-screen' : ''}`}>
     {video ? <StreamVideo stream={stream!} muted={self} /> : <span className="meeting-tile-avatar" style={{ background: person.color }}><span>{initial(person.name)}</span></span>}
-    <span className="meeting-tile-name">{!person.mic && <MicOff size={12} />}{person.name}</span>
+    <span className="meeting-tile-name">{!person.mic && <MicOff size={12} />}{person.name}{person.handRaised && ' ✋'}</span>{reaction && <span key={reaction} className="meeting-tile-reaction">{reaction}</span>}
   </div>;
 }
 
 /** The reference's full-screen meeting view: participant mosaic, side panel (chat, people, details) and the meeting tools. */
-export default function MeetingView({ roomName, meeting, people, selfId, localStream, remoteStreams, messages, panel, online, onPanel, onSend, onCopyLink }: Props) {
+export default function MeetingView({ reactions, roomName, meeting, people, selfId, localStream, remoteStreams, messages, panel, online, onPanel, onSend, onCopyLink }: Props) {
   const [text, setText] = useState('');
   const [now, setNow] = useState(() => Date.now());
   const end = useRef<HTMLDivElement>(null);
@@ -61,7 +62,7 @@ export default function MeetingView({ roomName, meeting, people, selfId, localSt
 
   return <div className={`meeting-view${panel ? ' with-panel' : ''}`}>
     <div className={`meeting-stage${people.length > 1 ? ' is-grid' : ''}`} style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}>
-      {people.map(person => <Tile key={person.id} person={person} self={person.id === selfId} stream={person.id === selfId ? localStream ?? undefined : remoteStreams[person.id]} />)}
+      {people.map(person => <Tile key={person.id} person={person} self={person.id === selfId} stream={person.id === selfId ? localStream ?? undefined : remoteStreams[person.id]} reaction={reactions.filter(item => item.participantId === person.id).at(-1)?.emoji} />)}
     </div>
     {panel && <aside className="meeting-panel" aria-label={panel === 'chat' ? t('Chat de la reunión') : panel === 'people' ? t('Personas') : t('Detalles de la reunión')}>
       <header><p>{panel === 'chat' ? t('Chat de la reunión') : panel === 'people' ? t('Personas') : t('Detalles de la reunión')}</p><button type="button" className="meeting-panel-close" aria-label={t('Cerrar panel')} title={t('Cerrar panel')} onClick={() => onPanel(null)}><X size={16} /></button></header>

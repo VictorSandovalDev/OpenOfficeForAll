@@ -1,4 +1,6 @@
 import { FURNITURE_ASSETS } from './furnitureAssets';
+import { CATALOG } from '../../shared/vivo-catalog.js';
+import { ROTATED_ASSETS } from './rotatedAssets';
 
 /** Generated pixel assets (PixelLab, see public/assets/pixel/objects/README.md) keyed by object kind, optionally by colour. */
 export const OBJECT_ASSETS: Record<string, string> = {
@@ -15,6 +17,23 @@ export const OBJECT_ASSETS: Record<string, string> = {
   'aloe-vera': 'aloe-vera.png', 'small-potted-hosta/white': 'small-potted-hosta-white.png', 'small-potted-hosta/orange': 'small-potted-hosta-orange.png', 'sprout': 'sprout.png', 'fern': 'fern.png', 'koi-pond': 'koi-pond.png',
 };
 export function objectAssetUrl(kind: string, color: string, facing = ''): string | null {
-  const file = FURNITURE_ASSETS[`${kind}/${color}/${facing}`] ?? OBJECT_ASSETS[`${kind}/${facing}`] ?? OBJECT_ASSETS[`${kind}/${color}`] ?? OBJECT_ASSETS[kind];
+  // A view drawn for this exact facing first; an object's generic sprite is its front view only.
+  const entry = CATALOG[`${kind}/${color}`];
+  const facings = Object.keys(entry?.facings ?? {});
+  // Plants, trees and other round things look the same from every side; furniture must use its own view.
+  const sameFromEverySide = !entry || /Plant|Tree|Pond|Globe|Lamp|Duck|Coffee$|Hydration|Fishtank/.test(entry.family);
+  const front = sameFromEverySide || !facing || facings.length <= 1 || facing === (facings.includes('Down') ? 'Down' : facings[0]);
+  const file = FURNITURE_ASSETS[`${kind}/${color}/${facing}`] ?? OBJECT_ASSETS[`${kind}/${facing}`] ?? ROTATED_ASSETS[`${kind}/${color}/${facing}`]
+    ?? (front ? OBJECT_ASSETS[`${kind}/${color}`] ?? OBJECT_ASSETS[kind] : undefined);
   return file ? `/assets/pixel/objects/${file}` : null;
+}
+
+/** The asset for a facing, or the opposite side mirrored when only that one exists (Left ↔ Right). */
+export function objectAsset(kind: string, color: string, facing = ''): { url: string; mirror: boolean } | null {
+  const direct = objectAssetUrl(kind, color, facing);
+  if (direct) return { url: direct, mirror: false };
+  const opposite = facing === 'Left' ? 'Right' : facing === 'Right' ? 'Left' : '';
+  if (!opposite) return null;
+  const file = FURNITURE_ASSETS[`${kind}/${color}/${opposite}`] ?? OBJECT_ASSETS[`${kind}/${opposite}`] ?? ROTATED_ASSETS[`${kind}/${color}/${opposite}`];
+  return file ? { url: `/assets/pixel/objects/${file}`, mirror: true } : null;
 }

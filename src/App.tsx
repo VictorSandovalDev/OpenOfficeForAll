@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, AtSign, CheckCheck, Hand, Hash, Info, Redo2, Undo2, Pencil as PencilIcon, Smile as SmileIcon, UserPen, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
+import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, AtSign, CheckCheck, Hand, Hash, Info, SmilePlus, Redo2, Undo2, Pencil as PencilIcon, Smile as SmileIcon, UserPen, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
 import VivoScene from './VivoScene';
 import MeetingView, { type MeetingPanel } from './MeetingView';
 import ChatView, { conversationKey, messageKey, type Conversation } from './chat/ChatView';
@@ -21,7 +21,7 @@ import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
 import { useEditHistory } from './useEditHistory';
 import { sanitizeLook, type AvatarLook } from './avatarLook';
 import { artPack, onArtPackChange, setArtPack, type ArtPack } from './sprites/artPack';
-import { loadConfig, rememberKeysFromUrl, storedKey, storeKey, type OfficeConfig } from './config';
+import { currentAccount, loadConfig, rememberKeysFromUrl, sessionToken, signIn, signOut, storedKey, storeKey, type Account, type OfficeConfig } from './config';
 import { language, LANGUAGES, locale, onLanguageChange, setLanguage, t, type Language } from './i18n';
 
 /** Looks are remembered per browser and name, so two people sharing a browser keep their own avatars. */
@@ -63,8 +63,14 @@ function StreamVideo({ stream, muted = false }: { stream: MediaStream; muted?: b
 }
 
 export default function App() {
-  const [profile, setProfile] = useState<{ name: string; color: string; avatar: AvatarLook; accessKey: string; adminKey: string } | null>(null);
-  const [config, setConfig] = useState<OfficeConfig>({ accessRequired: false, editPolicy: 'everyone', iceServers: [] });
+  const [profile, setProfile] = useState<{ name: string; color: string; avatar: AvatarLook; accessKey: string; adminKey: string; sessionToken: string } | null>(null);
+  const [config, setConfig] = useState<OfficeConfig>({ accessRequired: false, editPolicy: 'everyone', iceServers: [], accounts: 'off' });
+  const [account, setAccount] = useState<Account | null>(null);
+  const [authMode, setAuthMode] = useState<'login' | 'register' | 'guest'>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  useEffect(() => { void currentAccount().then(found => { if (found) { setAccount(found); setName(found.name); } }); }, []);
   const [accessKey, setAccessKey] = useState(() => storedKey('key', room));
   useEffect(() => { void loadConfig().then(setConfig); }, []);
   const [look, setLook] = useState<AvatarLook>(() => readLook(localStorage.getItem('office-name') || ''));
@@ -92,6 +98,7 @@ export default function App() {
   const [roomName, setRoomName] = useState('');
   const [seatTarget, setSeatTarget] = useState<{ seatId: string; nonce: number }>();
   const [handRaised, setHandRaised] = useState(false);
+  const [reactionMenu, setReactionMenu] = useState(false);
   const [meetingView, setMeetingView] = useState(false);
   const [meetingPanel, setMeetingPanel] = useState<MeetingPanel>('chat');
   const [conversation, setConversation] = useState<Conversation>({ kind: 'channel', id: 'general' });
@@ -123,6 +130,7 @@ export default function App() {
   const moreRef = useRef<HTMLDivElement>(null);
   const office = useOffice(room, profile);
   const canEdit = config.editPolicy === 'everyone' || office.role === 'admin';
+  useEffect(() => { if (office.loginRequired) { setProfile(null); setAccount(null); void signOut(); setAuthError('login_required'); } }, [office.loginRequired]);
   useEffect(() => { if (office.accessDenied) { setProfile(null); storeKey('key', room, ''); setAccessKey(''); } }, [office.accessDenied]);
   const store = (key: string) => `office-${key}-${office.userId}`;
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -167,7 +175,7 @@ export default function App() {
     if (meetingArea && previousLocked.current !== undefined && previousLocked.current !== locked) setNotice(locked ? t('Bloqueada: esta reunión ahora es privada') : t('Desbloqueada: otras personas pueden unirse'));
     previousLocked.current = meetingArea ? !!locked : undefined;
   }, [meetingArea?.id, meeting?.locked]);
-  useEffect(() => { if (!meetingArea && (panel === 'meeting' || channel === 'meeting')) { setChannel('office'); if (panel === 'meeting') setPanel('people'); } if (!meetingArea) setMeetingView(false); setHandRaised(false); }, [meetingArea?.id]);
+  useEffect(() => { if (!meetingArea && (panel === 'meeting' || channel === 'meeting')) { setChannel('office'); if (panel === 'meeting') setPanel('people'); } if (!meetingArea) setMeetingView(false); }, [meetingArea?.id]);
   const meetingPeople = meetingArea ? office.participants.filter(person => meetingRoomOf(person)?.id === meetingArea.id) : [];
   const meetingMessages = meetingArea ? office.messages.filter(message => message.channel === 'meeting' && message.areaId === meetingArea.id) : [];
   const showMeetingView = meetingView && !!meetingArea;
@@ -288,11 +296,24 @@ export default function App() {
   }, [editItem, selectedObject, rotateEditItem, rotateSelected, office.send, editHistory, panel]);
   const remove = useCallback((id: string) => { editHistory.record.remove(id); office.send({ type: 'object:remove', id }); }, [office.send, editHistory.record]);
   const moveObject = useCallback((id: string, x: number, y: number) => { editHistory.record.update(id); office.send({ type: 'object:update', id, x, y }); }, [office.send, editHistory.record]);
-  function join(e: React.FormEvent) {
-    e.preventDefault(); if (!name.trim()) return;
+  async function join(e: React.FormEvent) {
+    e.preventDefault();
+    if (config.accounts !== 'off' && !account && authMode !== 'guest') {
+      setAuthError('');
+      const result = await signIn(authMode, { email, password, name });
+      if (!result.account) { setAuthError(result.error ?? 'error'); return; }
+      setAccount(result.account); setPassword('');
+      return enter(result.account.name);
+    }
+    if (!name.trim()) return;
+    enter(name.trim());
+  }
+  function enter(chosen: string) {
+    setName(chosen);
+    const name = chosen;
     const saved = readLook(name); setLook(saved);
     localStorage.setItem('office-name', name.trim()); localStorage.setItem('office-color', color); storeKey('key', room, accessKey.trim());
-    setProfile({ name: name.trim(), color, avatar: saved, accessKey: accessKey.trim(), adminKey: storedKey('admin', room) });
+    setProfile({ name: name.trim(), color, avatar: saved, accessKey: accessKey.trim(), adminKey: storedKey('admin', room), sessionToken: sessionToken() });
   }
   function openPanel(value: Panel) { setPanel(old => old === value ? null : value); if (value !== 'build') { setEditItem(null); setSelectedObject(null); } setMoreOpen(false); }
   function saveProfile(e: React.FormEvent) {
@@ -319,6 +340,7 @@ export default function App() {
         <div className="controlbar" aria-label={t('Controles de presencia, audio y vídeo')}>
           {statusMenu && self && <div className="status-menu" role="dialog" aria-label={t('Tu perfil y disponibilidad')}>
             <div className="status-menu-head"><div><strong>{self.name}</strong><span>{self.statusText || STATUS[self.status]}</span></div><button type="button" title={t('Editar perfil')} aria-label={t('Editar perfil')} onClick={() => { setStatusMenu(false); setDialog('profile'); }}><UserPen size={16} /></button></div>
+            {account && <button type="button" className="status-menu-signout" onClick={() => { void signOut(); setAccount(null); setStatusMenu(false); leave(); }}>{t('Cerrar sesión')}</button>}
             <div className="status-menu-options">{(['available', 'busy', 'away'] as const).map(status => <button type="button" key={status} className={self.status === status ? `is-active ${status}` : status} aria-pressed={self.status === status} onClick={() => office.send({ type: 'profile', status })}><i className={`status-dot ${status}`} />{STATUS[status]}</button>)}</div>
             <form className="status-menu-text" onSubmit={e => { e.preventDefault(); office.send({ type: 'profile', statusText: statusDraft }); setStatusMenu(false); }}><SmileIcon size={15} /><input value={statusDraft} maxLength={60} placeholder={t('Actualiza tu estado')} aria-label={t('Actualiza tu estado')} onChange={e => setStatusDraft(e.target.value)} />{self.statusText && <button type="button" aria-label={t('Borrar estado')} title={t('Borrar estado')} onClick={() => { office.send({ type: 'profile', statusText: '' }); setStatusDraft(''); }}><X size={14} /></button>}</form>
           </div>}
@@ -327,7 +349,9 @@ export default function App() {
           <button className={`media-control ${media.mic ? 'enabled' : 'muted'}`} disabled={!online} onClick={() => void media.toggleMic()} title={media.mic ? t('Silenciar micrófono') : t('Activar micrófono')} aria-label={media.mic ? t('Silenciar micrófono') : t('Activar micrófono')} aria-pressed={media.mic}>{media.mic ? <Mic size={21} /> : <MicOff size={21} />}</button>
           <button className={`media-control ${media.camera ? 'enabled' : 'muted'}`} disabled={!online || media.screen} onClick={() => void media.toggleCamera()} title={media.camera ? t('Apagar cámara') : t('Activar cámara')} aria-label={media.camera ? t('Apagar cámara') : t('Activar cámara')} aria-pressed={media.camera}>{media.camera ? <Video size={22} /> : <VideoOff size={22} />}</button>
           <IconButton label={media.screen ? t('Dejar de compartir') : t('Compartir pantalla')} active={media.screen} disabled={!online} onClick={() => void media.toggleScreen()}><Monitor size={21} /></IconButton>
-          {meetingArea && <IconButton label={handRaised ? t('Bajar la mano') : t('Levantar la mano')} active={handRaised} onClick={() => setHandRaised(raised => !raised)}><Hand size={21} /></IconButton>}
+          <div className="reaction-wrap"><IconButton label={t('Enviar una reacción')} active={reactionMenu} disabled={!online} onClick={() => setReactionMenu(open => !open)}><SmilePlus size={21} /></IconButton>
+            {reactionMenu && <div className="reaction-menu" role="menu">{['👍', '❤️', '😂', '🎉', '👏', '😮', '🙌', '🔥'].map(emoji => <button type="button" role="menuitem" key={emoji} onClick={() => { office.send({ type: 'react', emoji }); setReactionMenu(false); }}>{emoji}</button>)}</div>}</div>
+          <IconButton label={handRaised ? t('Bajar la mano') : t('Levantar la mano')} active={handRaised} disabled={!online} onClick={() => { const next = !handRaised; setHandRaised(next); office.send({ type: 'profile', handRaised: next }); }}><Hand size={21} /></IconButton>
           {meetingArea && <IconButton label={t('Volver a mi escritorio · ⌘ D')} className="leave-meeting" onClick={leaveMeeting}><LogOut size={20} /></IconButton>}
           <div className="control-more" ref={moreRef}><button className={`icon-button ${moreOpen ? 'is-active' : ''}`} type="button" title={t('Más opciones')} aria-label={t('Más opciones')} aria-expanded={moreOpen} aria-controls="call-options" onClick={() => setMoreOpen(open => !open)}><MoreHorizontal size={22} /></button>
             {moreOpen && <div className="control-menu" id="call-options">
@@ -418,12 +442,12 @@ export default function App() {
         {pageView && <MiniOffice label={whereAmI} participants={office.participants} selfId={office.selfId} onOpen={() => setPanel('people')}>{controlBar}</MiniOffice>}
       </aside>}
       <main className={`map-area${showMeetingView ? ' is-meeting-view' : ''}${pageView ? ' is-chat-view' : ''}`} aria-label={showMeetingView ? t('Vista de reunión') : t('Oficina Vivo')}>
-        <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
+        <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} reactions={office.reactions} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
         {meetingArea && <div className="meeting-bar" aria-label={t('Reunión en curso')}>
           <div className="meeting-bar-left"><span className="meeting-pill"><Users size={15} />{roomLabel(meetingArea.id)}</span><button type="button" className={`meeting-lock ${meeting?.locked ? 'is-locked' : ''}`} title={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-label={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-pressed={!!meeting?.locked} onClick={() => office.send({ type: 'meeting:lock', areaId: meetingArea.id, locked: !meeting?.locked })}>{meeting?.locked ? <Lock size={14} /> : <LockOpen size={14} />}</button></div>
           <div className="meeting-bar-right"><button type="button" className="meeting-tool" title={t('Copiar enlace de la reunión')} aria-label={t('Copiar enlace de la reunión')} onClick={() => void copyMeetingLink(meetingArea.id)}><Link2 size={15} /></button><div className="meeting-view-toggle" role="group" aria-label="Vista"><button type="button" className={!showMeetingView ? 'is-active' : ''} aria-pressed={!showMeetingView} title={t('Vista de oficina')} aria-label={t('Vista de oficina')} onClick={() => setMeetingView(false)}><Map size={14} /></button><button type="button" className={showMeetingView ? 'is-active' : ''} aria-pressed={showMeetingView} title={t('Vista de reunión')} aria-label={t('Vista de reunión')} onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><LayoutGrid size={14} /></button></div></div>
         </div>}
-        {showMeetingView && meetingArea && <MeetingView roomName={roomLabel(meetingArea.id)} meeting={meeting} people={meetingPeople} selfId={office.selfId} localStream={media.localStream} remoteStreams={media.remoteStreams} messages={meetingMessages} panel={meetingPanel} online={online} onPanel={setMeetingPanel} onSend={value => office.send({ type: 'chat', text: value, channel: 'meeting' })} onCopyLink={() => void copyMeetingLink(meetingArea.id)} />}
+        {showMeetingView && meetingArea && <MeetingView reactions={office.reactions} roomName={roomLabel(meetingArea.id)} meeting={meeting} people={meetingPeople} selfId={office.selfId} localStream={media.localStream} remoteStreams={media.remoteStreams} messages={meetingMessages} panel={meetingPanel} online={online} onPanel={setMeetingPanel} onSend={value => office.send({ type: 'chat', text: value, channel: 'meeting' })} onCopyLink={() => void copyMeetingLink(meetingArea.id)} />}
         {showCalendarView && <CalendarView events={office.events} roomName={roomLabel} selfUserId={office.userId} selected={selectedEvent} online={online} onSelect={setSelectedEvent} onNew={openNewEvent} onJoin={areaId => { setSelectedEvent(null); setPanel('people'); joinMeeting(areaId); }} onDelete={id => { office.send({ type: 'event:delete', id }); setSelectedEvent(null); }} />}
         {showActivityView && <section className="activity-view" aria-label={t('Actividad')}><div><svg viewBox="0 0 22 16" width="76" height="56" shapeRendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="22" height="16" fill="#8a96a8" /><rect x="1" y="1" width="20" height="14" fill="#d79a68" /><rect x="2" y="2" width="4" height="5" fill="#f1f3f6" /><rect x="7" y="2" width="3" height="3" fill="#59b06a" /><rect x="11" y="3" width="3" height="3" fill="#4b8fd9" /><rect x="15" y="2" width="5" height="4" fill="#f1f3f6" /><rect x="15" y="3" width="5" height="1" fill="#4b8fd9" /><rect x="3" y="9" width="5" height="4" fill="#f1f3f6" /><rect x="10" y="8" width="3" height="3" fill="#e8607a" /><rect x="14" y="9" width="4" height="4" fill="#f5d56d" /></svg><p>{t('Tu centro de actividad de la oficina')}</p></div></section>}
         {showChatView && <ChatView conversation={conversation} channels={office.channels} users={office.users} participants={office.participants} selfUserId={office.userId} messages={conversationMessages} online={online} draft={drafts[activeKey] ?? ''} onDraft={value => setDrafts(old => ({ ...old, [activeKey]: value }))} onSend={sendConversation} onTopic={(channelId, topic) => office.send({ type: 'channel:update', channelId, topic })} />}
@@ -450,7 +474,11 @@ export default function App() {
     {newDm && <div className="modal-backdrop" onClick={() => setNewDm(false)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="dm-title" onClick={e => e.stopPropagation()}><IconButton label={t('Cerrar ventana')} className="modal-close" onClick={() => setNewDm(false)}><X size={19} /></IconButton><span className="dialog-icon"><SquarePen size={27} /></span><h2 id="dm-title">{t('Nuevo mensaje')}</h2><p>{t('Elige con quién quieres hablar.')}</p><div className="dm-picker">{office.users.map(user => <button type="button" key={user.userId} onClick={() => { setConversation({ kind: 'dm', userId: user.userId }); setPanel('chat'); setNewDm(false); }}><span className="chat-avatar small" style={{ background: user.color }}>{user.name.charAt(0).toUpperCase()}<i className={`status-dot ${onlineUsers.has(user.userId) ? 'available' : 'away'}`} /></span><span>{user.name}{user.userId === office.userId ? t(' (tú)') : ''}</span></button>)}</div></div></div>}
     {lookEditor && <AvatarEditor initial={look} name={name} onCancel={() => setLookEditor(false)} onDone={value => { setLook(value); setLookEditor(false); try { localStorage.setItem(lookStorageKey(name), JSON.stringify(value)); } catch { /* storage unavailable */ } if (profile) { setProfile({ ...profile, avatar: value }); office.send({ type: 'profile', avatar: value }); } }} />}
     {(notice || office.error) && <div className="toast" role="status"><span>{notice || office.error}</span><IconButton label={t('Cerrar aviso')} onClick={() => { setNotice(''); office.setError(''); }}><X size={15} /></IconButton></div>}
-    {!profile && <div className="modal-backdrop welcome-backdrop"><form className="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onSubmit={join}><div className="welcome-art"><InvitePortraits /></div><span className="eyebrow">{t('OPEN OFFICE')}</span><h1 id="welcome-title">{t('Entrar a Vivo')}</h1><p>{t('Tu equipo y tus conversaciones, en un mismo lugar.')}</p><label>{t('Tu nombre')}<input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder={t('¿Cómo te llamas?')} maxLength={40} required /></label>{(config.accessRequired || office.accessDenied) && <label>{t('Clave de invitación')}<input type="password" value={accessKey} onChange={e => setAccessKey(e.target.value)} placeholder={t('La recibiste con el enlace de la oficina')} maxLength={200} required autoComplete="off" /></label>}{office.accessDenied && <p className="form-error" role="alert">{t('La clave de invitación no es válida.')}</p>}<div className="color-picker" aria-label={t('Color del avatar')}>{COLORS.map(c => <button type="button" key={c} style={{ background: c }} aria-label={`Color ${c}`} aria-pressed={color === c} className={color === c ? 'selected' : ''} onClick={() => setColor(c)}>{color === c && <Check size={17} />}</button>)}</div><button className="primary enter-button" type="submit">{t('Entrar a la oficina')} <ArrowRight size={18} /></button><span className="privacy-note"><MicOff size={13} /><VideoOff size={14} />{t('Micrófono y cámara apagados al entrar')}</span></form></div>}
+    {!profile && <div className="modal-backdrop welcome-backdrop"><form className="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onSubmit={join}><div className="welcome-art"><InvitePortraits /></div><span className="eyebrow">{t('OPEN OFFICE')}</span><h1 id="welcome-title">{t('Entrar a Vivo')}</h1><p>{t('Tu equipo y tus conversaciones, en un mismo lugar.')}</p>{config.accounts !== 'off' && !account && <div className="segmented auth-tabs">{(['login', 'register'] as const).map(mode => <button type="button" key={mode} className={authMode === mode ? 'active' : ''} onClick={() => { setAuthMode(mode); setAuthError(''); }}>{mode === 'login' ? t('Iniciar sesión') : t('Crear cuenta')}</button>)}{config.accounts === 'optional' && <button type="button" className={authMode === 'guest' ? 'active' : ''} onClick={() => { setAuthMode('guest'); setAuthError(''); }}>{t('Invitado')}</button>}</div>}
+{account ? <p className="auth-signed">{t('Sesión iniciada como {email}', { email: account.email })} · <button type="button" className="link-button" onClick={() => { void signOut(); setAccount(null); }}>{t('Cerrar sesión')}</button></p>
+  : config.accounts !== 'off' && authMode !== 'guest' ? <>{authMode === 'register' && <label>{t('Tu nombre')}<input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder={t('¿Cómo te llamas?')} maxLength={40} required /></label>}<label>{t('Correo electrónico')}<input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} required maxLength={254} autoFocus={authMode === 'login'} /></label><label>{t('Contraseña')}<input type="password" autoComplete={authMode === 'login' ? 'current-password' : 'new-password'} value={password} onChange={e => setPassword(e.target.value)} required minLength={8} maxLength={200} /></label></>
+  : <label>{t('Tu nombre')}<input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder={t('¿Cómo te llamas?')} maxLength={40} required /></label>}
+{authError && <p className="form-error" role="alert">{authError === 'invalid_credentials' ? t('El correo o la contraseña no son correctos.') : authError === 'email_taken' ? t('Ya existe una cuenta con ese correo.') : authError === 'weak_password' ? t('La contraseña debe tener al menos 8 caracteres.') : authError === 'invalid_email' ? t('Escribe un correo válido.') : authError === 'too_many_attempts' ? t('Demasiados intentos. Espera un momento.') : authError === 'login_required' ? t('Esta oficina pide iniciar sesión.') : t('No se pudo iniciar sesión.')}</p>}{(config.accessRequired || office.accessDenied) && <label>{t('Clave de invitación')}<input type="password" value={accessKey} onChange={e => setAccessKey(e.target.value)} placeholder={t('La recibiste con el enlace de la oficina')} maxLength={200} required autoComplete="off" /></label>}{office.accessDenied && <p className="form-error" role="alert">{t('La clave de invitación no es válida.')}</p>}<div className="color-picker" aria-label={t('Color del avatar')}>{COLORS.map(c => <button type="button" key={c} style={{ background: c }} aria-label={`Color ${c}`} aria-pressed={color === c} className={color === c ? 'selected' : ''} onClick={() => setColor(c)}>{color === c && <Check size={17} />}</button>)}</div><button className="primary enter-button" type="submit">{config.accounts !== 'off' && !account && authMode !== 'guest' ? (authMode === 'login' ? t('Iniciar sesión y entrar') : t('Crear cuenta y entrar')) : account ? t('Continuar como {name}', { name: account.name }) : t('Entrar a la oficina')} <ArrowRight size={18} /></button><span className="privacy-note"><MicOff size={13} /><VideoOff size={14} />{t('Micrófono y cámara apagados al entrar')}</span></form></div>}
     {dialog && profile && <div className="modal-backdrop" onClick={() => setDialog(null)}><div ref={dialogRef} className="modal" role="dialog" aria-modal="true" aria-labelledby="dialog-title" onClick={e => e.stopPropagation()}><IconButton label={t('Cerrar ventana')} className="modal-close" onClick={() => setDialog(null)}><X size={19} /></IconButton>
       {dialog === 'profile' ? <form onSubmit={saveProfile} className="profile-form"><h2 id="dialog-title">{t('Editar perfil')}</h2>
         <div className="profile-pictures">
