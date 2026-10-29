@@ -186,7 +186,7 @@ flowchart LR
 ## ✅ Verificación
 
 ```sh
-npm test      # 47 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
+npm test      # 48 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
 npm run build # comprobación de tipos y paquete de producción
 ```
 

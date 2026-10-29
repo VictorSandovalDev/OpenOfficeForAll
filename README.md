@@ -186,7 +186,7 @@ flowchart LR
 ## ✅ Verification
 
 ```sh
-npm test      # 47 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
+npm test      # 48 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
 npm run build # type-check and production bundle
 ```
 

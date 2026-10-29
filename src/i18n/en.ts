@@ -440,4 +440,6 @@ export const EN: Record<string, string> = {
   "Girar": "Rotate",
   "Interacción": "Interaction",
   "Deseleccionar": "Deselect",
+  "Colocación libre": "Free placement",
+  "Pon los objetos en cualquier punto, sin la cuadrícula. También manteniendo ⌥ (Alt).": "Put objects anywhere, off the grid. Or hold ⌥ (Alt).",
 };

@@ -36,6 +36,8 @@ Supported messages:
 - `meeting:lock`: `areaId` of a meeting room and `locked`. Only someone inside the room may change it;
   a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
   Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants, startedAt, music?, recordingBy? } }`).
+- `object:add` and `object:update` accept `free: true` to keep the exact position instead of the grid; the object is
+  drawn at that point and still blocks the tiles it stands on. Moving without `free` returns it to the grid.
 - Workspaces: `POST /api/workspaces` with `name` (2–60 characters), `template` (`office` or `empty`) and, when
   the server has an invite key, `key`; replies `201 { slug, name }` with a unique address made from the name.
   `GET /api/workspaces/<slug>` returns its name. Every workspace is its own room (map, chat, calendar, desks);

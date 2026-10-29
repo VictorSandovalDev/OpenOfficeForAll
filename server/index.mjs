@@ -783,7 +783,7 @@ export async function startServer({
           const point = position(payload.x, payload.y);
           if (!point || typeof payload.kind !== 'string' || !validObject(payload)) return error(socket, 'invalid_object', 'Choose a supported object and finite position.');
           if (room.objects.length >= MAX_OBJECTS) return error(socket, 'object_limit', 'This room has reached its object limit.');
-          const addedObject = { id: randomUUID(), kind: payload.kind, ...(typeof payload.color === 'string' ? { color: payload.color } : {}), ...(typeof payload.facing === 'string' ? { facing: payload.facing } : {}), ...point };
+          const addedObject = { id: randomUUID(), kind: payload.kind, ...(typeof payload.color === 'string' ? { color: payload.color } : {}), ...(typeof payload.facing === 'string' ? { facing: payload.facing } : {}), ...point, ...(payload.free === true ? { free: true } : {}) };
           const problem = placementProblem(room, addedObject, room.objects);
           if (problem) return error(socket, 'invalid_object', problem);
           room.objects = [...room.objects, addedObject];
@@ -812,7 +812,7 @@ export async function startServer({
             delete override.removed;
             if (payload.rotate) { const facing = nextFacing(current); if (facing) override.facing = facing; }
             if (typeof payload.facing === 'string' && OBJECT_FACINGS.has(payload.facing)) override.facing = payload.facing;
-            if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(override, point); }
+            if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(override, point); if (payload.free === true) override.free = true; else delete override.free; }
             if (!validOverride(payload.id, override)) return error(socket, 'invalid_object', 'Unsupported variant.');
             if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`${payload.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
             const nextOverrides = { ...room.overrides, [payload.id]: override };
@@ -829,7 +829,7 @@ export async function startServer({
           const updated = { ...current };
           if (payload.rotate) { const facing = nextFacing(current); if (facing) updated.facing = facing; }
           if (typeof payload.facing === 'string' && OBJECT_FACINGS.has(payload.facing)) updated.facing = payload.facing;
-          if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(updated, point); }
+          if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(updated, point); if (payload.free === true) updated.free = true; else delete updated.free; }
           if (!validObject(updated)) return error(socket, 'invalid_object', 'Unsupported variant.');
           if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`object:${current.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
           const others = room.objects.filter((object) => object.id !== current.id);

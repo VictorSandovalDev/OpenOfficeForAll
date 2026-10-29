@@ -22,8 +22,8 @@ type Props = {
   participants: Participant[]; selfId: string | null; objects: OfficeObject[];
   zoom: number; simplified: boolean; editItem: EditItem | null; selectedObject: string | null; editorOpen: boolean; overrides: Overrides;
   navigationTarget?: Point & { nonce: number }; resetViewKey?: number;
-  onMove: (x: number, y: number) => void; onPlace: (x: number, y: number) => void;
-  onSelect: (id: string) => void; onSelectObject: (id: string | null) => void; onMoveObject: (id: string, x: number, y: number) => void; onRemove: (id: string) => void;
+  onMove: (x: number, y: number) => void; onPlace: (x: number, y: number, free?: boolean) => void;
+  onSelect: (id: string) => void; onSelectObject: (id: string | null) => void; onMoveObject: (id: string, x: number, y: number, free?: boolean) => void; onRemove: (id: string) => void;
   meetings: Meetings; areaNames: Record<string, string>; interactions?: Record<string, Interaction>; onNearInteractive?: (id: string | null) => void; onInteract?: (id: string) => void; reactions?: { participantId: string; emoji: string }[]; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
   /** Wheel zoom: the scene asks for a new zoom level and keeps the point under the cursor in place. */
   onZoom?: (zoom: number) => void;
@@ -33,6 +33,8 @@ type Props = {
   focusRooms?: Record<string, FocusRoom>;
   /** Clicking a closed focus office from outside. */
   onFocusClosed?: (areaId: string) => void;
+  /** Place and move furniture at the exact pointer position instead of the grid (also while holding Alt). */
+  freePlacement?: boolean;
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
@@ -128,8 +130,9 @@ function AddedObject({ object, selected, editing, onSelectObject, onGrab }: { ob
 }
 
 /** Ghost of the object being placed, following the pointer on the tile grid. */
-function Ghost({ item, tile }: { item: EditItem; tile: Tile }) {
-  const data = asMapObject({ id: 'ghost', ...item, x: tile.tx * TILE + TILE / 2, y: tile.ty * TILE + TILE / 2 }) as MapObjectData;
+type GhostTile = Tile & { at?: Point };
+function Ghost({ item, tile }: { item: EditItem; tile: GhostTile }) {
+  const data = asMapObject({ id: 'ghost', ...item, x: tile.at?.x ?? tile.tx * TILE + TILE / 2, y: tile.at?.y ?? tile.ty * TILE + TILE / 2, free: !!tile.at }) as MapObjectData;
   return <g pointerEvents="none" opacity=".75">
     {(data.blocks ?? []).map(([bx, by]) => <rect key={`${bx}-${by}`} x={bx * TILE} y={by * TILE} width={TILE} height={TILE} fill="#e4484f33" stroke="#e4484f" strokeWidth="1" />)}
     {(data.seat ?? []).map(([bx, by]) => <rect key={`s${bx}-${by}`} x={bx * TILE} y={by * TILE} width={TILE} height={TILE} fill="#3ac07a33" stroke="#3ac07a" strokeWidth="1" />)}
@@ -162,13 +165,13 @@ function SimpleAreaIcons({ scale }: { scale: number }) {
     </g>;
   })}</g>;
 }
-export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, deskLabels = {}, focusRooms = {}, onFocusClosed, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
+export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, deskLabels = {}, focusRooms = {}, onFocusClosed, freePlacement = false, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
-  const [hoverTile, setHoverTile] = useState<Tile | null>(null);
+  const [hoverTile, setHoverTile] = useState<GhostTile | null>(null);
   const editingMode = editorOpen || editItem !== null || selectedObject !== null;
   // Dragging an object in the decorator: the grabbed object follows the pointer on the tile grid.
   const grab = useRef<{ id: string; item: EditItem; moved: boolean; client: Point } | null>(null);
-  const [dragTile, setDragTile] = useState<{ id: string; item: EditItem; tile: Tile } | null>(null);
+  const [dragTile, setDragTile] = useState<{ id: string; item: EditItem; tile: GhostTile } | null>(null);
   const objectsRef = useRef(objects); objectsRef.current = objects;
   const overridesRef = useRef(overrides); overridesRef.current = overrides;
   const onGrab = (id: string, event: ReactPointerEvent<SVGGElement>) => {
@@ -441,10 +444,10 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     if (grab.current) {
       const point = worldPoint(event.clientX, event.clientY);
       if (Math.hypot(event.clientX - grab.current.client.x, event.clientY - grab.current.client.y) > 4) grab.current.moved = true;
-      if (point && grab.current.moved) { const tile = tileOf(point); const current = grab.current; setDragTile(previous => previous && sameTile(previous.tile, tile) ? previous : { id: current.id, item: current.item, tile }); }
+      if (point && grab.current.moved) { const tile = tileOf(point); const current = grab.current; const free = freePlacement || event.altKey; setDragTile(previous => !free && previous && !previous.tile.at && sameTile(previous.tile, tile) ? previous : { id: current.id, item: current.item, tile: free ? { ...tile, at: point } : tile }); }
       return;
     }
-    if (editItem) { const point = worldPoint(event.clientX, event.clientY); if (point) setHoverTile(previous => { const next = tileOf(point); return previous && sameTile(previous, next) ? previous : next; }); }
+    if (editItem) { const point = worldPoint(event.clientX, event.clientY); const free = freePlacement || event.altKey; if (point) setHoverTile(previous => { const next = tileOf(point); return free ? { ...next, at: point } : previous && !previous.at && sameTile(previous, next) ? previous : next; }); }
     if (!editingMode && !drag.current) {
       const point = worldPoint(event.clientX, event.clientY);
       const { tx, ty } = point ? tileOf(point) : { tx: -1, ty: -1 };
@@ -463,14 +466,14 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     if (grab.current) {
       const grabbed = grab.current; grab.current = null; setDragTile(null);
       const point = worldPoint(event.clientX, event.clientY);
-      if (grabbed.moved && point) { const tile = tileOf(point); onMoveObject(grabbed.id, tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); onSelectObject(grabbed.id); }
+      if (grabbed.moved && point) { const tile = tileOf(point); if (freePlacement || event.altKey) onMoveObject(grabbed.id, Math.round(point.x), Math.round(point.y), true); else onMoveObject(grabbed.id, tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); onSelectObject(grabbed.id); }
       else onSelectObject(selectedObject === grabbed.id ? null : grabbed.id);
       if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
       return;
     }
     if (drag.current && !drag.current.moved) {
       const point = worldPoint(event.clientX, event.clientY);
-      if (point && editKind) { const tile = tileOf(point); onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
+      if (point && editKind) { const tile = tileOf(point); if (freePlacement || event.altKey) onPlace(Math.round(point.x), Math.round(point.y), true); else onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
       else if (editingMode) { if (selectedObject) onSelectObject(null); }
       else if (point && self && self.status !== 'away' && !(event.target as Element).closest('.scene-avatar, .scene-added-object, .scene-seat')) {
         const target = tileOf(point);

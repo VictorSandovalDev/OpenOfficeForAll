@@ -1,5 +1,5 @@
 import type { MapObject } from './vivo-map.js';
-export type EditorObject = { id: string; kind: string; color?: string; facing?: string; x: number; y: number };
+export type EditorObject = { id: string; kind: string; color?: string; facing?: string; x: number; y: number; /** Placed off the grid: drawn at its exact position. */ free?: boolean };
 export type CatalogVariant = { w: number; h: number; originX: number; originY: number; offLeft: number; offTop: number; blocks: number[][]; seat: number[][] };
 export type CatalogEntry = { kind: string; color: string; family: string; facings: Record<string, CatalogVariant> };
 export const LEGACY_KINDS: Record<string, string>;

@@ -44,11 +44,14 @@ export function asMapObject(object, id = `object:${object.id}`) {
   const resolved = resolveObject(object);
   if (!resolved) return { id, kind: object.kind, color: object.color ?? '', facing: 'Down', x: object.x, y: object.y, w: 32, h: 32, originX: 16, originY: 32 };
   const { entry, facing, variant, tx, ty } = resolved;
+  // Freely placed objects keep their exact offset from the centre of the tile they stand on; collisions stay per tile.
+  const shiftX = object.free ? object.x - (Math.floor(object.x / TILE) * TILE + TILE / 2) : 0;
+  const shiftY = object.free ? object.y - (Math.floor(object.y / TILE) * TILE + TILE / 2) : 0;
   const blocks = variant.blocks.map(([dx, dy]) => [tx + dx, ty + dy]);
   const seat = variant.seat.map(([dx, dy]) => [tx + dx, ty + dy]);
   return {
     id, parent: null, kind: entry.kind, family: entry.family, color: entry.color, facing,
-    x: tx * TILE + variant.offLeft + variant.originX, y: ty * TILE + variant.offTop + variant.originY, w: variant.w, h: variant.h, originX: variant.originX, originY: variant.originY,
+    x: tx * TILE + variant.offLeft + variant.originX + shiftX, y: ty * TILE + variant.offTop + variant.originY + shiftY, w: variant.w, h: variant.h, originX: variant.originX, originY: variant.originY,
     blocks: blocks.length ? blocks : undefined, seat: seat.length ? seat : undefined,
   };
 }
@@ -69,6 +72,7 @@ export function validOverride(id, override) {
   const base = BASE_BY_ID.get(id);
   if (!base || !override || typeof override !== 'object') return false;
   if (override.removed !== undefined && typeof override.removed !== 'boolean') return false;
+  if (override.free !== undefined && typeof override.free !== 'boolean') return false;
   if (override.facing !== undefined && !catalogEntry(base)?.facings[override.facing]) return false;
   if ((override.x !== undefined || override.y !== undefined) && !(Number.isFinite(override.x) && Number.isFinite(override.y))) return false;
   return true;
@@ -91,7 +95,7 @@ export function baseAsEditorObject(id, overrides = {}) {
   const base = BASE_BY_ID.get(id);
   if (!base) return null;
   const override = overrides[id] ?? {};
-  if (override.x !== undefined) return { id, kind: base.kind, color: base.color, facing: override.facing ?? base.facing, x: override.x, y: override.y };
+  if (override.x !== undefined) return { id, kind: base.kind, color: base.color, facing: override.facing ?? base.facing, x: override.x, y: override.y, ...(override.free ? { free: true } : {}) };
   const variant = catalogEntry(base)?.facings[base.facing];
   const [ax, ay] = variant ? anchorOf(variant) : [0, 0];
   const tx = (variant ? Math.round((base.x - base.originX - variant.offLeft) / TILE) : Math.floor(base.x / TILE)) + ax;

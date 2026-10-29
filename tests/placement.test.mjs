@@ -174,3 +174,20 @@ test('objects can open a website or a note, and only valid ones are kept', async
   const later = await connect(server.port, 'Later');
   assert.deepEqual(later.welcome.interactions, {});
 });
+
+test('objects can be placed and moved off the grid, and drawn at their exact position', async t => {
+  const server = await fixture(t);
+  const editor = await connect(server.port, 'Editor');
+  editor.send({ type: 'object:add', kind: 'plant', x: 413, y: 307, free: true });
+  const [plant] = (await editor.next('objects')).objects;
+  assert.deepEqual([plant.x, plant.y, plant.free], [413, 307, true]);
+  const { asMapObject } = await import('../shared/office-objects.js');
+  const snapped = asMapObject({ ...plant, free: false }), exact = asMapObject(plant);
+  assert.deepEqual([exact.x - snapped.x, exact.y - snapped.y], [413 - (12 * 32 + 16), 307 - (9 * 32 + 16)], 'drawn at the exact offset from its tile centre');
+  editor.send({ type: 'object:update', id: plant.id, x: 432, y: 304 });
+  const [moved] = (await editor.next('objects')).objects;
+  assert.equal(moved.free, undefined, 'moving on the grid drops the exact placement');
+  await server.restart();
+  const restored = await connect(server.port, 'Restored');
+  assert.deepEqual(restored.welcome.objects, [moved]);
+});

@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { baseAsEditorObject, isBaseObjectId } from '../shared/office-objects.js';
 import type { OfficeObject, Send } from './types';
 
-type Pose = { x: number; y: number; facing?: string; original?: boolean };
-type Placed = { kind: string; color?: string; facing?: string; x: number; y: number };
+type Pose = { x: number; y: number; facing?: string; original?: boolean; free?: boolean };
+type Placed = { kind: string; color?: string; facing?: string; x: number; y: number; free?: boolean };
 /** One decorator change and what is needed to revert or repeat it. Placed objects get a new id every time they are
     re-created, so `id` is updated when the server confirms the object. */
 type Entry =
@@ -34,13 +34,13 @@ export function useEditHistory({ objects, overrides, send }: { objects: OfficeOb
   }, [objects]);
 
   const pose = (id: string): Pose | null => {
-    if (isBaseObjectId(id)) { const base = baseAsEditorObject(id, state.current.overrides as never); return base ? { x: base.x, y: base.y, facing: base.facing, original: !(id in state.current.overrides) } : null; }
+    if (isBaseObjectId(id)) { const base = baseAsEditorObject(id, state.current.overrides as never); return base ? { x: base.x, y: base.y, facing: base.facing, free: (base as { free?: boolean }).free, original: !(id in state.current.overrides) } : null; }
     const placed = state.current.objects.find(object => object.id === id);
-    return placed ? { x: placed.x, y: placed.y, facing: placed.facing } : null;
+    return placed ? { x: placed.x, y: placed.y, facing: placed.facing, free: (placed as { free?: boolean }).free } : null;
   };
   const push = (entry: Entry) => { past.current.push(entry); if (past.current.length > LIMIT) past.current.shift(); future.current = []; refresh(); };
   /** Puts an object back in a pose; an untouched map object is reset to its exact original placement. */
-  const restore = (id: string, target: Pose) => send(target.original ? { type: 'object:update', id, reset: true } : { type: 'object:update', id, x: target.x, y: target.y, facing: target.facing });
+  const restore = (id: string, target: Pose) => send(target.original ? { type: 'object:update', id, reset: true } : { type: 'object:update', id, x: target.x, y: target.y, facing: target.facing, free: !!target.free });
   const addObject = (entry: Entry & { object: Placed }) => { awaitingId.current.push(entry); entry.id = null; send({ type: 'object:add', ...entry.object }); };
 
   /** Records a change just before it is sent. */
