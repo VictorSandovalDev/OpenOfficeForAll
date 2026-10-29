@@ -40,3 +40,10 @@ export function visitedLabel(time: number, locale: string) {
   const text = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(-days, 'day');
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+export async function renameWorkspace(slug: string, name: string, key = '', admin = ''): Promise<{ slug: string; name: string } | { error: string }> {
+  try {
+    const response = await fetch(`/api/workspaces/${encodeURIComponent(slug)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, key, admin }) });
+    const body = await response.json().catch(() => ({}));
+    return response.ok ? body : { error: body.error ?? 'workspace_failed' };
+  } catch { return { error: 'offline' }; }
+}

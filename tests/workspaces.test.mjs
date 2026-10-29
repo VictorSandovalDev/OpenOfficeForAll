@@ -72,3 +72,36 @@ test('with an invite key, creating a workspace needs the key', async t => {
   assert.equal((await post(server.port, { name: 'Sin clave' })).status, 403);
   assert.equal((await post(server.port, { name: 'Con clave', key: 'invite-secret-123' })).status, 201);
 });
+
+test('a new workspace comes furnished exactly like the designed office, without its people or chat', async t => {
+  const server = await fixture(t);
+  const designer = await connect(server.port, 'Ana', 'user-ana-0001', 'mi-oficina');
+  designer.send({ type: 'object:add', kind: 'plant', x: 413, y: 307, free: true });
+  const [plant] = (await designer.next('objects')).objects;
+  designer.send({ type: 'object:remove', id: 'b34830e2' });
+  await designer.next('objects', event => event.overrides?.b34830e2?.removed);
+  designer.send({ type: 'area:rename', areaId: '094907c0', name: 'Sala grande' });
+  await designer.next('areas');
+  designer.send({ type: 'chat', channel: 'channel', channelId: 'general', text: 'Solo en Vivo' });
+  await designer.next('chat');
+  const { slug } = await (await post(server.port, { name: 'Equipo nuevo' })).json();
+  const guest = await connect(server.port, 'Bruno', 'user-bruno-001', slug);
+  assert.deepEqual(guest.welcome.objects, [plant], 'the placed furniture is copied');
+  assert.deepEqual(guest.welcome.overrides, { b34830e2: { removed: true } }, 'removed and moved pieces too');
+  assert.equal(guest.welcome.areaNames['094907c0'], 'Sala grande', 'and the room names');
+  assert.equal(guest.welcome.messages.some(message => message.text === 'Solo en Vivo'), false, 'the chat stays in its own office');
+});
+
+test('a workspace can be renamed from the list, and admins-only offices need the admin key', async t => {
+  const open = await fixture(t);
+  const { slug } = await (await post(open.port, { name: 'Ventas' })).json();
+  const inside = await connect(open.port, 'Ana', 'user-ana-0001', slug);
+  const renamed = await fetch(`http://127.0.0.1:${open.port}/api/workspaces/${slug}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Ventas y marketing' }) });
+  assert.deepEqual(await renamed.json(), { slug, name: 'Ventas y marketing' });
+  assert.equal((await inside.next('workspace')).workspace.name, 'Ventas y marketing', 'people inside see the new name');
+  const strict = await fixture(t, { adminKey: 'admin-secret-123' });
+  const created = await (await post(strict.port, { name: 'Dirección' })).json();
+  const patch = (body) => fetch(`http://127.0.0.1:${strict.port}/api/workspaces/${created.slug}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  assert.equal((await patch({ name: 'Otro nombre' })).status, 403);
+  assert.equal((await patch({ name: 'Otro nombre', admin: 'admin-secret-123' })).status, 200);
+});

@@ -49,6 +49,7 @@ This guide puts your office on the internet with HTTPS, an invite key, admin-onl
 | `HOST`, `PORT` | Listening address of the Node process (`0.0.0.0:3001` in Docker). |
 | `SERVE_CLIENT` | Set to `false` if another web server hosts the built client. |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | Media server for meeting rooms. With it, a meeting of 20 people needs one connection per person instead of 19. Point a `livekit.` subdomain to the server and keep the key in `deploy/livekit.yaml` in sync. |
+| `WORKSPACE_TEMPLATE` | Office whose current design new workspaces copy (default `mi-oficina`, Vivo). |
 | `ACCOUNTS` | `off` (names only, default), `optional` (accounts or guests) or `required` (e-mail and password to enter). Passwords are hashed with scrypt; sessions last 30 days. |
 
 Office data (decorations, room names, channels, messages and the calendar) lives in the `office-data` volume. Back it up with `docker run --rm -v openofficeforall_office-data:/data -v "$PWD":/backup alpine tar czf /backup/office-data.tgz -C /data .`.

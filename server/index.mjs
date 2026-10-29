@@ -132,6 +132,8 @@ export async function startServer({
   // Personal accounts: 'off' (names only), 'optional' (guests or accounts) or 'required'.
   accounts: accountMode = ['optional', 'required'].includes(process.env.ACCOUNTS) ? process.env.ACCOUNTS : 'off',
   // Media server for meeting rooms (LiveKit). Without it, calls are peer to peer everywhere.
+  // New workspaces are furnished as a copy of this office's current design (Vivo by default).
+  templateRoom = ROOM_SLUG.test(process.env.WORKSPACE_TEMPLATE ?? '') ? process.env.WORKSPACE_TEMPLATE : 'mi-oficina',
   livekit = process.env.LIVEKIT_URL && process.env.LIVEKIT_API_KEY && process.env.LIVEKIT_API_SECRET ? { url: process.env.LIVEKIT_URL, key: process.env.LIVEKIT_API_KEY, secret: process.env.LIVEKIT_API_SECRET } : null,
 } = {}) {
   const accounts = accountMode === 'off' ? null : createAccounts(dataDir);
@@ -170,6 +172,17 @@ export async function startServer({
     for (let n = 2; await slugTaken(slug); n++) slug = `${base}-${n}`.slice(0, 63);
     const list = await loadWorkspaces();
     list[slug] = { name, template, createdAt: new Date().toISOString() };
+    if (template === 'office') {
+      // Copy the design (furniture, moved or removed pieces, room names, interactive objects), not the people or the chat.
+      let design = null;
+      const live = rooms.get(templateRoom);
+      if (live) { await live.loaded; design = { objects: live.objects, overrides: live.overrides, areaNames: live.areaNames, interactions: live.interactions }; }
+      else { try { design = JSON.parse(await readFile(join(dataDir, `${templateRoom}.json`), 'utf8')); } catch { design = null; } }
+      if (design && Array.isArray(design.objects)) {
+        await mkdir(dataDir, { recursive: true });
+        await writeFile(join(dataDir, `${slug}.json`), JSON.stringify({ version: 2, objects: design.objects, overrides: design.overrides ?? {}, areaNames: design.areaNames ?? {}, interactions: design.interactions ?? {} }), { mode: 0o600 });
+      }
+    }
     if (template === 'empty') {
       // An empty office keeps floors and walls; every piece of furniture starts removed and can be added back.
       const overrides = Object.fromEntries(BASE_OBJECTS.map((object) => [object.id, { removed: true }]));
@@ -304,7 +317,7 @@ export async function startServer({
           const point = position(object.x, object.y);
           if (!point) return [];
           ids.add(object.id);
-          return [{ id: object.id, kind: object.kind, ...(typeof object.color === 'string' ? { color: object.color } : {}), ...(typeof object.facing === 'string' ? { facing: object.facing } : {}), ...point }];
+          return [{ id: object.id, kind: object.kind, ...(typeof object.color === 'string' ? { color: object.color } : {}), ...(typeof object.facing === 'string' ? { facing: object.facing } : {}), ...point, ...(object.free === true ? { free: true } : {}) }];
         });
       } catch (cause) {
         if (cause.code !== 'ENOENT') console.warn(`Could not load objects for room ${slug}: ${cause.message}`);
@@ -421,7 +434,8 @@ export async function startServer({
         void loadWorkspaces().then((list) => reply(200, { slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), template: list[slug]?.template ?? 'office' }));
         return;
       }
-      if (request.method !== 'POST' || request.url !== '/api/workspaces' || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
+      const renaming = request.method === 'PATCH' && request.url.startsWith('/api/workspaces/');
+      if ((!renaming && (request.method !== 'POST' || request.url !== '/api/workspaces')) || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
       const ip = request.socket.remoteAddress ?? 'unknown';
       const bucket = workspaceRate.get(ip) ?? { tokens: 5, at: Date.now() }; workspaceRate.set(ip, bucket);
       if (!takeToken(bucket, 5, 0.05)) return reply(429, { error: 'too_many_attempts' });
@@ -432,6 +446,18 @@ export async function startServer({
         if (accessKey && !sameSecret(String(payload.key ?? ''), accessKey)) return reply(403, { error: 'access_denied' });
         const name = cleanText(payload.name, 60);
         if (!name || name.length < 2) return reply(400, { error: 'invalid_name' });
+        if (renaming) {
+          // Renaming follows the decorating rule: anyone, or only admins (with the admin key) when the office restricts it.
+          const slug = decodeURIComponent(request.url.slice('/api/workspaces/'.length));
+          if (!ROOM_SLUG.test(slug)) return reply(400, { error: 'invalid_workspace' });
+          if (editPolicy === 'admins' && !(adminKey && sameSecret(String(payload.admin ?? ''), adminKey))) return reply(403, { error: 'forbidden' });
+          const list = await loadWorkspaces();
+          list[slug] = { ...(list[slug] ?? { template: 'office', createdAt: new Date().toISOString() }), name };
+          await saveWorkspaces();
+          const live = rooms.get(slug);
+          if (live) { live.workspaceName = name; broadcast(live, { type: 'workspace', workspace: { slug, name } }); }
+          return reply(200, { slug, name });
+        }
         const template = payload.template === 'empty' ? 'empty' : 'office';
         try { return reply(201, await createWorkspace(name, template)); }
         catch (cause) { console.error(`Could not create workspace: ${cause.message}`); return reply(500, { error: 'workspace_failed' }); }

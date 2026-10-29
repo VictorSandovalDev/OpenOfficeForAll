@@ -40,7 +40,9 @@ Supported messages:
   drawn at that point and still blocks the tiles it stands on. Moving without `free` returns it to the grid.
 - Workspaces: `POST /api/workspaces` with `name` (2–60 characters), `template` (`office` or `empty`) and, when
   the server has an invite key, `key`; replies `201 { slug, name }` with a unique address made from the name.
-  `GET /api/workspaces/<slug>` returns its name. Every workspace is its own room (map, chat, calendar, desks);
+  `GET /api/workspaces/<slug>` returns its name and template; `PATCH /api/workspaces/<slug>` with `name` renames it
+  (with `admin` when only admins may edit). The `office` template copies the current design of the template office
+  (`WORKSPACE_TEMPLATE`, Vivo by default): furniture, moved or removed pieces, room names and interactive objects. Every workspace is its own room (map, chat, calendar, desks);
   `empty` starts with every piece of furniture removed. `welcome` carries `workspace`; editors send
   `workspace:rename` with `name`, and everyone receives `workspace`. Saved in `server/data/workspaces.json`.
 - Closed focus offices: while someone is inside, moving or sitting there from outside fails with `focus_closed`

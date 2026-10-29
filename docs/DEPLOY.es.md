@@ -49,6 +49,7 @@ Esta guía pone tu oficina en internet con HTTPS, clave de invitación, decoraci
 | `HOST`, `PORT` | Dirección de escucha del proceso Node (`0.0.0.0:3001` en Docker). |
 | `SERVE_CLIENT` | Ponlo en `false` si otro servidor web aloja el cliente compilado. |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | Servidor de medios para las salas de reunión. Con él, una reunión de 20 personas necesita una conexión por persona en vez de 19. Apunta un subdominio `livekit.` al servidor y mantén la clave igual que en `deploy/livekit.yaml`. |
+| `WORKSPACE_TEMPLATE` | Oficina cuyo diseño actual copian los espacios nuevos (por defecto `mi-oficina`, Vivo). |
 | `ACCOUNTS` | `off` (solo nombres, por defecto), `optional` (cuentas o invitados) o `required` (correo y contraseña para entrar). Las contraseñas se guardan con scrypt; las sesiones duran 30 días. |
 
 Los datos de la oficina (decoración, nombres de salas, canales, mensajes y calendario) viven en el volumen `office-data`. Haz copias con `docker run --rm -v openofficeforall_office-data:/data -v "$PWD":/backup alpine tar czf /backup/office-data.tgz -C /data .`.

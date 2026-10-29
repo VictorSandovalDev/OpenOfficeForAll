@@ -451,4 +451,9 @@ export const EN: Record<string, string> = {
   "No hay espacios con ese nombre.": "No spaces with that name.",
   "Todavía no has entrado a ningún espacio.": "You have not entered any space yet.",
   "Elige un mapa": "Choose a map",
+  "Oficina amueblada": "Furnished office",
+  "Igual que Vivo: salas de reunión, escritorios, cocina y jardín, con la decoración actual.": "Just like Vivo: meeting rooms, desks, kitchen and garden, with the current decoration.",
+  "Solo los administradores pueden cambiar el nombre.": "Only admins can rename this space.",
+  "No se pudo cambiar el nombre.": "The name could not be changed.",
+  "Cambiar nombre": "Rename",
 };

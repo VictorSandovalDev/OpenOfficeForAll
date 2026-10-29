@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { Check, Copy, LayoutGrid, MoreVertical, Plus, Search, Trash2, X } from 'lucide-react';
+import { Check, Copy, LayoutGrid, MoreVertical, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { locale, t } from './i18n';
 import { loadConfig, storedKey } from './config';
-import { createWorkspace, fetchWorkspace, forgetWorkspace, knownWorkspaces, rememberWorkspace, visitedLabel, workspaceUrl, type KnownWorkspace, type Template } from './workspaces';
+import { createWorkspace, fetchWorkspace, forgetWorkspace, knownWorkspaces, rememberWorkspace, renameWorkspace, visitedLabel, workspaceUrl, type KnownWorkspace, type Template } from './workspaces';
 
 const THUMBNAIL: Record<Template, string> = { office: '/thumbnails/office.jpg', empty: '/thumbnails/empty.jpg' };
 
@@ -14,6 +14,15 @@ export default function WorkspaceHome() {
   const [creating, setCreating] = useState(() => new URLSearchParams(location.search).has('new'));
   const [menu, setMenu] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<{ slug: string; name: string; error?: string } | null>(null);
+  async function saveName() {
+    if (!renaming || renaming.name.trim().length < 2) return;
+    const result = await renameWorkspace(renaming.slug, renaming.name.trim(), storedKey('key', renaming.slug), storedKey('admin', renaming.slug));
+    if ('error' in result) { setRenaming({ ...renaming, error: result.error === 'forbidden' ? t('Solo los administradores pueden cambiar el nombre.') : t('No se pudo cambiar el nombre.') }); return; }
+    const item = list.find(entry => entry.slug === renaming.slug);
+    if (item) rememberWorkspaceQuietly(item, result.name, item.template ?? 'office');
+    setList(knownWorkspaces()); setRenaming(null);
+  }
 
   useEffect(() => { document.title = t('Tus espacios de trabajo · Open Office'); }, []);
   // Learn the template (map thumbnail) and current name of spaces we only visited.
@@ -51,11 +60,14 @@ export default function WorkspaceHome() {
       {shown.length > 0 ? <div className="dashboard-grid">{shown.map(item => <article className="space-card" key={item.slug}>
         <a className="space-thumb" href={workspaceUrl(item.slug)} onClick={() => rememberWorkspace(item.slug, item.name)}><img src={THUMBNAIL[item.template ?? 'office']} alt="" loading="lazy" /></a>
         <div className="space-meta">
-          <a href={workspaceUrl(item.slug)} onClick={() => rememberWorkspace(item.slug, item.name)}><strong>{item.name}</strong></a>
+          {renaming?.slug === item.slug
+            ? <form className="space-rename" onSubmit={e => { e.preventDefault(); void saveName(); }}><input autoFocus value={renaming.name} onChange={e => setRenaming({ ...renaming, name: e.target.value, error: undefined })} onKeyDown={e => { if (e.key === 'Escape') setRenaming(null); }} maxLength={60} aria-label={t('Nombre del espacio')} /><button type="submit" aria-label={t('Guardar')}><Check size={15} /></button>{renaming.error && <small role="alert">{renaming.error}</small>}</form>
+            : <a href={workspaceUrl(item.slug)} onClick={() => rememberWorkspace(item.slug, item.name)}><strong>{item.name}</strong></a>}
           <span>{tab === 'created' && item.createdAt ? visitedLabel(item.createdAt, locale()) : visitedLabel(item.visitedAt, locale())}</span>
           <div className="space-menu-wrap">
             <button type="button" className="space-menu-button" aria-label={t('Opciones de {name}', { name: item.name })} aria-expanded={menu === item.slug} onClick={e => { e.stopPropagation(); setMenu(menu === item.slug ? null : item.slug); }}><MoreVertical size={16} /></button>
             {menu === item.slug && <div className="space-menu" role="menu" onClick={e => e.stopPropagation()}>
+              <button role="menuitem" onClick={() => { setRenaming({ slug: item.slug, name: item.name }); setMenu(null); }}><Pencil size={14} />{t('Cambiar nombre')}</button>
               <button role="menuitem" onClick={() => void copyLink(item.slug)}>{copied === item.slug ? <Check size={14} /> : <Copy size={14} />}{copied === item.slug ? t('Enlace copiado') : t('Copiar enlace')}</button>
               <button role="menuitem" className="danger" onClick={() => { forgetWorkspace(item.slug); setList(knownWorkspaces()); setMenu(null); }}><Trash2 size={14} />{t('Quitar de esta lista')}</button>
             </div>}
@@ -78,7 +90,7 @@ function rememberWorkspaceQuietly(item: KnownWorkspace, name: string, template: 
 
 function CreateDialog({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState('');
-  const [template, setTemplate] = useState<Template>('office');
+  const template: Template = 'office'; // every new workspace starts as a copy of the designed office
   const [key, setKey] = useState('');
   const [keyRequired, setKeyRequired] = useState(false);
   const [error, setError] = useState('');
@@ -102,15 +114,7 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
       <button type="button" className="dashboard-dialog-close" aria-label={t('Cerrar ventana')} onClick={onClose}><X size={18} /></button>
       <h2 id="create-title">{t('Crear un espacio de trabajo')}</h2>
       <p className="dashboard-dialog-lead">{t('Cada espacio tiene su propio mapa, sus personas, su chat y su calendario.')}</p>
-      <span className="dashboard-label">{t('Elige un mapa')}</span>
-      <div className="template-grid">
-        {(['office', 'empty'] as const).map(option => <button type="button" key={option} className={`template-card${template === option ? ' selected' : ''}`} aria-pressed={template === option} onClick={() => setTemplate(option)}>
-          <img src={THUMBNAIL[option]} alt="" />
-          <strong>{option === 'office' ? t('Oficina completa') : t('Oficina vacía')}</strong>
-          <small>{option === 'office' ? t('Salas de reunión, escritorios, cocina y jardín, ya amueblados.') : t('Las mismas salas sin muebles, para decorarla a tu gusto.')}</small>
-          {template === option && <span className="template-check"><Check size={14} /></span>}
-        </button>)}
-      </div>
+      <figure className="template-preview"><img src={THUMBNAIL.office} alt="" /><figcaption><strong>{t('Oficina amueblada')}</strong><small>{t('Igual que Vivo: salas de reunión, escritorios, cocina y jardín, con la decoración actual.')}</small></figcaption></figure>
       <label className="dashboard-label">{t('Nombre del espacio')}<input ref={input} value={name} onChange={e => setName(e.target.value)} placeholder={t('p. ej. Equipo de diseño')} minLength={2} maxLength={60} required /></label>
       {keyRequired && <label className="dashboard-label">{t('Clave de invitación')}<input type="password" value={key} onChange={e => setKey(e.target.value)} autoComplete="off" maxLength={200} /></label>}
       {error && <p className="form-error" role="alert">{error}</p>}
