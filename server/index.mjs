@@ -81,6 +81,8 @@ export async function startServer({
     const state = {};
     for (const member of room.members.values()) { const area = meetingRoomOf(member.participant); if (area) (state[area.id] ??= { active: true, locked: false, participants: 0 }).participants += 1; }
     for (const areaId of Object.keys(room.locks)) { if (state[areaId]) state[areaId].locked = true; else delete room.locks[areaId]; }
+    for (const areaId of Object.keys(room.meetingStarts)) if (!state[areaId]) delete room.meetingStarts[areaId];
+    for (const [areaId, meeting] of Object.entries(state)) meeting.startedAt = room.meetingStarts[areaId] ??= Date.now();
     return state;
   };
   const systemMessage = (room, areaId, participant, text) => broadcast(room, { type: 'chat', message: { id: randomUUID(), participantId: participant.id, name: participant.name, text, channel: 'meeting', areaId, system: true, createdAt: new Date().toISOString() } }, (other) => meetingRoomOf(other)?.id === areaId);
@@ -118,7 +120,7 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), messages: [], objects: [], overrides: {}, areaNames: {}, locks: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), messages: [], objects: [], overrides: {}, areaNames: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');

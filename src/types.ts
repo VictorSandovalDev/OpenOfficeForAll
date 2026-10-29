@@ -4,7 +4,7 @@ export type Participant = { id: string; name: string; color: string; x: number; 
 export type OfficeObject = { id: string; kind: string; color?: string; facing?: string; x: number; y: number };
 export type EditItem = { kind: string; color: string; facing: string };
 export type ChatMessage = { id: string; participantId: string; name: string; text: string; channel: 'office' | 'nearby' | 'meeting'; areaId?: string; system?: boolean; createdAt: string };
-export type MeetingState = { active: boolean; locked: boolean; participants: number };
+export type MeetingState = { active: boolean; locked: boolean; participants: number; startedAt?: number };
 export type Meetings = Record<string, MeetingState>;
 export type Send = (message: Record<string, unknown>) => void;
 export type Signal = { from: string; data: { description?: RTCSessionDescriptionInit; candidate?: RTCIceCandidateInit } };
