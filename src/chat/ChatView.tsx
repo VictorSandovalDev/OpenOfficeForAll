@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { AtSign, Bold, Code, Hash, Italic, Link2, List, ListOrdered, MoreVertical, Paperclip, Quote, Radio, Send, Smile, SquareCode, Strikethrough, User } from 'lucide-react';
 import type { Channel, ChatMessage, DirectoryUser, Participant } from '../types';
 import { applyFormat, renderMessage } from './markdown';
+import { locale, t } from '../i18n';
 
 /** A conversation the chat view can show: a company channel, a direct message, or the nearby chat. */
 export type Conversation = { kind: 'channel'; id: string } | { kind: 'dm'; userId: string } | { kind: 'nearby' };
@@ -13,9 +14,9 @@ const initial = (name: string) => name.trim().charAt(0).toUpperCase() || '?';
 const sameGroup = (a: ChatMessage, b: ChatMessage) => a.userId === b.userId && !a.system && !b.system && new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() < 5 * 60_000;
 const dayLabel = (date: Date) => {
   const today = new Date(); const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
-  if (date.toDateString() === today.toDateString()) return 'Hoy';
-  if (date.toDateString() === yesterday.toDateString()) return 'Ayer';
-  return date.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+  if (date.toDateString() === today.toDateString()) return t('Hoy');
+  if (date.toDateString() === yesterday.toDateString()) return t('Ayer');
+  return date.toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' });
 };
 
 type Props = {
@@ -44,8 +45,8 @@ export default function ChatView({ conversation, channels, users, participants, 
   const other = conversation.kind === 'dm' ? users.find(user => user.userId === conversation.userId) : undefined;
   const onlineIds = new Set(participants.map(person => person.userId));
   const names = useMemo(() => users.map(user => user.name), [users]);
-  const title = conversation.kind === 'channel' ? channel?.name ?? conversation.id : conversation.kind === 'dm' ? `${other?.name ?? 'Persona'}${conversation.userId === selfUserId ? ' (tú)' : ''}` : 'Cerca de ti';
-  const placeholder = conversation.kind === 'channel' ? `Mensaje a ${title}` : conversation.kind === 'dm' ? `Mensaje a ${other?.name ?? 'esta persona'}` : 'Mensaje a quienes están cerca';
+  const title = conversation.kind === 'channel' ? channel?.name ?? conversation.id : conversation.kind === 'dm' ? `${other?.name ?? t('Persona')}${conversation.userId === selfUserId ? t(' (tú)') : ''}` : t('Cerca de ti');
+  const placeholder = conversation.kind === 'channel' ? t('Mensaje a {name}', { name: title }) : conversation.kind === 'dm' ? t('Mensaje a {name}', { name: other?.name ?? t('esta persona') }) : t('Mensaje a quienes están cerca');
   const colorOf = (message: ChatMessage) => users.find(user => user.userId === message.userId)?.color ?? participants.find(person => person.id === message.participantId)?.color ?? '#7968e6';
 
   useEffect(() => { end.current?.scrollIntoView({ block: 'end' }); }, [messages.length, conversation]);
@@ -72,38 +73,38 @@ export default function ChatView({ conversation, channels, users, participants, 
   const members = conversation.kind === 'channel' ? users : conversation.kind === 'dm' ? users.filter(user => user.userId === conversation.userId || user.userId === selfUserId) : [];
   const here = members.filter(user => onlineIds.has(user.userId));
 
-  return <section className="chat-view" aria-label={`Conversación: ${title}`}>
+  return <section className="chat-view" aria-label={t('Conversación: {name}', { name: title })}>
     <header className="chat-view-header">
-      <button type="button" className="chat-title" onClick={() => conversation.kind === 'channel' && (setTopic(channel?.topic ?? ''), setEditingTopic(true))} title={conversation.kind === 'channel' ? 'Editar la descripción del canal' : title}>{header}</button>
+      <button type="button" className="chat-title" onClick={() => conversation.kind === 'channel' && (setTopic(channel?.topic ?? ''), setEditingTopic(true))} title={conversation.kind === 'channel' ? t('Editar la descripción del canal') : title}>{header}</button>
       {conversation.kind !== 'nearby' && <div className="chat-header-tools">
-        <div className="chat-members" title={`${here.length} en línea · ${members.length} miembros`}>
+        <div className="chat-members" title={t('{online} en línea · {total} miembros', { online: here.length, total: members.length })}>
           <span className="chat-members-online">{here.slice(0, 3).map(user => <span key={user.userId} className="chat-avatar tiny" style={{ background: user.color }}>{initial(user.name)}</span>)}<b>{here.length}</b><i className="status-dot available" /></span>
           <span className="chat-members-total"><User size={13} />{members.length}</span>
         </div>
-        <div className="chat-menu-wrap"><button type="button" className="chat-icon" aria-label="Más opciones" title="Más opciones" aria-expanded={menuOpen} onClick={() => setMenuOpen(open => !open)}><MoreVertical size={16} /></button>
-          {menuOpen && <div className="chat-menu" role="menu">{conversation.kind === 'channel' && <button role="menuitem" onClick={() => { setTopic(channel?.topic ?? ''); setEditingTopic(true); setMenuOpen(false); }}>Editar descripción</button>}<button role="menuitem" onClick={() => { void navigator.clipboard?.writeText(`${location.origin}/?room=${new URLSearchParams(location.search).get('room') ?? ''}`); setMenuOpen(false); }}>Copiar enlace de la oficina</button></div>}
+        <div className="chat-menu-wrap"><button type="button" className="chat-icon" aria-label={t('Más opciones')} title={t('Más opciones')} aria-expanded={menuOpen} onClick={() => setMenuOpen(open => !open)}><MoreVertical size={16} /></button>
+          {menuOpen && <div className="chat-menu" role="menu">{conversation.kind === 'channel' && <button role="menuitem" onClick={() => { setTopic(channel?.topic ?? ''); setEditingTopic(true); setMenuOpen(false); }}>{t('Editar descripción')}</button>}<button role="menuitem" onClick={() => { void navigator.clipboard?.writeText(`${location.origin}/?room=${new URLSearchParams(location.search).get('room') ?? ''}`); setMenuOpen(false); }}>{t('Copiar enlace de la oficina')}</button></div>}
         </div>
       </div>}
     </header>
     <div className="chat-scroll">
       <div className="chat-intro">
         {conversation.kind === 'channel' && <>
-          <h2>Bienvenido a #{title}</h2>
-          {editingTopic ? <form className="chat-topic-form" onSubmit={event => { event.preventDefault(); onTopic(conversation.id, topic); setEditingTopic(false); }}><input autoFocus value={topic} maxLength={160} onChange={event => setTopic(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setEditingTopic(false); }} placeholder="Añade una descripción" aria-label="Descripción del canal" /><button className="primary" type="submit">Guardar</button></form>
-            : <p>{channel?.topic || 'Este canal todavía no tiene descripción.'}</p>}
+          <h2>{t('Bienvenido a #{name}', { name: title })}</h2>
+          {editingTopic ? <form className="chat-topic-form" onSubmit={event => { event.preventDefault(); onTopic(conversation.id, topic); setEditingTopic(false); }}><input autoFocus value={topic} maxLength={160} onChange={event => setTopic(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setEditingTopic(false); }} placeholder={t('Añade una descripción')} aria-label={t('Descripción del canal')} /><button className="primary" type="submit">{t('Guardar')}</button></form>
+            : <p>{channel?.topic ? t(channel.topic) : t('Este canal todavía no tiene descripción.')}</p>}
         </>}
         {conversation.kind === 'dm' && <>
           <span className="chat-avatar large" style={{ background: other?.color }}>{initial(other?.name ?? '?')}</span>
-          <h2>{conversation.userId === selfUserId ? 'Este es tu espacio' : other?.name}</h2>
-          <p>{conversation.userId === selfUserId ? 'Escribe notas, enlaces o borradores. Solo tú puedes verlos.' : `Esta es tu conversación privada con ${other?.name ?? 'esta persona'}. Solo ustedes dos pueden verla.`}</p>
+          <h2>{conversation.userId === selfUserId ? t('Este es tu espacio') : other?.name}</h2>
+          <p>{conversation.userId === selfUserId ? t('Escribe notas, enlaces o borradores. Solo tú puedes verlos.') : t('Esta es tu conversación privada con {name}. Solo ustedes dos pueden verla.', { name: other?.name ?? t('esta persona') })}</p>
         </>}
-        {conversation.kind === 'nearby' && <><h2>Cerca de ti</h2><p>Los mensajes llegan solo a quienes están en tu zona de conversación. No se guardan.</p></>}
+        {conversation.kind === 'nearby' && <><h2>{t('Cerca de ti')}</h2><p>{t('Los mensajes llegan solo a quienes están en tu zona de conversación. No se guardan.')}</p></>}
       </div>
       {messages.map((message, index) => {
         const previous = messages[index - 1];
         const newDay = !previous || new Date(previous.createdAt).toDateString() !== new Date(message.createdAt).toDateString();
         const grouped = !newDay && previous && sameGroup(previous, message);
-        const time = new Date(message.createdAt).toLocaleTimeString('es', { hour: 'numeric', minute: '2-digit' });
+        const time = new Date(message.createdAt).toLocaleTimeString(locale(), { hour: 'numeric', minute: '2-digit' });
         return <div key={message.id}>
           {newDay && <div className="chat-day"><span>{dayLabel(new Date(message.createdAt))}</span></div>}
           <article className={`chat-message${grouped ? ' is-grouped' : ''}${message.userId === selfUserId ? ' is-own' : ''}`}>
@@ -120,21 +121,21 @@ export default function ChatView({ conversation, channels, users, participants, 
     <form className="chat-composer" onSubmit={event => { event.preventDefault(); send(); }}>
       <textarea ref={box} rows={1} value={draft} onChange={event => onDraft(event.target.value)} onKeyDown={keyDown} placeholder={placeholder} aria-label={placeholder} maxLength={4000} disabled={!online} />
       <div className="chat-toolbar">
-        <button type="button" title="Adjuntar archivo (próximamente)" aria-label="Adjuntar archivo" disabled><Paperclip size={16} /></button>
-        <button type="button" title="Mencionar" aria-label="Mencionar" onClick={() => insert('@')}><AtSign size={16} /></button>
-        <span className="chat-emoji-wrap"><button type="button" title="Emoji" aria-label="Emoji" aria-expanded={emojiOpen} onClick={() => setEmojiOpen(open => !open)}><Smile size={16} /></button>
+        <button type="button" title={t('Adjuntar archivo (próximamente)')} aria-label={t('Adjuntar archivo')} disabled><Paperclip size={16} /></button>
+        <button type="button" title={t('Mencionar')} aria-label={t('Mencionar')} onClick={() => insert('@')}><AtSign size={16} /></button>
+        <span className="chat-emoji-wrap"><button type="button" title={t('Emoji')} aria-label={t('Emoji')} aria-expanded={emojiOpen} onClick={() => setEmojiOpen(open => !open)}><Smile size={16} /></button>
           {emojiOpen && <span className="chat-emoji" role="menu">{EMOJI.map(emoji => <button type="button" key={emoji} onClick={() => { insert(emoji); setEmojiOpen(false); }}>{emoji}</button>)}</span>}</span>
         <i className="chat-toolbar-divider" />
-        <button type="button" title="Negrita (⌘ B)" aria-label="Negrita" onClick={() => format('bold')}><Bold size={16} /></button>
-        <button type="button" title="Cursiva (⌘ I)" aria-label="Cursiva" onClick={() => format('italic')}><Italic size={16} /></button>
-        <button type="button" title="Tachado" aria-label="Tachado" onClick={() => format('strike')}><Strikethrough size={16} /></button>
-        <button type="button" title="Enlace" aria-label="Enlace" onClick={() => format('link')}><Link2 size={16} /></button>
-        <button type="button" title="Lista numerada" aria-label="Lista numerada" onClick={() => format('ol')}><ListOrdered size={16} /></button>
-        <button type="button" title="Lista con viñetas" aria-label="Lista con viñetas" onClick={() => format('ul')}><List size={16} /></button>
-        <button type="button" title="Cita" aria-label="Cita" onClick={() => format('quote')}><Quote size={16} /></button>
-        <button type="button" title="Código" aria-label="Código" onClick={() => format('code')}><Code size={16} /></button>
-        <button type="button" title="Bloque de código" aria-label="Bloque de código" onClick={() => format('codeblock')}><SquareCode size={16} /></button>
-        <button type="submit" className="chat-send" title="Enviar (Intro)" aria-label="Enviar mensaje" disabled={!online || !draft.trim()}><Send size={15} /></button>
+        <button type="button" title={t('Negrita (⌘ B)')} aria-label={t('Negrita')} onClick={() => format('bold')}><Bold size={16} /></button>
+        <button type="button" title={t('Cursiva (⌘ I)')} aria-label={t('Cursiva')} onClick={() => format('italic')}><Italic size={16} /></button>
+        <button type="button" title={t('Tachado')} aria-label={t('Tachado')} onClick={() => format('strike')}><Strikethrough size={16} /></button>
+        <button type="button" title={t('Enlace')} aria-label={t('Enlace')} onClick={() => format('link')}><Link2 size={16} /></button>
+        <button type="button" title={t('Lista numerada')} aria-label={t('Lista numerada')} onClick={() => format('ol')}><ListOrdered size={16} /></button>
+        <button type="button" title={t('Lista con viñetas')} aria-label={t('Lista con viñetas')} onClick={() => format('ul')}><List size={16} /></button>
+        <button type="button" title={t('Cita')} aria-label={t('Cita')} onClick={() => format('quote')}><Quote size={16} /></button>
+        <button type="button" title={t('Código')} aria-label={t('Código')} onClick={() => format('code')}><Code size={16} /></button>
+        <button type="button" title={t('Bloque de código')} aria-label={t('Bloque de código')} onClick={() => format('codeblock')}><SquareCode size={16} /></button>
+        <button type="submit" className="chat-send" title={t('Enviar (Intro)')} aria-label={t('Enviar mensaje')} disabled={!online || !draft.trim()}><Send size={15} /></button>
       </div>
     </form>
   </section>;

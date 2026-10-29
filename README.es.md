@@ -108,7 +108,7 @@ Además: perfil con nombre y color, temas claro, oscuro y del sistema, zoom del 
 
 - **Lo alojas tú.** Un solo proceso de Node ejecuta el servidor de tiempo real y el cliente son archivos estáticos. Tu oficina, tus datos, tu servidor.
 - **Sin cuentas.** Elige un nombre y un color y entra. Una sala es solo una palabra en la dirección.
-- **Abierto a todos los idiomas.** La interfaz está hoy en español y lista para traducirse. Las contribuciones con tu idioma son muy bienvenidas.
+- **Abierto a todos los idiomas.** La interfaz está en inglés y en español, sigue el idioma del navegador y se cambia en Ajustes. Añadir un idioma es un solo archivo de diccionario en `src/i18n/`; las contribuciones con el tuyo son muy bienvenidas.
 - **Abierto a todos los presupuestos.** Licencia MIT. Gratis para una startup de dos personas en Bogotá, un aula en Lagos o un equipo de voluntarios en Manila.
 - **Abierto a todos los colaboradores.** Un código pequeño y legible: React y Vite en el cliente, un protocolo WebSocket documentado en el servidor, la geometría compartida en módulos ES sencillos y pruebas que fijan el comportamiento.
 
@@ -159,11 +159,12 @@ El modelo de colisiones se compara baldosa por baldosa con el mapa de referencia
 
 ## 🗺️ Hoja de ruta
 
-- [ ] Vista de reunión a pantalla completa con los participantes en mosaico
-- [ ] Canales de chat al estilo de Slack y mensajes directos
-- [ ] Calendario y actividad con contenido real
+- [x] Vista de reunión a pantalla completa con los participantes en mosaico
+- [x] Canales de chat al estilo de Slack y mensajes directos
+- [x] Calendario y actividad
 - [ ] Vestuario del avatar con ropa y peinados
-- [ ] Traducciones de la interfaz, empezando por el inglés
+- [x] Interfaz en inglés y en español
+- [ ] Más idiomas para la interfaz
 - [ ] Cuentas, permisos y una guía de despliegue público segura (HTTPS, TURN/SFU)
 
 ¿Quieres alguna antes? Abre un issue o envía un pull request.

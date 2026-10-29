@@ -13,6 +13,7 @@ import { FloorPatterns, floorKey, floorPatternId } from './sprites/floors';
 import { DoorwayPiece, WallPiece, WALL_HEIGHT } from './sprites/walls';
 import { ObjectArt, ObjectForeground, hasForeground, type MapObjectData } from './sprites/objects';
 import { AVATAR_FRAME_URLS, AVATAR_SPRITE, avatarFrame, walkFrameAt } from './avatarSprite';
+import { locale, t } from './i18n';
 
 type Seat = ReturnType<typeof getOfficeSeats>[number];
 type Props = {
@@ -29,7 +30,9 @@ type Motion = { facing: Facing; moving: boolean; frame: number };
 type Remote = { from: Point; to: Point; startedAt: number; facing: Facing; lastMoved: number };
 
 const STATUS_COLOR: Record<Participant['status'], string> = { available: '#3ac07a', busy: '#e4484f', away: '#9b9da9', focus: '#aa99ee' };
-const STATUS_LABEL: Record<Participant['status'], string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'Concentrado' };
+const STATUS_LABEL_SOURCE: Record<Participant['status'], string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'Concentrado' };
+/** Status labels, translated each time they are read so a language change applies at once. */
+const STATUS_LABEL = Object.defineProperties({} as Record<Participant['status'], string>, Object.fromEntries(Object.entries(STATUS_LABEL_SOURCE).map(([key, value]) => [key, { enumerable: true, get: () => t(value) }])));
 const KEY_DIRECTION: Record<string, [number, number, Facing]> = { arrowup: [0, -1, 'north'], w: [0, -1, 'north'], arrowdown: [0, 1, 'south'], s: [0, 1, 'south'], arrowleft: [-1, 0, 'west'], a: [-1, 0, 'west'], arrowright: [1, 0, 'east'], d: [1, 0, 'east'] };
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 const typing = (target: EventTarget | null) => target instanceof HTMLElement && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
@@ -62,7 +65,7 @@ function objectDepth(object: MapObjectData, byId: Map<string, MapObjectData>, de
 /** A base-map object: selectable in the decorator so it can be rotated, moved or removed like in the reference editor. */
 function BaseObject({ object, selected, editing, onSelectObject, onGrab }: { object: MapObjectData; selected: boolean; editing: boolean; onSelectObject: (id: string | null) => void; onGrab: (id: string, event: ReactPointerEvent<SVGGElement>) => void }) {
   const label = `${object.kind.replace(/-/g, ' ')} (${object.facing})`;
-  return <g className={`scene-base-object${selected ? ' is-selected' : ''}${editing ? ' is-editable' : ''}`} data-object-id={object.id} tabIndex={editing ? 0 : -1} role={editing ? 'button' : undefined} aria-label={editing ? `${label}. Clic para seleccionar, arrastra para mover; R gira, Suprimir elimina.` : undefined}
+  return <g className={`scene-base-object${selected ? ' is-selected' : ''}${editing ? ' is-editable' : ''}`} data-object-id={object.id} tabIndex={editing ? 0 : -1} role={editing ? 'button' : undefined} aria-label={editing ? t('{label}. Clic para seleccionar, arrastra para mover; R gira, Suprimir elimina.', { label }) : undefined}
     onPointerDown={e => { if (editing) { e.stopPropagation(); onGrab(object.id, e); } }} onClick={e => { if (editing) e.stopPropagation(); }}
     onKeyDown={e => { if (editing && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onSelectObject(object.id); } }}>
     {editing && <title>{label}</title>}
@@ -80,7 +83,7 @@ const STATIC: Layer[] = [
 function Avatar({ person, self, facing, moving, frame, onSelect }: { person: Participant; self: boolean; facing: Facing; moving: boolean; frame: number; onSelect: () => void }) {
   const name = person.name.length > 22 ? `${person.name.slice(0, 21)}…` : person.name;
   const width = Math.max(56, name.length * 7 + 30);
-  return <g className={`scene-avatar${self ? ' is-self' : ''}${person.status === 'away' ? ' is-away' : ''}${moving ? ' is-walking' : ''}${person.seatId ? ' is-seated' : ''}`} tabIndex={0} role="button" aria-label={`${person.name}${self ? ', tú' : ''}${person.seatId ? ', sentado' : ''}. ${STATUS_LABEL[person.status]}`} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onSelect(); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}>
+  return <g className={`scene-avatar${self ? ' is-self' : ''}${person.status === 'away' ? ' is-away' : ''}${moving ? ' is-walking' : ''}${person.seatId ? ' is-seated' : ''}`} tabIndex={0} role="button" aria-label={`${person.name}${self ? t(', tú') : ''}${person.seatId ? t(', sentado') : ''}. ${STATUS_LABEL[person.status]}`} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onSelect(); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}>
     <title>{person.name} · {STATUS_LABEL[person.status]}</title>
     <image className="pixel-resource character-resource" href={avatarFrame(facing, moving, frame, !!person.seatId)} x={-AVATAR_SPRITE.foot.x * AVATAR_SPRITE.renderScale} y={-AVATAR_SPRITE.foot.y * AVATAR_SPRITE.renderScale} width={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} height={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} />
     <g className="scene-nameplate" transform={`translate(0 ${AVATAR_SPRITE.nameplateY})`} shapeRendering="auto"><rect x={-width / 2} y="-20" width={width} height="20" rx="6" fill={self ? '#6f3fd6' : '#2b2b33'} /><circle cx={-width / 2 + 10} cy="-10" r="3" fill={STATUS_COLOR[person.status]} /><text x="5" y="-6" textAnchor="middle" fontSize="12" fontWeight="500" fill="#fff">{name}</text></g>
@@ -102,7 +105,7 @@ function SeatTarget({ seat, occupiedBy, own, enabled, onSit }: { seat: Seat; occ
 function AddedObject({ object, selected, editing, onSelectObject, onGrab }: { object: OfficeObject; selected: boolean; editing: boolean; onSelectObject: (id: string | null) => void; onGrab: (id: string, event: ReactPointerEvent<SVGGElement>) => void }) {
   const data = asMapObject(object) as MapObjectData;
   const label = `${catalogEntry(object)?.kind.replace(/-/g, ' ') ?? object.kind} (${data.facing})`;
-  return <g className={`scene-added-object${selected ? ' is-selected' : ''}${editing ? ' is-editable' : ''}`} tabIndex={editing ? 0 : -1} role={editing ? 'button' : undefined} aria-label={editing ? `${label}. Clic para seleccionar, arrastra para mover; R gira, Suprimir elimina.` : undefined}
+  return <g className={`scene-added-object${selected ? ' is-selected' : ''}${editing ? ' is-editable' : ''}`} tabIndex={editing ? 0 : -1} role={editing ? 'button' : undefined} aria-label={editing ? t('{label}. Clic para seleccionar, arrastra para mover; R gira, Suprimir elimina.', { label }) : undefined}
     onPointerDown={e => { if (editing) { e.stopPropagation(); onGrab(object.id, e); } }} onClick={e => { if (editing) e.stopPropagation(); }}
     onKeyDown={e => { if (editing && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onSelectObject(object.id); } }}>
     {editing && <title>{label}</title>}
@@ -445,7 +448,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
 
   const minimapScale = 108 / WORLD.width;
   return <div className={`office-scene${simplified ? ' simplified' : ''}${dragging ? ' is-dragging' : ''}${editingMode ? ' is-editing' : ''}${dragTile ? ' is-moving' : ''}`}>
-    <svg ref={svgRef} className="office-map" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="group" aria-label="Oficina Vivo. Muévete con las flechas o WASD; clic para caminar, clic en una silla o E para sentarte; flechas o E para levantarte; arrastra el fondo para desplazar el mapa." onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => { drag.current = null; setDragging(false); }} onPointerLeave={() => setHoverRoom(null)}>
+    <svg ref={svgRef} className="office-map" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="group" aria-label={t('Oficina Vivo. Muévete con las flechas o WASD; clic para caminar, clic en una silla o E para sentarte; flechas o E para levantarte; arrastra el fondo para desplazar el mapa.')} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => { drag.current = null; setDragging(false); }} onPointerLeave={() => setHoverRoom(null)}>
       <FloorPatterns />
       <defs><pattern id="edit-grid" width={TILE} height={TILE} patternUnits="userSpaceOnUse"><path d={`M${TILE} 0V${TILE}H0`} fill="none" stroke="#ffffff" strokeOpacity=".12" strokeWidth="1" /></pattern></defs>
       <g pointerEvents="none" shapeRendering="crispEdges">
@@ -459,9 +462,9 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       {dragTile && <Ghost item={dragTile.item} tile={dragTile.tile} />}
       {!editingMode && <g>{seats.map(seat => { const occupant = occupiedSeats.get(seat.id); return <SeatTarget key={seat.id} seat={seat} occupiedBy={occupant?.name} own={occupant?.id === selfId} enabled={!!self && self.status !== 'away'} onSit={() => requestSeat(seat)} />; })}</g>}
     </svg>
-    {hoverRoom && <div className="scene-tooltip" style={hoverRoom.x > viewport.width - 200 ? { right: viewport.width - hoverRoom.x + 14, top: hoverRoom.y + 16 } : { left: hoverRoom.x + 14, top: hoverRoom.y + 16 }}>Sala de reunión: {areaNames[hoverRoom.area.id] ?? hoverRoom.area.name}</div>}
-    <div className="scene-minimap" aria-label="Minimapa de la oficina">
-      <svg viewBox={`0 0 ${WORLD.width} ${WORLD.height}`} role="button" tabIndex={0} aria-label="Centrar cámara en el minimapa; Intro centra en tu posición" onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); following.current = true; setCamera(tileCenter(tile.current)); } }} onClick={event => { const matrix = event.currentTarget.getScreenCTM(); if (!matrix) return; const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); following.current = false; setCamera({ x: clamp(point.x, 0, WORLD.width), y: clamp(point.y, 0, WORLD.height) }); }}>
+    {hoverRoom && <div className="scene-tooltip" style={hoverRoom.x > viewport.width - 200 ? { right: viewport.width - hoverRoom.x + 14, top: hoverRoom.y + 16 } : { left: hoverRoom.x + 14, top: hoverRoom.y + 16 }}>{t('Sala de reunión: {name}', { name: areaNames[hoverRoom.area.id] ?? hoverRoom.area.name })}</div>}
+    <div className="scene-minimap" aria-label={t('Minimapa de la oficina')}>
+      <svg viewBox={`0 0 ${WORLD.width} ${WORLD.height}`} role="button" tabIndex={0} aria-label={t('Centrar cámara en el minimapa; Intro centra en tu posición')} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); following.current = true; setCamera(tileCenter(tile.current)); } }} onClick={event => { const matrix = event.currentTarget.getScreenCTM(); if (!matrix) return; const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); following.current = false; setCamera({ x: clamp(point.x, 0, WORLD.width), y: clamp(point.y, 0, WORLD.height) }); }}>
         <rect width={WORLD.width} height={WORLD.height} fill="#2b2b2b" />
         {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? '#2b2b2b' : '#474c55'} />)}
         <rect x={viewX} y={viewY} width={viewWidth} height={viewHeight} fill="#ffffff" fillOpacity=".08" stroke="#d8d8e0" strokeWidth={24 * minimapScale * 10} />

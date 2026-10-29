@@ -108,7 +108,7 @@ Also included: profiles with name and colour, light, dark and system themes, zoo
 
 - **Yours to host.** One Node process runs the realtime server and the client is static files. Your office, your data, your server.
 - **No accounts required.** Pick a name, pick a colour, walk in. A room is just a word in the URL.
-- **Open to every language.** The interface ships in Spanish today and is ready to be translated. Pull requests for your language are very welcome.
+- **Open to every language.** The interface ships in English and Spanish, follows the browser's language and can be switched in Settings. Adding a language is one dictionary file in `src/i18n/`; pull requests for yours are very welcome.
 - **Open to every budget.** MIT licensed. Free for a two-person startup in Bogotá, a classroom in Lagos or a volunteer team in Manila.
 - **Open to every contributor.** A small, readable codebase: React and Vite on the client, a documented WebSocket protocol on the server, shared geometry in plain ES modules, and tests that pin the behaviour down.
 
@@ -159,11 +159,12 @@ The collision model is compared tile by tile with the reference map, the tests w
 
 ## 🗺️ Roadmap
 
-- [ ] Full-screen meeting view with participant tiles
-- [ ] Slack-style chat channels and direct messages
-- [ ] Calendar and activity feed with real content
+- [x] Full-screen meeting view with participant tiles
+- [x] Slack-style chat channels and direct messages
+- [x] Calendar and activity feed
 - [ ] Avatar wardrobe with clothing and hair
-- [ ] Interface translations, English first
+- [x] Interface in English and Spanish
+- [ ] More interface languages
 - [ ] Accounts, permissions and a hardened public deployment guide (HTTPS, TURN/SFU)
 
 Want one of these sooner? Open an issue or send a pull request.

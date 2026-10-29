@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Participant, Send, Signal } from './types';
 import { MEDIA_RADIUS, sharesConversationArea } from '../shared/office-world.js';
+import { locale, t } from './i18n';
 
 type MediaOptions = {
   selfId: string | null;
@@ -42,10 +43,10 @@ function rtcConfiguration(): RTCConfiguration {
 
 function mediaError(error: unknown, kind: string): string {
   const name = error instanceof Error ? error.name : '';
-  if (name === 'NotAllowedError' || name === 'SecurityError') return `No se autorizó ${kind}. Revisa los permisos del navegador e inténtalo de nuevo.`;
-  if (name === 'NotFoundError') return `No se encontró un dispositivo para ${kind}.`;
-  if (name === 'NotReadableError') return `No se pudo abrir ${kind}. Puede estar en uso por otra aplicación.`;
-  return `No se pudo activar ${kind}. ${error instanceof Error ? error.message : 'Inténtalo de nuevo.'}`;
+  if (name === 'NotAllowedError' || name === 'SecurityError') return t('No se autorizó {kind}. Revisa los permisos del navegador e inténtalo de nuevo.', { kind });
+  if (name === 'NotFoundError') return t('No se encontró un dispositivo para {kind}.', { kind });
+  if (name === 'NotReadableError') return t('No se pudo abrir {kind}. Puede estar en uso por otra aplicación.', { kind });
+  return t('No se pudo activar {kind}. {detail}', { kind, detail: error instanceof Error ? error.message : t('Inténtalo de nuevo.') });
 }
 
 export function useMedia({ selfId, participants, send, subscribeSignal, onError }: MediaOptions) {
@@ -123,7 +124,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
     connection.onconnectionstatechange = () => {
       if (connection.connectionState === 'failed' && active()) {
         closePeer(id);
-        reportError('No se pudo conectar el audio o video con esta persona. Para conexiones entre redes distintas se necesita configurar STUN/TURN.');
+        reportError(t('No se pudo conectar el audio o video con esta persona. Para conexiones entre redes distintas se necesita configurar STUN/TURN.'));
       }
     };
     connection.onnegotiationneeded = () => {
@@ -135,7 +136,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
         await connection.setLocalDescription(await connection.createOffer());
         if (active() && connection.localDescription) current.current.send({ type: 'signal', to: id, data: { description: connection.localDescription.toJSON() } });
       }).catch(() => {
-        if (active()) reportError('No se pudo iniciar la conexión de audio y video.');
+        if (active()) reportError(t('No se pudo iniciar la conexión de audio y video.'));
       }).finally(() => { peer.makingOffer = false; });
     };
     return peer;
@@ -145,7 +146,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
     for (const id of peers.current.keys()) if (!eligible(id)) closePeer(id);
     for (const person of current.current.participants) {
       if (!eligible(person.id)) continue;
-      try { getPeer(person.id); } catch { reportError('Este navegador no pudo preparar una conexión de audio y video.'); }
+      try { getPeer(person.id); } catch { reportError(t('Este navegador no pudo preparar una conexión de audio y video.')); }
     }
   }, [closePeer, eligible, getPeer, reportError]);
 
@@ -163,7 +164,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
     await Promise.all(Array.from(peers.current.entries(), async ([id, peer]) => {
       try { await Promise.all([peer.audio?.replaceTrack(audio), peer.video?.replaceTrack(video)]); }
       catch {
-        if (peers.current.get(id) === peer && eligible(id)) reportError('No se pudo actualizar el audio o video de la llamada.');
+        if (peers.current.get(id) === peer && eligible(id)) reportError(t('No se pudo actualizar el audio o video de la llamada.'));
       }
     }));
   }, [eligible, reconcilePeers, reportError]);
@@ -198,7 +199,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia || typeof RTCPeerConnection === 'undefined') {
-      reportError('El navegador no ofrece audio y video aquí. Abre la aplicación en localhost o mediante HTTPS y utiliza un navegador compatible.');
+      reportError(t('El navegador no ofrece audio y video aquí. Abre la aplicación en localhost o mediante HTTPS y utiliza un navegador compatible.'));
       return;
     }
     pending.current[kind] = true;
@@ -208,13 +209,13 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
       if (!mounted.current || generation.current !== attempt) { stream.getTracks().forEach(track => track.stop()); return; }
       const track = kind === 'mic' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
       stream.getTracks().filter(other => other !== track).forEach(other => other.stop());
-      if (!track) throw new Error('El dispositivo no entregó una pista de medios.');
+      if (!track) throw new Error(t('El dispositivo no entregó una pista de medios.'));
       stopped.current = false;
       ref.current = track;
       track.onended = () => { if (ref.current === track) { ref.current = null; void syncMedia(); } };
       await syncMedia();
     } catch (error) {
-      if (generation.current === attempt) reportError(mediaError(error, kind === 'mic' ? 'el micrófono' : 'la cámara'));
+      if (generation.current === attempt) reportError(mediaError(error, kind === 'mic' ? t('el micrófono') : t('la cámara')));
     } finally { pending.current[kind] = false; }
   }, [reportError, syncMedia]);
 
@@ -231,7 +232,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
       return;
     }
     if (!navigator.mediaDevices?.getDisplayMedia || typeof RTCPeerConnection === 'undefined') {
-      reportError('Compartir pantalla no está disponible en este navegador. Utiliza un navegador compatible en localhost o mediante HTTPS.');
+      reportError(t('Compartir pantalla no está disponible en este navegador. Utiliza un navegador compatible en localhost o mediante HTTPS.'));
       return;
     }
     pending.current.screen = true;
@@ -242,7 +243,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
       if (!mounted.current || generation.current !== attempt) { stream.getTracks().forEach(track => track.stop()); return; }
       const track = stream.getVideoTracks()[0];
       stream.getTracks().filter(other => other !== track).forEach(other => other.stop());
-      if (!track) throw new Error('No se recibió una pantalla para compartir.');
+      if (!track) throw new Error(t('No se recibió una pantalla para compartir.'));
       stopped.current = false;
       screenTrack.current = track;
       track.onended = () => { if (screenTrack.current === track) { screenTrack.current = null; void syncMedia(); } };
@@ -261,7 +262,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
   useEffect(() => subscribeSignal(signal => {
     if (!eligible(signal.from)) return;
     let peer: Peer | undefined;
-    try { peer = getPeer(signal.from); } catch { reportError('No se pudo recibir la conexión de audio y video.'); return; }
+    try { peer = getPeer(signal.from); } catch { reportError(t('No se pudo recibir la conexión de audio y video.')); return; }
     if (!peer) return;
     const target = peer;
     const active = () => peers.current.get(signal.from) === target && eligible(signal.from);
@@ -292,7 +293,7 @@ export function useMedia({ selfId, participants, send, subscribeSignal, onError 
         if (target.connection.remoteDescription) await target.connection.addIceCandidate(candidate);
         else target.candidates.push(candidate);
       }
-    }).catch(() => { if (active()) reportError('No se pudo completar la conexión de audio y video.'); });
+    }).catch(() => { if (active()) reportError(t('No se pudo completar la conexión de audio y video.')); });
   }), [eligible, getPeer, reportError, subscribeSignal]);
 
   useEffect(() => {
