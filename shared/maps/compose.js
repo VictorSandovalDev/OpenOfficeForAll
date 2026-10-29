@@ -1,10 +1,12 @@
 // Builds a new office map by reusing whole pieces of another: rooms (areas with their walls, floors and doors) and the
 // furniture standing in them. Doors that led into a walled room that was not copied are closed.
+import { CATALOG } from '../vivo-catalog.js';
+
 const TILE = 32;
 const inside = (rect, x, y) => x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h;
 const containsArea = (rect, area) => area.x >= rect.x && area.y >= rect.y && area.x + area.w <= rect.x + rect.w && area.y + area.h <= rect.y + rect.h;
 
-export function composeMap(base, { cols, rows, stamps, spawn }) {
+export function composeMap(base, { cols, rows, stamps, spawn, areas: extraAreas = [], objects: placements = [] }) {
   const root = { id: 'root', name: 'Public area', type: 'Public', parent: null, x: 0, y: 0, w: cols, h: rows, depth: 1, capacity: null, floor: 'NewStyleGrass', floorColor: 'Green', walls: null, doorways: [] };
   const areas = [root], objects = [], extras = [];
   const walled = base.AREAS.filter((area) => area.walls);
@@ -33,5 +35,22 @@ export function composeMap(base, { cols, rows, stamps, spawn }) {
     for (const o of base.OBJECTS) if (objectIds.has(o.id)) objects.push(move(o));
     for (const o of base.EXTRA_OBJECTS) if (objectIds.has(o.id)) extras.push(move(o));
   }
+  // New ground: paths, plazas, sand, sea and piers. Copied furniture standing on a cleared area (paths, sand, water) is
+  // removed so it never blocks the way; then the new pieces are placed by tile.
+  extraAreas.forEach((spec, index) => areas.push({ id: `ground-${index}`, name: spec.name, type: 'Public', parent: 'root', x: spec.x, y: spec.y, w: spec.w, h: spec.h, depth: spec.depth ?? 2, capacity: null, floor: spec.floor, floorColor: spec.floorColor, walls: null, doorways: [], ...(spec.blocked ? { blocked: true } : {}) }));
+  const cleared = extraAreas.filter((spec) => spec.clear !== false);
+  const onCleared = (tiles) => tiles.some(([x, y]) => cleared.some((spec) => inside(spec, x, y)));
+  const keep = (o) => !onCleared([[Math.floor(o.x / TILE), Math.floor(o.y / TILE)], ...(o.blocks ?? []), ...(o.seat ?? [])]);
+  for (const list of [objects, extras]) { const kept = list.filter(keep); list.length = 0; list.push(...kept); }
+  placements.forEach(([kind, color, ax, ay], index) => {
+    const entry = CATALOG[`${kind}/${color}`]; if (!entry) throw new Error(`Unknown catalog piece ${kind}/${color}`);
+    const variant = entry.facings.Down ?? Object.values(entry.facings)[0];
+    const facing = entry.facings.Down ? 'Down' : Object.keys(entry.facings)[0];
+    const [px, py] = variant.seat[0] ?? variant.blocks[0] ?? [0, 0];
+    const tx = ax - px, ty = ay - py; // (ax, ay) is the tile the piece stands on
+    objects.push({ id: `placed-${index}`, parent: 'root', kind, family: entry.family, color, facing, w: variant.w, h: variant.h, originX: variant.originX, originY: variant.originY,
+      x: tx * TILE + variant.offLeft + variant.originX, y: ty * TILE + variant.offTop + variant.originY,
+      ...(variant.blocks.length ? { blocks: variant.blocks.map(([x, y]) => [tx + x, ty + y]) } : {}), ...(variant.seat.length ? { seat: variant.seat.map(([x, y]) => [tx + x, ty + y]) } : {}) });
+  });
   return { TILE, WORLD: Object.freeze({ cols, rows, width: cols * TILE, height: rows * TILE }), AREAS: areas, OBJECTS: objects, EXTRA_OBJECTS: extras, SPAWN_TILE: Object.freeze(spawn) };
 }

@@ -1,7 +1,7 @@
 import { AREAS, TILE } from '../shared/vivo-map.js';
 
 /** Footsteps synthesised in the browser (no recordings): a sound per floor material, slightly varied every step. */
-export type Material = 'wood' | 'carpet' | 'grass';
+export type Material = 'wood' | 'carpet' | 'grass' | 'sand' | 'stone';
 const BY_DEPTH = [...AREAS].filter(area => area.floor).sort((a, b) => b.depth - a.depth);
 const STORAGE = 'office-footsteps';
 
@@ -9,7 +9,7 @@ export function floorMaterial(point: { x: number; y: number }): Material {
   const tx = Math.floor(point.x / TILE), ty = Math.floor(point.y / TILE);
   const area = BY_DEPTH.find(candidate => tx >= candidate.x && tx < candidate.x + candidate.w && ty >= candidate.y && ty < candidate.y + candidate.h);
   const floor = area?.floor ?? 'NewStyleGrass';
-  return floor.startsWith('Carpet') ? 'carpet' : floor.includes('Grass') ? 'grass' : 'wood';
+  return floor.startsWith('Carpet') ? 'carpet' : floor.includes('Grass') ? 'grass' : floor === 'Sand' ? 'sand' : floor === 'StonePath' ? 'stone' : 'wood';
 }
 
 /** Sound effects volume, 0 to 1 (0 silences them). */
@@ -75,6 +75,12 @@ export function playStep(material: Material, running = false) {
   } else if (material === 'carpet') { // soft and muffled
     thump(110, 0.18, 0.09);
     burst('lowpass', 520, 0.7, 0.14, 0.006, 0.08);
+  } else if (material === 'sand') { // a soft, grainy crunch
+    burst('bandpass', 1300, 0.5, 0.16, 0.018, 0.13);
+    burst('lowpass', 400, 0.7, 0.08, 0.01, 0.1);
+  } else if (material === 'stone') { // a short, hard click on cobbles
+    thump(240, 0.25, 0.04);
+    burst('highpass', 2600, 0.9, 0.18, 0.001, 0.035);
   } else { // grass: a short rustle of blades
     burst('highpass', 3200, 0.6, 0.12, 0.012, 0.11);
     burst('bandpass', 900, 0.8, 0.05, 0.01, 0.08);

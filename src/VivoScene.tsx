@@ -90,6 +90,8 @@ function BaseObject({ object, selected, editing, onSelectObject, onGrab }: { obj
 }
 /** Static layers: floors in area depth order, then walls, doorways and furniture sorted with the avatars. */
 const AREA_FLOORS = [...AREAS].sort((a, b) => a.depth - b.depth);
+/** Outdoor ground keeps its colour on the minimap. */
+const MINIMAP_GROUND: Record<string, string> = { Sand: '#cdb88a', Shore: '#9fd0d8', Water: '#3f8fb0', StonePath: '#8f8b82' };
 /** Tall north walls are drawn over the tiles behind them; a click on one means the floor right in front of it. */
 const NORTH_WALLS = WALLS.filter(wall => !wall.open && (wall.side === 'n' || wall.side === 'nw' || wall.side === 'ne'));
 function inFrontOfWall(point: Point): Tile | null {
@@ -582,7 +584,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     <div className="scene-minimap" aria-label={t('Minimapa de la oficina')}>
       <svg viewBox={`0 0 ${WORLD.width} ${WORLD.height}`} role="button" tabIndex={0} aria-label={t('Centrar cámara en el minimapa; Intro centra en tu posición')} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); following.current = true; setCamera(tileCenter(tile.current)); } }} onClick={event => { const matrix = event.currentTarget.getScreenCTM(); if (!matrix) return; const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); following.current = false; setCamera({ x: clamp(point.x, 0, WORLD.width), y: clamp(point.y, 0, WORLD.height) }); }}>
         <rect width={WORLD.width} height={WORLD.height} fill="#2b2b2b" />
-        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? '#2b2b2b' : '#474c55'} />)}
+        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={MINIMAP_GROUND[area.floor] ?? (area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? '#2b2b2b' : '#474c55')} />)}
         <rect x={viewX} y={viewY} width={viewWidth} height={viewHeight} fill="#ffffff" fillOpacity=".08" stroke="#d8d8e0" strokeWidth={24 * minimapScale * 10} />
         {participants.map(person => <circle key={person.id} cx={person.id === selfId ? local.x : person.x} cy={person.id === selfId ? local.y : person.y} r={person.id === selfId ? 40 : 30} fill={person.id === selfId ? '#39d98a' : '#d0c7ef'} />)}
       </svg>

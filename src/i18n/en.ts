@@ -485,4 +485,6 @@ export const EN: Record<string, string> = {
   "Para equipos pequeños: 6 escritorios, una sala de reuniones, vestíbulo, cocina y estanque.": "For small teams: 6 desks, one meeting room, lobby, kitchen and pond.",
   "La oficina principal con su decoración: 10 escritorios, 5 salas de reunión y 4 oficinas de concentración.": "The main office with its decoration: 10 desks, 5 meeting rooms and 4 focus offices.",
   "Para equipos grandes: dos edificios con 20 escritorios, 10 salas de reunión y 8 oficinas de concentración.": "For large teams: two buildings with 20 desks, 10 meeting rooms and 8 focus offices.",
+  "Para equipos pequeños, frente al mar: 6 escritorios, una sala de reuniones, jardín, plaza con fuente y playa con muelle.": "For small teams, by the sea: 6 desks, one meeting room, a garden, a fountain plaza and a beach with a pier.",
+  "Para equipos grandes: dos edificios unidos por un paseo y una plaza, con 20 escritorios, 10 salas de reunión, 8 oficinas de concentración y una playa larga.": "For large teams: two buildings joined by a promenade and a plaza, with 20 desks, 10 meeting rooms, 8 focus offices and a long beach.",
 };

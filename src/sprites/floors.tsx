@@ -95,6 +95,53 @@ function diamond(base: string, line: string): PixelSprite {
 }
 const carpetDiamondWhite = diamond('#9c949f', '#8e8d9b');
 
+/** Outdoor floors: deterministic noise so every tile matches its neighbours. */
+const noise = (x: number, y: number, seed: number) => { let h = (x * 374761393 + y * 668265263 + seed * 2147483647) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+function sand(): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) { let row = ''; for (let x = 0; x < 32; x++) { const n = noise(x, y, 3); row += n > .94 ? 'd' : n > .88 ? 'l' : n < .04 ? 'p' : 'b'; } rows.push(row); }
+  return { w: 32, h: 32, palette: { b: '#e9d3a2', d: '#cfb37f', l: '#f6e6bf', p: '#d9a98a' }, rows };
+}
+function water(base: string, ripple: string, light: string): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      const wave = (x + Math.round(Math.sin((y / 32) * Math.PI * 2) * 3) + 32) % 16;
+      const band = y % 8 === 3 && wave < 5;
+      row += band ? 'r' : y % 8 === 4 && wave >= 1 && wave < 3 ? 'l' : noise(x, y, 7) > .97 ? 'l' : 'b';
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { b: base, r: ripple, l: light }, rows };
+}
+/** The shore: sand above, a frothy wave line, shallow water below. */
+function shore(): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      const edge = 14 + Math.round(Math.sin((x / 32) * Math.PI * 2) * 2);
+      row += y < edge - 3 ? (noise(x, y, 3) > .92 ? 'd' : 's') : y < edge - 1 ? 'w' : y < edge + 1 ? (x % 5 === 0 ? 'f' : 'w') : y < edge + 3 ? 'f' : (noise(x, y, 9) > .95 ? 'l' : 'b');
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { s: '#e9d3a2', d: '#d4b986', w: '#f4f1e8', f: '#bfe6ea', b: '#5fb6c9', l: '#8fd3df' }, rows };
+}
+function cobbles(): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      const by = Math.floor(y / 8), offset = by % 2 ? 6 : 0, bx = (x + offset) % 12;
+      const joint = y % 8 === 7 || bx === 11;
+      row += joint ? 'j' : y % 8 === 0 || bx === 0 ? 'l' : noise(Math.floor((x + offset) / 12), by, 5) > .5 ? 'b' : 'c';
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { b: '#b6b2a8', c: '#a7a399', l: '#cdc9be', j: '#8a867c' }, rows };
+}
+
 /** The project's own floor drawings, used by the original art pack. */
 export const ORIGINAL_FLOOR_TILES: Record<string, PixelSprite> = {
   'NewStyleGrass/Green': grass,
@@ -105,6 +152,11 @@ export const ORIGINAL_FLOOR_TILES: Record<string, PixelSprite> = {
   'CarpetStripeGray/LightGray': carpetStripeGray,
   'CarpetCouture/White': carpetCoutureWhite,
   'CarpetDiamond/LightWhite': carpetDiamondWhite,
+  'Sand/Beige': sand(),
+  'Shore/Foam': shore(),
+  'Water/Shallow': water('#5fb6c9', '#8fd3df', '#c3ecf2'),
+  'Water/Deep': water('#3a8fb3', '#5aa9c8', '#8fd3df'),
+  'StonePath/Grey': cobbles(),
 };
 export const FLOOR_TILES: Record<string, PixelSprite> = { ...ORIGINAL_FLOOR_TILES, ...REFERENCE_FLOORS };
 export const floorKey = (texture: string, color: string) => `${texture}/${color}`;

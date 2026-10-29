@@ -4,6 +4,24 @@ import { ROTATED_ASSETS } from './rotatedAssets';
 
 /** Generated pixel assets (PixelLab, see public/assets/pixel/objects/README.md) keyed by object kind, optionally by colour. */
 export const OBJECT_ASSETS: Record<string, string> = {
+  // Outdoor and beach objects (PixelLab, project style)
+  'rowboat/wood': 'rowboat-wood.png',
+  'palm-tree/green': 'palm-tree-green.png',
+  'palm-tree-short/green': 'palm-tree-short-green.png',
+  'beach-umbrella/red': 'beach-umbrella-red.png',
+  'beach-umbrella/blue': 'beach-umbrella-blue.png',
+  'sun-lounger/white': 'sun-lounger-white.png',
+  'beach-towel/yellow': 'beach-towel-yellow.png',
+  'surfboard/white': 'surfboard-white.png',
+  'sandcastle/sand': 'sandcastle-sand.png',
+  'beach-ball/red': 'beach-ball-red.png',
+  'lifeguard-tower/white': 'lifeguard-tower-white.png',
+  'beach-rocks/grey': 'beach-rocks-grey.png',
+  'hedge/green': 'hedge-green.png',
+  'flower-bed/pink': 'flower-bed-pink.png',
+  'park-bench/wood': 'park-bench-wood.png',
+  'street-lamp/black': 'street-lamp-black.png',
+  'fountain/stone': 'fountain-stone.png',
   'pine-tree-large': 'pine-tree-large.png', 'pine-tree-small': 'pine-tree-small.png', 'birch-tree': 'birch-tree.png',
   'maple-tree/lightgreen': 'maple-tree-lightgreen.png', 'maple-tree/green': 'maple-tree-green.png',
   'ficus': 'ficus.png', 'fiddle-leaf-fig': 'fiddle-leaf-fig.png', 'bird-of-paradise-green': 'bird-of-paradise-green.png',

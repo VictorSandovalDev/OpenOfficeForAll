@@ -6,9 +6,9 @@ import { createWorkspace, deleteWorkspace, fetchWorkspace, forgetWorkspace, know
 
 const THUMBNAIL: Record<Template, string> = { office: '/thumbnails/office.jpg', empty: '/thumbnails/empty.jpg' };
 const MAP_OPTIONS: { id: OfficeMap; name: string; detail: string }[] = [
-  { id: 'studio', name: 'Estudio', detail: 'Para equipos pequeños: 6 escritorios, una sala de reuniones, vestíbulo, cocina y estanque.' },
+  { id: 'studio', name: 'Estudio', detail: 'Para equipos pequeños, frente al mar: 6 escritorios, una sala de reuniones, jardín, plaza con fuente y playa con muelle.' },
   { id: 'vivo', name: 'Oficina', detail: 'La oficina principal con su decoración: 10 escritorios, 5 salas de reunión y 4 oficinas de concentración.' },
-  { id: 'campus', name: 'Campus', detail: 'Para equipos grandes: dos edificios con 20 escritorios, 10 salas de reunión y 8 oficinas de concentración.' },
+  { id: 'campus', name: 'Campus', detail: 'Para equipos grandes: dos edificios unidos por un paseo y una plaza, con 20 escritorios, 10 salas de reunión, 8 oficinas de concentración y una playa larga.' },
 ];
 
 /** Start page, laid out like the reference dashboard: recent and created workspaces as map cards, and a create dialog. */

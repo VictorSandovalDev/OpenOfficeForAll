@@ -54,8 +54,19 @@ export function buildBlockedEdges(walls = WALLS) {
 }
 export const BLOCKED_EDGES = buildBlockedEdges();
 
+/** Tiles nobody can walk on because of the ground itself (the sea); a deeper open area on top (a pier) wins. */
+function buildBlockedGround() {
+  const tiles = new Set();
+  for (const area of AREAS) {
+    if (!area.blocked) continue;
+    for (let y = area.y; y < area.y + area.h; y++) for (let x = area.x; x < area.x + area.w; x++) if (areaAt(x, y)?.blocked) tiles.add(key(x, y));
+  }
+  return tiles;
+}
+let blockedGround = null;
 export function buildBlockedTiles(extraObjects = [], baseObjects = OBJECTS) {
-  const blocked = new Set();
+  blockedGround ??= buildBlockedGround();
+  const blocked = new Set(blockedGround);
   for (const object of [...baseObjects, ...extraObjects]) for (const [x, y] of object.blocks ?? []) blocked.add(key(x, y));
   return blocked;
 }

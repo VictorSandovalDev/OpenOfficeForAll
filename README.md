@@ -159,7 +159,7 @@ Plug in an optional [LiveKit](https://livekit.io) media server and meeting rooms
 </tr>
 </table>
 
-Also included: audio, video and screen sharing over WebRTC (all off when you enter), optional personal accounts with passwords, interactive objects that open a link or a note when you press **X** next to them, workspaces with their own name and map in three sizes (Studio, Office and Campus), furnished as a copy of your designed office and renamable from the dashboard, assigned desks (⌘ / Ctrl D takes you to yours), focus offices that switch you to Do not disturb and close their door while you are inside (others knock and you let them in), scroll-wheel zoom with an overview of everyone when you zoom far out, profiles, light, dark and system themes, English and Spanish, zoom from 36 % to 400 %, a minimap, and keyboard shortcuts (⌘ / Ctrl K to search people, ⌘ / Ctrl D to return to your desk).
+Also included: audio, video and screen sharing over WebRTC (all off when you enter), optional personal accounts with passwords, interactive objects that open a link or a note when you press **X** next to them, workspaces with their own name and map in three sizes (a seaside Studio, the Office and a Campus of two buildings with a beach), furnished as a copy of your designed office and renamable from the dashboard, assigned desks (⌘ / Ctrl D takes you to yours), focus offices that switch you to Do not disturb and close their door while you are inside (others knock and you let them in), scroll-wheel zoom with an overview of everyone when you zoom far out, profiles, light, dark and system themes, English and Spanish, zoom from 36 % to 400 %, a minimap, and keyboard shortcuts (⌘ / Ctrl K to search people, ⌘ / Ctrl D to return to your desk).
 
 ---
 
@@ -208,7 +208,7 @@ flowchart LR
 ## ✅ Verification
 
 ```sh
-npm test      # 52 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
+npm test      # 54 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
 npm run build # type-check and production bundle
 ```
 

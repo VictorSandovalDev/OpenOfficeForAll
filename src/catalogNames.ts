@@ -9,8 +9,9 @@ export const CATEGORIES: { id: string; es: string; en: string; families: string[
   { id: 'storage', es: 'Almacenamiento', en: 'Storage', families: ['Bookcase', 'Cabinet', 'Shelf', 'Wall Cabinet'] },
   { id: 'tech', es: 'Tecnología', en: 'Technology', families: ['Computer Set', 'Mobile', 'Mounted Display', 'Arcade Machine'] },
   { id: 'kitchen', es: 'Cocina y café', en: 'Kitchen and coffee', families: ['Coffee', 'Fridge', 'Kitchen Counters', 'Hydration'] },
-  { id: 'plants', es: 'Plantas y exterior', en: 'Plants and outdoors', families: ['Room Plant', 'Desk Plant', 'Ground Plant', 'Tree', 'Pond'] },
-  { id: 'lighting', es: 'Iluminación', en: 'Lighting', families: ['Floor Lamp'] },
+  { id: 'plants', es: 'Plantas y exterior', en: 'Plants and outdoors', families: ['Room Plant', 'Desk Plant', 'Ground Plant', 'Tree', 'Pond', 'Garden', 'Garden Seat', 'Fountain'] },
+  { id: 'beach', es: 'Playa', en: 'Beach', families: ['Palm Tree', 'Beach Umbrella', 'Beach Seat', 'Beach Decor'] },
+  { id: 'lighting', es: 'Iluminación', en: 'Lighting', families: ['Floor Lamp', 'Street Lamp'] },
   { id: 'decor', es: 'Decoración', en: 'Decoration', families: ['Painting', 'Wall Cover', 'Wall Clock', 'Globe', 'Small Fishtank', 'Duck'] },
   { id: 'stationery', es: 'Papelería y oficina', en: 'Stationery and office', families: ['Book', 'Document', 'Handwritten Notes', 'Easel'] },
 ];
@@ -84,12 +85,28 @@ const NAMES: Record<string, [string, string]> = {
   'document-single': ['Documento', 'Document'],
   'inkpen-notes': ['Notas y bolígrafo', 'Notes and pen'],
   'poster-easel': ['Caballete con gráfico', 'Chart easel'],
+  'palm-tree': ['Palmera', 'Palm tree'],
+  'palm-tree-short': ['Palmera baja', 'Short palm tree'],
+  'beach-umbrella': ['Sombrilla', 'Beach umbrella'],
+  'sun-lounger': ['Tumbona', 'Sun lounger'],
+  'beach-towel': ['Toalla de playa', 'Beach towel'],
+  'surfboard': ['Tabla de surf', 'Surfboard'],
+  'sandcastle': ['Castillo de arena', 'Sandcastle'],
+  'beach-ball': ['Pelota de playa', 'Beach ball'],
+  'lifeguard-tower': ['Torre de socorrista', 'Lifeguard tower'],
+  'rowboat': ['Barca', 'Rowboat'],
+  'beach-rocks': ['Rocas', 'Rocks'],
+  'hedge': ['Seto', 'Hedge'],
+  'flower-bed': ['Jardinera con flores', 'Flower bed'],
+  'park-bench': ['Banco', 'Park bench'],
+  'street-lamp': ['Farola', 'Street lamp'],
+  'fountain': ['Fuente', 'Fountain'],
 };
 const COLORS: Record<string, [string, string]> = {
   purple: ['morado', 'purple'], black: ['negro', 'black'], white: ['blanco', 'white'], yellow: ['amarillo', 'yellow'],
   lightcoffee: ['madera clara', 'light wood'], coffee: ['madera', 'wood'], brown: ['marrón', 'brown'], blue: ['azul', 'blue'],
   pink: ['rosa', 'pink'], green: ['verde', 'green'], lightgreen: ['verde claro', 'light green'], grey: ['gris', 'grey'],
-  teal: ['turquesa', 'teal'], lightteal: ['turquesa claro', 'light teal'], orange: ['naranja', 'orange'], lightblue: ['azul claro', 'light blue'], red: ['rojo', 'red'],
+  teal: ['turquesa', 'teal'], sand: ['arena', 'sand'], wood: ['madera', 'wood'], stone: ['piedra', 'stone'], lightteal: ['turquesa claro', 'light teal'], orange: ['naranja', 'orange'], lightblue: ['azul claro', 'light blue'], red: ['rojo', 'red'],
 };
 const FACINGS: Record<string, [string, string]> = { Down: ['de frente', 'facing front'], Up: ['de espaldas', 'facing back'], Left: ['hacia la izquierda', 'facing left'], Right: ['hacia la derecha', 'facing right'] };
 

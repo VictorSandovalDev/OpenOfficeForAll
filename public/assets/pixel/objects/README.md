@@ -24,3 +24,10 @@ facing right and mirrored for the left.
 Trees, the fish tank, the wooden chair, the side views of the chairs and the laptop were drawn again in our own style:
 generic descriptions, our approved pieces as style guides and only the footprint size. Nothing from the reference was used as
 input. Chair side views are flat profiles facing right, mirrored for the left.
+
+## Outdoor and beach pieces (2026-10-29)
+
+Palm trees, beach umbrellas, sun loungers, towels, surfboards, a sandcastle, a beach ball, a lifeguard tower, a rowboat,
+rocks, hedges, flower beds, park benches, street lamps and a fountain were generated with PixelLab from generic
+descriptions, using the project's own pieces as style guides. Their catalog entries live in `shared/catalog-extra.js`.
+Sand, shore, water and cobblestone floors are drawn in code in `src/sprites/floors.tsx`.
