@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { Check, Copy, LayoutGrid, MoreVertical, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { Check, Copy, LayoutGrid, MoreVertical, Pencil, Plus, Search, Trash2, Users, X } from 'lucide-react';
 import { locale, t } from './i18n';
 import { loadConfig, storedKey } from './config';
-import { createWorkspace, fetchWorkspace, forgetWorkspace, knownWorkspaces, rememberWorkspace, renameWorkspace, visitedLabel, workspaceUrl, type KnownWorkspace, type Template } from './workspaces';
+import { createWorkspace, deleteWorkspace, fetchWorkspace, forgetWorkspace, knownWorkspaces, listWorkspaces, rememberWorkspace, renameWorkspace, visitedLabel, type ServerWorkspace, workspaceUrl, type KnownWorkspace, type Template } from './workspaces';
 
 const THUMBNAIL: Record<Template, string> = { office: '/thumbnails/office.jpg', empty: '/thumbnails/empty.jpg' };
 
 /** Start page, laid out like the reference dashboard: recent and created workspaces as map cards, and a create dialog. */
 export default function WorkspaceHome() {
   const [list, setList] = useState(knownWorkspaces);
-  const [tab, setTab] = useState<'recent' | 'created'>('recent');
+  const [tab, setTab] = useState<'recent' | 'created' | 'all'>('recent');
+  const [server, setServer] = useState<ServerWorkspace[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState<{ slug: string; name: string; error?: string } | null>(null);
+  const refreshServer = () => void listWorkspaces(storedKey('key', 'mi-oficina')).then(found => { if (found) setServer(found); });
+  useEffect(refreshServer, []);
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(() => new URLSearchParams(location.search).has('new'));
   const [menu, setMenu] = useState<string | null>(null);
@@ -35,10 +39,12 @@ export default function WorkspaceHome() {
   }, []);
   useEffect(() => { const close = () => setMenu(null); window.addEventListener('click', close); return () => window.removeEventListener('click', close); }, []);
 
-  const shown = useMemo(() => list
-    .filter(item => tab === 'recent' || item.createdAt)
+  const shown = useMemo(() => (tab === 'all'
+      ? server.map(entry => ({ ...(list.find(item => item.slug === entry.slug) ?? { visitedAt: 0, template: 'office' as const }), slug: entry.slug, name: entry.name, createdAt: entry.createdAt ? Date.parse(entry.createdAt) : undefined }))
+      : list)
+    .filter(item => tab !== 'created' || item.createdAt)
     .filter(item => !query || `${item.name} ${item.slug}`.toLowerCase().includes(query.toLowerCase()))
-    .sort((a, b) => tab === 'created' ? (b.createdAt ?? 0) - (a.createdAt ?? 0) : b.visitedAt - a.visitedAt), [list, tab, query]);
+    .sort((a, b) => tab === 'all' ? a.name.localeCompare(b.name, locale()) : tab === 'created' ? (b.createdAt ?? 0) - (a.createdAt ?? 0) : b.visitedAt - a.visitedAt), [list, tab, query, server]);
 
   async function copyLink(slug: string) {
     try { await navigator.clipboard.writeText(workspaceUrl(slug)); setCopied(slug); setTimeout(() => setCopied(null), 1600); } catch { /* clipboard unavailable */ }
@@ -54,6 +60,7 @@ export default function WorkspaceHome() {
         <div className="dashboard-tabs" role="tablist">
           <button role="tab" aria-selected={tab === 'recent'} className={tab === 'recent' ? 'active' : ''} onClick={() => setTab('recent')}>{t('Visitados recientemente')}</button>
           <button role="tab" aria-selected={tab === 'created'} className={tab === 'created' ? 'active' : ''} onClick={() => setTab('created')}>{t('Creados por ti')}</button>
+          <button role="tab" aria-selected={tab === 'all'} className={tab === 'all' ? 'active' : ''} onClick={() => { setTab('all'); refreshServer(); }}>{t('Todos los espacios')}</button>
         </div>
         <label className="dashboard-search"><Search size={15} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={t('Buscar')} aria-label={t('Buscar espacios')} /></label>
       </div>
@@ -63,19 +70,31 @@ export default function WorkspaceHome() {
           {renaming?.slug === item.slug
             ? <form className="space-rename" onSubmit={e => { e.preventDefault(); void saveName(); }}><input autoFocus value={renaming.name} onChange={e => setRenaming({ ...renaming, name: e.target.value, error: undefined })} onKeyDown={e => { if (e.key === 'Escape') setRenaming(null); }} maxLength={60} aria-label={t('Nombre del espacio')} /><button type="submit" aria-label={t('Guardar')}><Check size={15} /></button>{renaming.error && <small role="alert">{renaming.error}</small>}</form>
             : <a href={workspaceUrl(item.slug)} onClick={() => rememberWorkspace(item.slug, item.name)}><strong>{item.name}</strong></a>}
+          {(() => { const online = server.find(entry => entry.slug === item.slug)?.online ?? 0; return online > 0 ? <span className="space-online"><Users size={13} />{online}</span> : null; })()}
           <span>{tab === 'created' && item.createdAt ? visitedLabel(item.createdAt, locale()) : visitedLabel(item.visitedAt, locale())}</span>
           <div className="space-menu-wrap">
             <button type="button" className="space-menu-button" aria-label={t('Opciones de {name}', { name: item.name })} aria-expanded={menu === item.slug} onClick={e => { e.stopPropagation(); setMenu(menu === item.slug ? null : item.slug); }}><MoreVertical size={16} /></button>
             {menu === item.slug && <div className="space-menu" role="menu" onClick={e => e.stopPropagation()}>
               <button role="menuitem" onClick={() => { setRenaming({ slug: item.slug, name: item.name }); setMenu(null); }}><Pencil size={14} />{t('Cambiar nombre')}</button>
               <button role="menuitem" onClick={() => void copyLink(item.slug)}>{copied === item.slug ? <Check size={14} /> : <Copy size={14} />}{copied === item.slug ? t('Enlace copiado') : t('Copiar enlace')}</button>
-              <button role="menuitem" className="danger" onClick={() => { forgetWorkspace(item.slug); setList(knownWorkspaces()); setMenu(null); }}><Trash2 size={14} />{t('Quitar de esta lista')}</button>
+              {tab !== 'all' && <button role="menuitem" onClick={() => { forgetWorkspace(item.slug); setList(knownWorkspaces()); setMenu(null); }}><X size={14} />{t('Quitar de esta lista')}</button>}
+              {!server.find(entry => entry.slug === item.slug)?.main && <button role="menuitem" className="danger" onClick={() => { setConfirmDelete({ slug: item.slug, name: item.name }); setMenu(null); }}><Trash2 size={14} />{t('Eliminar espacio')}</button>}
             </div>}
           </div>
         </div>
       </article>)}</div>
         : <div className="dashboard-empty"><p>{tab === 'created' ? t('Aún no has creado ningún espacio.') : query ? t('No hay espacios con ese nombre.') : t('Todavía no has entrado a ningún espacio.')}</p><button type="button" className="dashboard-create" onClick={() => setCreating(true)}><Plus size={17} />{t('Crear espacio')}</button></div>}
     </main>
+    {confirmDelete && <div className="dashboard-backdrop" onClick={() => setConfirmDelete(null)}><div className="dashboard-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-title" onClick={e => e.stopPropagation()}>
+      <h2 id="delete-title">{t('¿Eliminar «{name}»?', { name: confirmDelete.name })}</h2>
+      <p className="dashboard-dialog-lead">{t('Se borran su mapa, su chat, su calendario y sus escritorios para todo el equipo. No se puede deshacer.')}</p>
+      {confirmDelete.error && <p className="form-error" role="alert">{confirmDelete.error}</p>}
+      <div className="dashboard-dialog-actions"><button type="button" className="dashboard-secondary" onClick={() => setConfirmDelete(null)}>{t('Cancelar')}</button><button type="button" className="dashboard-danger" onClick={async () => {
+        const result = await deleteWorkspace(confirmDelete.slug, storedKey('key', confirmDelete.slug), storedKey('admin', confirmDelete.slug));
+        if ('error' in result) { setConfirmDelete({ ...confirmDelete, error: result.error === 'occupied' ? t('Hay personas dentro. Espera a que salgan.') : result.error === 'forbidden' ? t('Solo los administradores pueden eliminar espacios.') : t('No se pudo eliminar el espacio.') }); return; }
+        forgetWorkspace(confirmDelete.slug); setList(knownWorkspaces()); refreshServer(); setConfirmDelete(null);
+      }}>{t('Eliminar')}</button></div>
+    </div></div>}
     {creating && <CreateDialog onClose={() => { setCreating(false); if (location.search.includes('new')) history.replaceState(null, '', '/'); }} />}
   </div>;
 }

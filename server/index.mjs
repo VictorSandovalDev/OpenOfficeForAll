@@ -428,6 +428,38 @@ export async function startServer({
     }
     if (request.url === '/api/workspaces' || request.url?.startsWith('/api/workspaces/')) {
       const reply = (status, body) => { response.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security }); response.end(JSON.stringify(body)); };
+      if (request.method === 'GET' && request.url.split('?')[0] === '/api/workspaces') {
+        // Every workspace on this server, so the whole team sees the same list (with the invite key when one is set).
+        const key = new URL(request.url, 'http://localhost').searchParams.get('key') ?? '';
+        if (accessKey && !sameSecret(key, accessKey)) return reply(403, { error: 'access_denied' });
+        void loadWorkspaces().then((list) => {
+          const slugs = new Set([templateRoom, ...Object.keys(list)]);
+          reply(200, { workspaces: [...slugs].map((slug) => ({ slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), createdAt: list[slug]?.createdAt ?? null, online: rooms.get(slug)?.members.size ?? 0, main: slug === templateRoom })) });
+        });
+        return;
+      }
+      if (request.method === 'DELETE' && request.url.startsWith('/api/workspaces/')) {
+        if (!validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
+        let body = '';
+        request.on('data', (chunk) => { body += chunk; if (body.length > 4096) request.destroy(); });
+        request.on('end', async () => {
+          let payload; try { payload = JSON.parse(body || '{}'); } catch { return reply(400, { error: 'invalid_json' }); }
+          const slug = decodeURIComponent(request.url.slice('/api/workspaces/'.length));
+          if (!ROOM_SLUG.test(slug)) return reply(400, { error: 'invalid_workspace' });
+          if (slug === templateRoom) return reply(400, { error: 'main_workspace' });
+          if (accessKey && !sameSecret(String(payload.key ?? ''), accessKey)) return reply(403, { error: 'access_denied' });
+          if (editPolicy === 'admins' && !(adminKey && sameSecret(String(payload.admin ?? ''), adminKey))) return reply(403, { error: 'forbidden' });
+          if ((rooms.get(slug)?.members.size ?? 0) > 0) return reply(409, { error: 'occupied' });
+          const list = await loadWorkspaces();
+          if (!list[slug]) return reply(404, { error: 'not_found' });
+          delete list[slug]; await saveWorkspaces();
+          rooms.delete(slug);
+          const { rm } = await import('node:fs/promises');
+          for (const suffix of ['json', 'chat.json', 'calendar.json', 'desks.json']) await rm(join(dataDir, `${slug}.${suffix}`), { force: true });
+          return reply(200, { ok: true });
+        });
+        return;
+      }
       if (request.method === 'GET' && request.url.startsWith('/api/workspaces/')) {
         const slug = decodeURIComponent(request.url.slice('/api/workspaces/'.length));
         if (!ROOM_SLUG.test(slug)) return reply(400, { error: 'invalid_workspace' });

@@ -105,3 +105,19 @@ test('a workspace can be renamed from the list, and admins-only offices need the
   assert.equal((await patch({ name: 'Otro nombre' })).status, 403);
   assert.equal((await patch({ name: 'Otro nombre', admin: 'admin-secret-123' })).status, 200);
 });
+
+test('everyone sees the same list of workspaces, and empty ones can be deleted (never the main office)', async t => {
+  const server = await fixture(t);
+  const list = async () => (await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces`)).json()).workspaces;
+  const del = (slug, body = {}) => fetch(`http://127.0.0.1:${server.port}/api/workspaces/${slug}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const { slug } = await (await post(server.port, { name: 'Soporte' })).json();
+  assert.deepEqual((await list()).map(item => [item.slug, item.name, item.main]), [['mi-oficina', 'Vivo', true], [slug, 'Soporte', false]]);
+  const inside = await connect(server.port, 'Ana', 'user-ana-0001', slug);
+  assert.equal((await list()).find(item => item.slug === slug).online, 1);
+  assert.equal((await del(slug)).status, 409, 'not while someone is inside');
+  inside.socket.close();
+  await new Promise(resolve => setTimeout(resolve, 50));
+  assert.equal((await del('mi-oficina')).status, 400, 'the main office stays');
+  assert.equal((await del(slug)).status, 200);
+  assert.deepEqual((await list()).map(item => item.slug), ['mi-oficina']);
+});

@@ -26,7 +26,7 @@ Cada pantalla se midió en la referencia antes de construirla (tamaños, radios,
   referencia no se replican todavía (solo colores, gafas y sombreros).
 - **Despliegue**: clave de invitación, rol de administrador, TURN en tiempo de ejecución, cliente servido por el mismo
   proceso, Docker con Caddy y coturn (`docs/DEPLOY.md`).
-- **Arte**: «Ajustes → Arte del mapa» alterna entre la transcripción de la referencia (por defecto) y el arte original
+- **Arte**: no hay selector. La oficina usa el paquete de arte local de `src/sprites/reference/` si existe (ignorado por git, nunca se publica); si no, el arte propio del proyecto, que es el que contiene el repositorio.
   del proyecto. En el modo original faltan las capas que dibujan la silla por delante del avatar y algunas orientaciones
   usan el dibujo en código.
 

@@ -472,4 +472,11 @@ export const EN: Record<string, string> = {
   "Música de reunión": "Meeting music",
   "Volumen de la música de reunión": "Meeting music volume",
   "Con el mismo mapa y la misma decoración que la oficina principal: salas de reunión, escritorios, cocina y jardín.": "With the same map and decoration as the main office: meeting rooms, desks, kitchen and garden.",
+  "Todos los espacios": "All Spaces",
+  "Eliminar espacio": "Delete space",
+  "¿Eliminar «{name}»?": "Delete “{name}”?",
+  "Se borran su mapa, su chat, su calendario y sus escritorios para todo el equipo. No se puede deshacer.": "Its map, chat, calendar and desks are deleted for the whole team. This cannot be undone.",
+  "Hay personas dentro. Espera a que salgan.": "People are inside. Wait until they leave.",
+  "Solo los administradores pueden eliminar espacios.": "Only admins can delete spaces.",
+  "No se pudo eliminar el espacio.": "The space could not be deleted.",
 };

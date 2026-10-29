@@ -47,3 +47,14 @@ export async function renameWorkspace(slug: string, name: string, key = '', admi
     return response.ok ? body : { error: body.error ?? 'workspace_failed' };
   } catch { return { error: 'offline' }; }
 }
+export type ServerWorkspace = { slug: string; name: string; createdAt: string | null; online: number; main: boolean };
+export async function listWorkspaces(key = ''): Promise<ServerWorkspace[] | null> {
+  try { const response = await fetch(`/api/workspaces${key ? `?key=${encodeURIComponent(key)}` : ''}`); return response.ok ? (await response.json()).workspaces : null; } catch { return null; }
+}
+export async function deleteWorkspace(slug: string, key = '', admin = ''): Promise<{ ok: true } | { error: string }> {
+  try {
+    const response = await fetch(`/api/workspaces/${encodeURIComponent(slug)}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, admin }) });
+    const body = await response.json().catch(() => ({}));
+    return response.ok ? { ok: true } : { error: body.error ?? 'workspace_failed' };
+  } catch { return { error: 'offline' }; }
+}

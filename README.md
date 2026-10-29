@@ -125,6 +125,26 @@ Pick a male or female body, then skin, hair, top, bottom and shoe colours, glass
 </td>
 </tr>
 <tr>
+<td valign="top">
+
+### 🗂️ Workspaces for every team
+
+Create as many spaces as you need, each with its own name, map, people, chat, calendar and desks. New spaces start as a copy of your designed office. The dashboard lists recent spaces, the ones you created and every space on the server, with who is inside right now.
+
+<img src="docs/screenshots/dashboard-en.png" alt="The workspace dashboard with map cards, tabs and search" width="100%">
+
+</td>
+<td valign="top">
+
+### 🪑 Desks, focus rooms and an overview
+
+Walk into a desk to claim it or assign it to someone; ⌘ / Ctrl D takes you back to yours. The four top offices close their door while you focus: others knock and you let them in. Zoom out with the wheel and the office turns into a clean overview of rooms and people.
+
+<img src="docs/screenshots/desk-menu-en.png" alt="The desk label with its menu to claim or assign the desk" width="100%">
+
+</td>
+</tr>
+<tr>
 <td valign="top" colspan="2">
 
 ### 🎵 Meetings for the whole team
@@ -186,7 +206,7 @@ flowchart LR
 ## ✅ Verification
 
 ```sh
-npm test      # 50 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
+npm test      # 51 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
 npm run build # type-check and production bundle
 ```
 
@@ -220,7 +240,9 @@ Personal accounts are optional (`ACCOUNTS=optional` or `required`); without them
 
 ## 🎨 Art and credits
 
-The avatar, trees, plants and pond are original pixel art generated with [PixelLab](https://pixellab.ai) and served from local files. Icons are [Lucide](https://lucide.dev) (ISC). By default the floors and furniture are a pixel-by-pixel transcription of the reference office, so the look matches it exactly; do not redistribute that art. **Settings → Map art → Original** switches to the project's own art (PixelLab-generated furniture and code-drawn floors), which is free to redistribute; see the [comparison notes](docs/COMPARACION-GATHER-2.md). No code, sprites or credentials from any third-party product are included.
+All art in this repository is original. The avatars, trees, plants, pond and furniture were generated with [PixelLab](https://pixellab.ai) from generic descriptions, using the project's own pieces as style guides, and some were drawn by hand; the floors are drawn in code. Icons are [Lucide](https://lucide.dev) (ISC). Nothing from any third-party product is included: no code, sprites or credentials.
+
+An office can also run with its own local art pack in `src/sprites/reference/` (ignored by git and never published). When that folder exists the office uses it automatically; otherwise it uses the art above.
 
 ## 📄 License
 

@@ -125,6 +125,26 @@ Elige un cuerpo masculino o femenino y después el color de piel, pelo, ropa y z
 </td>
 </tr>
 <tr>
+<td valign="top">
+
+### 🗂️ Espacios para cada equipo
+
+Crea todos los espacios que necesites, cada uno con su nombre, su mapa, sus personas, su chat, su calendario y sus escritorios. Los espacios nuevos salen como copia de tu oficina diseñada. El panel muestra los visitados, los que creaste y todos los del servidor, con quién está dentro ahora.
+
+<img src="docs/screenshots/dashboard.png" alt="El panel de espacios con tarjetas de mapa, pestañas y buscador" width="100%">
+
+</td>
+<td valign="top">
+
+### 🪑 Escritorios, concentración y vista general
+
+Entra a un escritorio para reclamarlo o asignárselo a alguien; ⌘ / Ctrl D te devuelve al tuyo. Las cuatro oficinas de arriba cierran su puerta mientras te concentras: los demás tocan y tú les dejas pasar. Aléjate con la rueda y la oficina pasa a una vista limpia de salas y personas.
+
+<img src="docs/screenshots/desk-menu.png" alt="La etiqueta del escritorio con su menú para reclamarlo o asignarlo" width="100%">
+
+</td>
+</tr>
+<tr>
 <td valign="top" colspan="2">
 
 ### 🎵 Reuniones para todo el equipo
@@ -186,7 +206,7 @@ flowchart LR
 ## ✅ Verificación
 
 ```sh
-npm test      # 50 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
+npm test      # 51 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
 npm run build # comprobación de tipos y paquete de producción
 ```
 
@@ -220,7 +240,9 @@ Las cuentas personales son opcionales (`ACCOUNTS=optional` o `required`); sin el
 
 ## 🎨 Arte y créditos
 
-El avatar, los árboles, las plantas y el estanque son arte de píxeles original generado con [PixelLab](https://pixellab.ai) y se sirven desde archivos locales. Los iconos son de [Lucide](https://lucide.dev) (ISC). Por defecto, los suelos y muebles son una transcripción píxel a píxel de la oficina de referencia, para que el aspecto sea idéntico; no redistribuyas ese arte. **Ajustes → Arte del mapa → Original** cambia al arte propio del proyecto (muebles generados con PixelLab y suelos dibujados en código), libre para redistribuir; consulta las [notas de comparación](docs/COMPARACION-GATHER-2.md). No se incluye código, sprites ni credenciales de ningún producto de terceros.
+Todo el arte de este repositorio es original. Los avatares, los árboles, las plantas, el estanque y los muebles se generaron con [PixelLab](https://pixellab.ai) a partir de descripciones genéricas, usando las propias piezas del proyecto como guía de estilo, y algunos se dibujaron a mano; los suelos se dibujan por código. Los iconos son de [Lucide](https://lucide.dev) (ISC). No se incluye nada de ningún producto de terceros: ni código, ni sprites, ni credenciales.
+
+Una oficina también puede usar su propio paquete de arte local en `src/sprites/reference/` (ignorado por git y nunca publicado). Si esa carpeta existe, la oficina lo usa automáticamente; si no, usa el arte anterior.
 
 ## 📄 Licencia
 
