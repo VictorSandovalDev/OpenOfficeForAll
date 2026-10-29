@@ -24,7 +24,7 @@ const MAX_CHANNELS = 40;
 const MAX_EVENTS = 300;
 const REACTIONS = new Set(['👍', '❤️', '😂', '🎉', '👏', '😮', '🙌', '🔥']);
 /** Avatar looks: one palette index per zone plus accessories (sizes match src/avatarLook.ts). */
-const LOOK_SIZES = { body: 2, skin: 5, hair: 9, top: 11, bottom: 8, shoes: 6, glasses: 4, hat: 3 };
+const LOOK_SIZES = { body: 2, skin: 5, hair: 9, top: 11, bottom: 8, shoes: 6, glasses: 4, hat: 4, beard: 4 };
 const sanitizeLook = (value) => {
   if (!value || typeof value !== 'object') return undefined;
   const look = {};

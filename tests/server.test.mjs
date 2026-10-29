@@ -258,9 +258,9 @@ test('foreign browser origins and invalid room slugs are rejected', async (t) =>
 test('avatar looks and status texts are validated and shared with everyone', async (t) => {
   const server = await fixture(t);
   const a = await client(server.port);
-  a.send({ type: 'join', name: 'Ana', avatar: { skin: 4, hair: 99, top: 2, bottom: -1, shoes: 'x', glasses: 3, hat: 1 } });
+  a.send({ type: 'join', name: 'Ana', avatar: { skin: 4, hair: 99, top: 2, bottom: -1, shoes: 'x', glasses: 3, hat: 1, beard: 2 } });
   const welcome = await a.next('welcome');
-  assert.deepEqual(welcome.participants[0].avatar, { body: 0, skin: 4, hair: 1, top: 2, bottom: 0, shoes: 0, glasses: 3, hat: 1 });
+  assert.deepEqual(welcome.participants[0].avatar, { body: 0, skin: 4, hair: 1, top: 2, bottom: 0, shoes: 0, glasses: 3, hat: 1, beard: 2 });
   const b = await client(server.port);
   await b.join('Bruno');
   a.send({ type: 'profile', avatar: { skin: 0, hair: 4, top: 5, bottom: 3, shoes: 2, glasses: 0, hat: 0 }, statusText: '  En una llamada  ' });

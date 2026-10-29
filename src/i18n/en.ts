@@ -374,4 +374,10 @@ export const EN: Record<string, string> = {
   "detuvo la música": "stopped the music",
   "empezó a grabar la reunión": "started recording the meeting",
   "detuvo la grabación": "stopped recording",
+  "Auriculares": "Headphones",
+  "Sin vello facial": "No facial hair",
+  "Bigote": "Moustache",
+  "Barba corta": "Short beard",
+  "Barba completa": "Full beard",
+  "Vello facial": "Facial hair",
 };

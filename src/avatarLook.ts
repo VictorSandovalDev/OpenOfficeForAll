@@ -2,8 +2,8 @@ import { AVATAR_FRAME_URLS } from './avatarSprite';
 
 /** An avatar look: a colour per body zone plus accessories. Zones are found in the base sprite by colour and
     position, and recoloured keeping the pixel art's own shading, so every pose and walk frame stays consistent. */
-export type AvatarLook = { body: number; skin: number; hair: number; top: number; bottom: number; shoes: number; glasses: number; hat: number };
-export const DEFAULT_LOOK: AvatarLook = { body: 0, skin: 1, hair: 1, top: 0, bottom: 0, shoes: 0, glasses: 0, hat: 0 };
+export type AvatarLook = { body: number; skin: number; hair: number; top: number; bottom: number; shoes: number; glasses: number; hat: number; beard: number };
+export const DEFAULT_LOOK: AvatarLook = { body: 0, skin: 1, hair: 1, top: 0, bottom: 0, shoes: 0, glasses: 0, hat: 0, beard: 0 };
 /** Base characters. Frames are always looked up by the first body's file names; other bodies swap the folder. */
 export const BODIES = [
   { label: 'Cuerpo masculino', root: '/assets/pixel/cliente-avatar', hairRows: 11, ref: { skin: '#fac08a', hair: '#361c10', top: '#458791', bottom: '#192436', shoes: '#737a7b' } },
@@ -22,22 +22,24 @@ export const PALETTES: Record<Zone, string[]> = {
   shoes: ['#737a7b', '#222226', '#eeeeee', '#6b4228', '#b8322a', '#3459a8'],
 };
 export const GLASSES = ['Sin gafas', 'Redondas', 'Cuadradas', 'De sol'];
-export const HATS = ['Sin sombrero', 'Gorra', 'Gorro de lana'];
+export const HATS = ['Sin sombrero', 'Gorra', 'Gorro de lana', 'Auriculares'];
+export const BEARDS = ['Sin vello facial', 'Bigote', 'Barba corta', 'Barba completa'];
 const HAT_COLORS = ['#d14b3d', '#3d6fd1', '#2b2b30'];
 
-export const lookKey = (look: AvatarLook) => [look.body, look.skin, look.hair, look.top, look.bottom, look.shoes, look.glasses, look.hat].join('.');
+export const lookKey = (look: AvatarLook) => [look.body, look.skin, look.hair, look.top, look.bottom, look.shoes, look.glasses, look.hat, look.beard].join('.');
 export const isDefaultLook = (look: AvatarLook) => lookKey(look) === lookKey(DEFAULT_LOOK);
 /** The body's own colours and no accessories: its original files are used as they are. */
-const isBaseColours = (look: AvatarLook) => look.glasses === 0 && look.hat === 0 && look.skin === DEFAULT_LOOK.skin && look.hair === DEFAULT_LOOK.hair && look.top === 0 && look.bottom === 0 && look.shoes === 0;
+const isBaseColours = (look: AvatarLook) => look.glasses === 0 && look.hat === 0 && look.beard === 0 && look.skin === DEFAULT_LOOK.skin && look.hair === DEFAULT_LOOK.hair && look.top === 0 && look.bottom === 0 && look.shoes === 0;
 export function sanitizeLook(value: unknown): AvatarLook {
   const source = value && typeof value === 'object' ? value as Record<string, unknown> : {};
   const pick = (key: keyof AvatarLook, size: number): number => { const n = Number(source[key]); return Number.isInteger(n) && n >= 0 && n < size ? n : DEFAULT_LOOK[key]; };
-  return { body: pick('body', BODIES.length), skin: pick('skin', PALETTES.skin.length), hair: pick('hair', PALETTES.hair.length), top: pick('top', PALETTES.top.length), bottom: pick('bottom', PALETTES.bottom.length), shoes: pick('shoes', PALETTES.shoes.length), glasses: pick('glasses', GLASSES.length), hat: pick('hat', HATS.length) };
+  return { body: pick('body', BODIES.length), skin: pick('skin', PALETTES.skin.length), hair: pick('hair', PALETTES.hair.length), top: pick('top', PALETTES.top.length), bottom: pick('bottom', PALETTES.bottom.length), shoes: pick('shoes', PALETTES.shoes.length), glasses: pick('glasses', GLASSES.length), hat: pick('hat', HATS.length), beard: pick('beard', BEARDS.length) };
 }
 export const randomLook = (body = 0): AvatarLook => ({
   body,
   skin: Math.floor(Math.random() * PALETTES.skin.length), hair: Math.floor(Math.random() * PALETTES.hair.length), top: Math.floor(Math.random() * PALETTES.top.length),
-  bottom: Math.floor(Math.random() * PALETTES.bottom.length), shoes: Math.floor(Math.random() * PALETTES.shoes.length), glasses: Math.random() < .35 ? 1 + Math.floor(Math.random() * 3) : 0, hat: Math.random() < .25 ? 1 + Math.floor(Math.random() * 2) : 0,
+  bottom: Math.floor(Math.random() * PALETTES.bottom.length), shoes: Math.floor(Math.random() * PALETTES.shoes.length), glasses: Math.random() < .35 ? 1 + Math.floor(Math.random() * 3) : 0, hat: Math.random() < .25 ? 1 + Math.floor(Math.random() * 3) : 0,
+  beard: body === 0 && Math.random() < .3 ? 1 + Math.floor(Math.random() * 3) : 0,
 });
 
 // --- colour maths -------------------------------------------------------------------------------------------
@@ -171,8 +173,61 @@ function drawGlasses(frame: Frame, style: number, paint: Paint) {
     for (let d = 1; d <= 4; d++) paint(back < 0 ? left - d : right + d, eyeY, frameColor);
   }
 }
+/** Facial hair in the hair's colour. Both bodies have the mouth 18 rows below the top of the hair; only skin is
+    covered, so the mouth, the outline and the neck stay as drawn. */
+function drawBeard(frame: Frame, style: number, paint: Paint, hairColor: string) {
+  if (!style || frame.facing === 'north' || frame.hairBottom < 0) return;
+  const [h, s, l] = toHsl(...hex(hairColor));
+  const base = `rgb(${toRgb(h, s, Math.max(.08, l * .9)).join(',')})`, shade = `rgb(${toRgb(h, s, l * .6).join(',')})`;
+  const mouthY = frame.hairTop + 18, at = (x: number, y: number) => y * frame.width + x;
+  const skin = (x: number, y: number) => x >= 0 && y >= 0 && x < frame.width && y < frame.height && frame.zones[at(x, y)] === 'skin';
+  const left = frame.hairLeft - 1, right = frame.hairRight + 1;
+  const rowSkin = (y: number) => { const xs: number[] = []; for (let x = left; x <= right; x++) if (skin(x, y)) xs.push(x); return xs; };
+  // Moustache: the row above the mouth, centred on the face (or at its front in profile).
+  const above = rowSkin(mouthY - 1);
+  if (above.length) {
+    const centre = frame.facing === 'south' ? Math.round((frame.hairLeft + frame.hairRight) / 2) + 1 : frame.facing === 'east' ? above[above.length - 2] ?? above[0] : (above[1] ?? above[0]);
+    for (let x = centre - 2; x <= centre + 2; x++) if (skin(x, mouthY - 1)) paint(x, mouthY - 1, base);
+    if (frame.facing === 'south') for (const x of [centre - 3, centre + 3]) if (skin(x, mouthY)) paint(x, mouthY, shade); // the tips, either side of the mouth
+  }
+  if (style === 1) return;
+  // Short beard: the chin under the mouth. Full beard: the whole chin plus the jaw line up to the cheeks.
+  const centre = frame.facing === 'south' ? Math.round((frame.hairLeft + frame.hairRight) / 2) + 1 : null;
+  const front = (xs: number[]) => frame.facing === 'east' ? xs.slice(-4) : xs.slice(0, 4);
+  const to = mouthY + 3;
+  for (let y = style === 3 ? mouthY - 3 : mouthY + 1; y <= to; y++) {
+    let xs = rowSkin(y); if (!xs.length) continue;
+    if (y <= mouthY) xs = xs.filter(x => !skin(x - 2, y) || !skin(x + 2, y)); // jaw line only, above the chin
+    else if (style === 2) xs = centre === null ? front(xs) : xs.filter(x => Math.abs(x - centre) <= 3);
+    for (const x of xs) paint(x, y, y === to || !skin(x, y + 1) ? shade : base);
+  }
+}
+function drawHeadphones(frame: Frame, paint: Paint) {
+  const band = '#2b2b30', cup = '#4a4a55', outline = '#0b0b0e', left = frame.hairLeft, right = frame.hairRight;
+  const opaque = (x: number, y: number) => x >= 0 && y >= 0 && x < frame.width && y < frame.height && frame.data[(y * frame.width + x) * 4 + 3] > 128;
+  const profile = frame.facing === 'east' || frame.facing === 'west';
+  const cups = profile ? [Math.round((left + right) / 2) + (frame.facing === 'east' ? -2 : 2)] : [left, right];
+  // The band hugs the top of the head: over each column's first opaque pixel, then down the sides to the cups.
+  const from = profile ? cups[0] : left + 1, until = profile ? cups[0] : right - 1;
+  for (let x = Math.min(from, until); x <= Math.max(from, until); x++) {
+    let y = frame.hairTop - 2; while (y < frame.hairTop + 8 && !opaque(x, y)) y++;
+    if (!profile) paint(x, y - 1, outline);
+    paint(x, y, band);
+  }
+  const cupTop = frame.hairTop + 9, cupBottom = frame.hairTop + 13;
+  for (const cx of cups) {
+    if (profile) { let y = frame.hairTop - 2; while (y < cupTop && !opaque(cx, y)) y++; for (; y < cupTop; y++) paint(cx, y, band); }
+    else for (let y = frame.hairTop; y < cupTop; y++) { // follow the head's silhouette on that side
+      let x = cx === left ? left - 2 : right + 2; const step = cx === left ? 1 : -1;
+      while (x !== cx + step * 4 && !opaque(x, y)) x += step;
+      if (opaque(x, y)) paint(x, y, band);
+    }
+    for (let y = cupTop; y <= cupBottom; y++) for (let x = cx - 1; x <= cx + 1; x++) paint(x, y, x === cx - 1 || x === cx + 1 || y === cupTop || y === cupBottom ? outline : cup);
+  }
+}
 function drawHat(frame: Frame, style: number, paint: Paint, color: string) {
   if (!style || frame.hairBottom < 0) return;
+  if (style === 3) { drawHeadphones(frame, paint); return; }
   const [r, g, b] = hex(color), [h, s, l] = toHsl(r, g, b);
   const dark = `rgb(${toRgb(h, s, l * .62).join(',')})`, light = `rgb(${toRgb(h, s, Math.min(.92, l * 1.25)).join(',')})`, outline = '#0b0b0e';
   const left = frame.hairLeft, right = frame.hairRight, top = frame.hairTop - (style === 2 ? 2 : 1);
@@ -209,6 +264,7 @@ function paintFrame(frame: Frame, look: AvatarLook): HTMLCanvasElement {
     context.putImageData(new ImageData(out, frame.width, frame.height), 0, 0);
     const paint: Paint = (x, y, color) => { context.fillStyle = color; context.fillRect(x, y, 1, 1); };
     drawHat(frame, look.hat, paint, HAT_COLORS[(look.top + look.hat) % HAT_COLORS.length]);
+    drawBeard(frame, look.beard, paint, PALETTES.hair[look.hair]);
     drawGlasses(frame, look.glasses, paint);
     return canvas;
 }
