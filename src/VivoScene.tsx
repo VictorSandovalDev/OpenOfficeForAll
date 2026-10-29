@@ -89,6 +89,12 @@ function BaseObject({ object, selected, editing, onSelectObject, onGrab }: { obj
 }
 /** Static layers: floors in area depth order, then walls, doorways and furniture sorted with the avatars. */
 const AREA_FLOORS = [...AREAS].sort((a, b) => a.depth - b.depth);
+/** Tall north walls are drawn over the tiles behind them; a click on one means the floor right in front of it. */
+const NORTH_WALLS = WALLS.filter(wall => !wall.open && (wall.side === 'n' || wall.side === 'nw' || wall.side === 'ne'));
+function inFrontOfWall(point: Point): Tile | null {
+  const wall = NORTH_WALLS.find(candidate => point.x >= candidate.tx * TILE && point.x < (candidate.tx + 1) * TILE && point.y >= candidate.ty * TILE - WALL_HEIGHT && point.y < candidate.ty * TILE);
+  return wall ? { tx: wall.tx, ty: wall.ty } : null;
+}
 const STATIC: Layer[] = [
   ...WALLS.filter(wall => !wall.open).map(wall => ({ key: `wall-${wall.tx}-${wall.ty}-${wall.side}`, y: wall.side.startsWith('n') ? N_WALL_DEPTH(wall.ty) : wall.side.startsWith('s') ? S_WALL_DEPTH(wall.ty) : wall.ty * TILE + TILE, order: 0, node: <g transform={`translate(${wall.tx * TILE} ${wall.ty * TILE})`}><WallPiece side={wall.side} texture={wall.texture} open={wall.open} /></g> })),
 
@@ -476,7 +482,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       if (point && editKind) { const tile = tileOf(point); if (freePlacement || event.altKey) onPlace(Math.round(point.x), Math.round(point.y), true); else onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
       else if (editingMode) { if (selectedObject) onSelectObject(null); }
       else if (point && self && self.status !== 'away' && !(event.target as Element).closest('.scene-avatar, .scene-added-object, .scene-seat')) {
-        const target = tileOf(point);
+        const target = inFrontOfWall(point) ?? tileOf(point);
         const area = meetingRoomAt(target.tx, target.ty);
         const closed = closedFocus.find(room => target.tx >= room.x && target.tx < room.x + room.w && target.ty >= room.y && target.ty < room.y + room.h);
         if (closed) { onFocusClosed?.(closed.id); navigateTo({ tx: closed.x + Math.floor(closed.w / 2), ty: closed.y + closed.h }); }
