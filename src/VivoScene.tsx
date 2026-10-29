@@ -6,7 +6,7 @@ import { AREAS, TILE, WORLD } from '../shared/vivo-map.js';
 import { DOORWAYS, WALLS } from '../shared/vivo-geometry.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { asMapObject, baseAsEditorObject, catalogEntry, effectiveBaseObjects, type Overrides } from '../shared/office-objects.js';
-import { MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
+import { deskAt, MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
 import type { Interaction, Meetings } from './types';
 import { blockedWith, canStep, findTilePath, nearestFreeTile, RUN_STEP_MS, sameTile, STEP_MS, tileCenter, tileOf, type Blocked, type Point, type Tile } from './navigation';
 import { FloorPatterns, floorKey, floorPatternId } from './sprites/floors';
@@ -26,6 +26,8 @@ type Props = {
   meetings: Meetings; areaNames: Record<string, string>; interactions?: Record<string, Interaction>; onNearInteractive?: (id: string | null) => void; onInteract?: (id: string) => void; reactions?: { participantId: string; emoji: string }[]; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
   /** Wheel zoom: the scene asks for a new zoom level and keeps the point under the cursor in place. */
   onZoom?: (zoom: number) => void;
+  /** Who each desk belongs to, shown when hovering a desk. */
+  deskLabels?: Record<string, string>;
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
@@ -131,7 +133,7 @@ function Ghost({ item, tile }: { item: EditItem; tile: Tile }) {
   </g>;
 }
 
-export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
+export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, deskLabels = {}, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
   const [hoverTile, setHoverTile] = useState<Tile | null>(null);
   const editingMode = editorOpen || editItem !== null || selectedObject !== null;
@@ -163,6 +165,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     return tiles;
   }, [objects, overrides, lockedRooms]);
   const [hoverRoom, setHoverRoom] = useState<{ area: MeetingArea; x: number; y: number } | null>(null);
+  const [hoverDesk, setHoverDesk] = useState<{ label: string; x: number; y: number } | null>(null);
   // Each participant's look, recoloured once per distinct look and shared by everyone wearing it.
   const [lookMaps, setLookMaps] = useState<Record<string, Record<string, string>>>({});
   const looksKey = participants.map(person => lookKey(sanitizeLook(person.avatar))).sort().join('|');
@@ -417,7 +420,9 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       const area = meetingRoomAt(tx, ty);
       const host = event.currentTarget.parentElement?.getBoundingClientRect();
       setHoverRoom(area && host && area.id !== selfRoomId ? { area, x: event.clientX - host.left, y: event.clientY - host.top } : null);
-    } else if (hoverRoom) setHoverRoom(null);
+      const desk = !area && host ? deskAt(tx, ty) : null;
+      setHoverDesk(desk && host && deskLabels[desk.id] ? { label: deskLabels[desk.id], x: event.clientX - host.left, y: event.clientY - host.top } : null);
+    } else { if (hoverRoom) setHoverRoom(null); if (hoverDesk) setHoverDesk(null); }
     const start = drag.current;
     if (!start) return;
     const dx = event.clientX - start.client.x, dy = event.clientY - start.client.y;
@@ -535,6 +540,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
         })}</g>
       </g>}
     </svg>
+    {hoverDesk && !hoverRoom && <div className="scene-tooltip" style={hoverDesk.x > viewport.width - 200 ? { right: viewport.width - hoverDesk.x + 14, top: hoverDesk.y + 16 } : { left: hoverDesk.x + 14, top: hoverDesk.y + 16 }}>{hoverDesk.label}</div>}
     {hoverRoom && <div className="scene-tooltip" style={hoverRoom.x > viewport.width - 200 ? { right: viewport.width - hoverRoom.x + 14, top: hoverRoom.y + 16 } : { left: hoverRoom.x + 14, top: hoverRoom.y + 16 }}>{t('Sala de reunión: {name}', { name: areaNames[hoverRoom.area.id] ?? hoverRoom.area.name })}</div>}
     <div className="scene-minimap" aria-label={t('Minimapa de la oficina')}>
       <svg viewBox={`0 0 ${WORLD.width} ${WORLD.height}`} role="button" tabIndex={0} aria-label={t('Centrar cámara en el minimapa; Intro centra en tu posición')} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); following.current = true; setCamera(tileCenter(tile.current)); } }} onClick={event => { const matrix = event.currentTarget.getScreenCTM(); if (!matrix) return; const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); following.current = false; setCamera({ x: clamp(point.x, 0, WORLD.width), y: clamp(point.y, 0, WORLD.height) }); }}>

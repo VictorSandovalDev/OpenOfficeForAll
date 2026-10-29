@@ -14,7 +14,7 @@ import { canHearEachOther, useMedia } from './useMedia';
 import type { EditItem, OfficeObject, Participant, Status } from './types';
 import { CATALOG } from '../shared/vivo-catalog.js';
 import { baseObject, nextFacing } from '../shared/office-objects.js';
-import { meetingRoom, meetingRoomOf, roomSeats } from '../shared/office-meetings.js';
+import { DESK_AREAS, deskSeats, meetingRoom, meetingRoomOf, roomSeats } from '../shared/office-meetings.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { ObjectThumb } from './sprites/objects';
 import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
@@ -276,7 +276,7 @@ export default function App() {
         e.preventDefault(); setPanel('people'); setEditItem(null); requestAnimationFrame(() => searchRef.current?.focus());
       }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'd' && !e.shiftKey) {
-        e.preventDefault(); leaveMeeting();
+        e.preventDefault(); deskShortcut.current();
       }
     }
     window.addEventListener('keydown', key);
@@ -323,6 +323,20 @@ export default function App() {
     opened.addEventListener('pagehide', () => setPip(null));
     setPip(opened);
   }
+  const userName = (userId: string) => office.users.find(user => user.userId === userId)?.name ?? t('Alguien');
+  const deskLabel = (areaId: string) => { const owner = office.desks[areaId]; const n = DESK_AREAS.findIndex(area => area.id === areaId) + 1; return owner === office.userId ? t('Tu escritorio') : owner ? t('Escritorio de {name}', { name: userName(owner) }) : t('Escritorio {n} (libre)', { n }); };
+  const myDesk = DESK_AREAS.find(area => office.desks[area.id] === office.userId) ?? null;
+  /** Walks to a desk and sits at its chair (or stands next to it when the chair is taken). */
+  function goToDesk(areaId: string) {
+    const area = DESK_AREAS.find(candidate => candidate.id === areaId); if (!area) return;
+    const taken = new Set(office.participants.filter(person => person.id !== office.selfId).map(person => person.seatId));
+    const seat = deskSeats(area, getOfficeSeats(office.objects, office.overrides)).find(candidate => !taken.has(candidate.id));
+    setAreaCard(null);
+    if (seat) setSeatTarget({ seatId: seat.id, nonce: Date.now() });
+    else setNavigationTarget({ x: (area.x + area.w / 2) * 32, y: (area.y + area.h + .5) * 32, nonce: Date.now() });
+  }
+  const deskShortcut = useRef<() => void>(() => undefined);
+  deskShortcut.current = () => { if (myDesk) goToDesk(myDesk.id); else leaveMeeting(); };
   function leaveMeeting() { setNavigationTarget({ x: SPAWN.x, y: SPAWN.y, nonce: Date.now() }); setAreaCard(null); }
   const publishMove = useCallback((x: number, y: number) => office.send({ type: 'move', x, y }), [office.send]);
   const editHistory = useEditHistory({ objects: office.objects, overrides: office.overrides, send: office.send });
@@ -399,7 +413,7 @@ export default function App() {
             {reactionMenu && <div className="reaction-menu" role="menu">{['👍', '❤️', '😂', '🎉', '👏', '😮', '🙌', '🔥'].map(emoji => <button type="button" role="menuitem" key={emoji} onClick={() => { office.send({ type: 'react', emoji }); setReactionMenu(false); }}>{emoji}</button>)}</div>}</div>
           {meetingArea && <IconButton label={recordingMine ? t('Detener la grabación') : t('Grabar la reunión')} active={recordingMine} className={recordingMine ? 'recording' : ''} disabled={!online || (!!meeting?.recordingBy && !recordingMine)} onClick={() => office.send({ type: 'meeting:record', recording: !recordingMine })}><Circle size={18} fill={recordingMine ? 'currentColor' : 'none'} /></IconButton>}
           <IconButton label={handRaised ? t('Bajar la mano') : t('Levantar la mano')} active={handRaised} disabled={!online} onClick={() => { const next = !handRaised; setHandRaised(next); office.send({ type: 'profile', handRaised: next }); }}><Hand size={21} /></IconButton>
-          {meetingArea && <IconButton label={t('Volver a mi escritorio · ⌘ D')} className="leave-meeting" onClick={leaveMeeting}><LogOut size={20} /></IconButton>}
+          {meetingArea && <IconButton label={t('Volver a mi escritorio · ⌘ D')} className="leave-meeting" onClick={() => deskShortcut.current()}><LogOut size={20} /></IconButton>}
           <div className="control-more" ref={moreRef}><button className={`icon-button ${moreOpen ? 'is-active' : ''}`} type="button" title={t('Más opciones')} aria-label={t('Más opciones')} aria-expanded={moreOpen} aria-controls="call-options" onClick={() => setMoreOpen(open => !open)}><MoreHorizontal size={22} /></button>
             {moreOpen && <div className="control-menu" id="call-options">
               <div className="nearby-status"><i />{nearby.length ? (nearby.length === 1 ? t('1 persona cerca') : t('{n} personas cerca', { n: nearby.length })) : t('No hay personas cerca')}</div>
@@ -443,6 +457,21 @@ export default function App() {
             <button className="area-row" disabled={!online} onClick={() => move(1008, 848)}><Monitor size={16} /><span>{t('Team')}</span><ArrowRight size={14} /></button>
             <button className="area-row" disabled={!online} onClick={() => move(1104, 1200)}><Users size={16} /><span>{t('Media room')}</span><ArrowRight size={14} /></button>
             <button className="area-row" disabled={!online} onClick={() => move(SPAWN.x, SPAWN.y)}><Coffee size={16} /><span>{t('Lobby')}</span><ArrowRight size={14} /></button>
+          </details>
+          <details className="office-places desk-list"><summary><Monitor size={15} />{t('Escritorios')}<ChevronDown size={13} /></summary>
+            {myDesk && <p className="desk-hint">{t('Tu escritorio: ⌘ D te lleva a él.')}</p>}
+            {DESK_AREAS.map(area => { const owner = office.desks[area.id]; const mine = owner === office.userId; return <div className={`desk-row${mine ? ' mine' : ''}`} key={area.id}>
+              <button className="area-row" disabled={!online} onClick={() => goToDesk(area.id)} title={t('Ir a este escritorio')}><Monitor size={16} /><span>{deskLabel(area.id)}</span><ArrowRight size={14} /></button>
+              <div className="desk-actions">
+                {!owner && !myDesk && <button disabled={!online} onClick={() => office.send({ type: 'desk:assign', areaId: area.id, userId: office.userId })}>{t('Reclamar')}</button>}
+                {!owner && myDesk && <button disabled={!online} onClick={() => office.send({ type: 'desk:assign', areaId: area.id, userId: office.userId })}>{t('Cambiarme aquí')}</button>}
+                {owner && (mine || canEdit) && <button disabled={!online} onClick={() => office.send({ type: 'desk:assign', areaId: area.id, userId: null })}>{t('Liberar')}</button>}
+                {canEdit && <select aria-label={t('Asignar {desk} a', { desk: deskLabel(area.id) })} disabled={!online} value={owner ?? ''} onChange={e => office.send({ type: 'desk:assign', areaId: area.id, userId: e.target.value || null })}>
+                  <option value="">{t('Asignar a…')}</option>
+                  {office.users.map(user => <option key={user.userId} value={user.userId}>{user.name}</option>)}
+                </select>}
+              </div>
+            </div>; })}
           </details>
           <div className="sidebar-foot"><span className={`connection ${online ? 'connected' : ''}`}><i />{online ? t('Conectado') : profile ? t('Conectando…') : t('Sin conexión')}</span><span>{t('Open Office')}</span></div>
         </>}
@@ -489,7 +518,7 @@ export default function App() {
         {pageView && <MiniOffice label={whereAmI} participants={office.participants} selfId={office.selfId} onOpen={() => setPanel('people')}>{controlBar}</MiniOffice>}
       </aside>}
       <main className={`map-area${showMeetingView ? ' is-meeting-view' : ''}${pageView ? ' is-chat-view' : ''}`} aria-label={showMeetingView ? t('Vista de reunión') : t('Oficina Vivo')}>
-        <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} onZoom={setZoom} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} reactions={office.reactions} interactions={office.interactions} onNearInteractive={setNearInteractive} onInteract={setOpenInteraction} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
+        <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} onZoom={setZoom} deskLabels={Object.fromEntries(DESK_AREAS.map(area => [area.id, deskLabel(area.id)]))} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} reactions={office.reactions} interactions={office.interactions} onNearInteractive={setNearInteractive} onInteract={setOpenInteraction} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
         {meetingArea && <div className="meeting-bar" aria-label={t('Reunión en curso')}>
           <div className="meeting-bar-left"><span className="meeting-pill"><Users size={15} />{roomLabel(meetingArea.id)}</span><button type="button" className={`meeting-lock ${meeting?.locked ? 'is-locked' : ''}`} title={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-label={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-pressed={!!meeting?.locked} onClick={() => office.send({ type: 'meeting:lock', areaId: meetingArea.id, locked: !meeting?.locked })}>{meeting?.locked ? <Lock size={14} /> : <LockOpen size={14} />}</button></div>
           <div className="meeting-bar-right">{meeting?.recordingBy && <span className="meeting-recording"><i />{t('Grabando')}</span>}<button type="button" className={`meeting-tool ${meeting?.music ? 'is-active' : ''}`} title={meeting?.music ? t('Detener la música') : t('Poner música para todos')} aria-label={meeting?.music ? t('Detener la música') : t('Poner música para todos')} aria-pressed={!!meeting?.music} onClick={() => office.send({ type: 'meeting:music', playing: !meeting?.music })}><Music size={15} /></button>{'documentPictureInPicture' in window && <button type="button" className={`meeting-tool ${pip ? 'is-active' : ''}`} title={t('Abrir en ventana emergente')} aria-label={t('Abrir en ventana emergente')} onClick={() => void togglePip()}><PictureInPicture2 size={15} /></button>}<button type="button" className="meeting-tool" title={t('Copiar enlace de la reunión')} aria-label={t('Copiar enlace de la reunión')} onClick={() => void copyMeetingLink(meetingArea.id)}><Link2 size={15} /></button><div className="meeting-view-toggle" role="group" aria-label="Vista"><button type="button" className={!showMeetingView ? 'is-active' : ''} aria-pressed={!showMeetingView} title={t('Vista de oficina')} aria-label={t('Vista de oficina')} onClick={() => setMeetingView(false)}><Map size={14} /></button><button type="button" className={showMeetingView ? 'is-active' : ''} aria-pressed={showMeetingView} title={t('Vista de reunión')} aria-label={t('Vista de reunión')} onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><LayoutGrid size={14} /></button></div></div>

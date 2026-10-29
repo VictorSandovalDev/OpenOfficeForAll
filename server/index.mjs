@@ -9,6 +9,10 @@ import { canApproachSeat, canExitSeat, getOfficeSeat, getOfficeSeats, SEAT_INTER
 import { baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
 import { meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
 import { createAccounts } from './accounts.mjs';
+import { AREAS } from '../shared/vivo-map.js';
+
+/** Desk areas of the office; each can belong to one person. */
+const DESK_IDS = new Set(AREAS.filter((area) => area.type === 'Desk').map((area) => area.id));
 
 const OBJECT_KIND = /^[a-z0-9-]{1,64}$/;
 const OBJECT_COLOR = /^[a-z]{1,24}$/;
@@ -201,7 +205,7 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], desks: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
@@ -259,6 +263,12 @@ export async function startServer({
       } catch (cause) {
         if (cause.code !== 'ENOENT') console.warn(`Could not load calendar for room ${slug}: ${cause.message}`);
       }
+      try {
+        const saved = JSON.parse(await readFile(join(dataDir, `${slug}.desks.json`), 'utf8'));
+        for (const [areaId, userId] of Object.entries(saved.desks ?? {})) if (DESK_IDS.has(areaId) && typeof userId === 'string' && USER_ID.test(userId)) room.desks[areaId] = userId;
+      } catch (cause) {
+        if (cause.code !== 'ENOENT') console.warn(`Could not load desks for room ${slug}: ${cause.message}`);
+      }
     })();
     rooms.set(slug, room);
     await room.loaded;
@@ -288,6 +298,16 @@ export async function startServer({
       await writeFile(temporary, snapshot, { mode: 0o600 });
       await rename(temporary, destination);
     }).catch((cause) => console.error(`Could not save chat for room ${room.slug}: ${cause.message}`));
+  }
+  function persistDesks(room) {
+    const snapshot = JSON.stringify({ version: 1, desks: room.desks });
+    room.chatWrite = room.chatWrite.then(async () => {
+      await mkdir(dataDir, { recursive: true });
+      const destination = join(dataDir, `${room.slug}.desks.json`);
+      const temporary = `${destination}.${randomUUID()}.tmp`;
+      await writeFile(temporary, snapshot, { mode: 0o600 });
+      await rename(temporary, destination);
+    }).catch((cause) => console.error(`Could not save desks for room ${room.slug}: ${cause.message}`));
   }
   function persistEvents(room) {
     const snapshot = JSON.stringify({ version: 1, events: room.events });
@@ -408,7 +428,7 @@ export async function startServer({
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
         persistChat(room);
-        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames, interactions: room.interactions });
+        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames, interactions: room.interactions , desks: room.desks });
         broadcastParticipants(room);
         return;
       }
@@ -506,6 +526,23 @@ export async function startServer({
           room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
           persistChat(room);
           broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'desk:assign': {
+          // Anyone may claim a free desk or give up their own; assigning desks to others needs edit rights.
+          const areaId = payload.areaId, userId = payload.userId === null ? null : payload.userId;
+          if (typeof areaId !== 'string' || !DESK_IDS.has(areaId) || (userId !== null && (typeof userId !== 'string' || !room.users[userId]))) return error(socket, 'invalid_desk', 'Choose a desk and someone from this office.');
+          const owner = room.desks[areaId] ?? null;
+          const self = participant.userId;
+          const allowed = canEdit(participant) || (userId === self && owner === null) || (userId === null && owner === self);
+          if (!allowed) return error(socket, 'forbidden', 'Only office admins can assign desks to other people.');
+          if (userId === null) delete room.desks[areaId];
+          else {
+            for (const [other, holder] of Object.entries(room.desks)) if (holder === userId) delete room.desks[other]; // one desk per person
+            room.desks[areaId] = userId;
+          }
+          broadcast(room, { type: 'desks', desks: room.desks });
+          persistDesks(room);
           break;
         }
         case 'media:token': {

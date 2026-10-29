@@ -14,3 +14,12 @@ export function roomSeats(area, seats) {
   return seats.filter((seat) => meetingRoomAt(seat.tx, seat.ty)?.id === area.id).sort((a, b) => Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy));
 }
 export const DEFAULT_MEETING = { locked: false };
+
+/** Desk areas: each can be assigned to one person. Ordered top to bottom, left to right. */
+export const DESK_AREAS = AREAS.filter((area) => area.type === 'Desk').sort((a, b) => a.y - b.y || a.x - b.x);
+export const deskAt = (tx, ty) => DESK_AREAS.find((area) => tx >= area.x && tx < area.x + area.w && ty >= area.y && ty < area.y + area.h) ?? null;
+/** Free chairs closest to a desk, nearest first (desk chairs stand just outside the desk area). */
+export function deskSeats(area, seats) {
+  const cx = (area.x + area.w / 2) * TILE, cy = (area.y + area.h / 2) * TILE;
+  return seats.filter((seat) => Math.hypot(seat.x - cx, seat.y - cy) <= TILE * 2.6).sort((a, b) => Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy));
+}

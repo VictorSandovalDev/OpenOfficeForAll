@@ -36,6 +36,9 @@ Supported messages:
 - `meeting:lock`: `areaId` of a meeting room and `locked`. Only someone inside the room may change it;
   a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
   Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants, startedAt, music?, recordingBy? } }`).
+- `desk:assign`: `areaId` of a desk and `userId` (someone from the office) or `null` to free it. Anyone may claim a
+  free desk or free their own; assigning or freeing other people's desks needs edit rights. One desk per person.
+  Saved in `server/data/<room>.desks.json`; `welcome` and every change carry `desks` (`{ [areaId]: userId }`).
 - `meeting:music`: `playing` (boolean). Starts or stops the shared background music of the sender's meeting room;
   `music` is `{ startedAt, by }`, and every client plays the same generated bars from `startedAt`. It ends with the meeting.
 - `meeting:record`: `recording` (boolean). One person per room may record; the room sees `recordingBy` and a system
