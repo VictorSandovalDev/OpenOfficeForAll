@@ -115,3 +115,25 @@ test('inside a meeting room the server issues a LiveKit token for that room only
   const { createHmac } = await import('node:crypto');
   assert.equal(signature, createHmac('sha256', 'secret-secret-secret-secret-secret').update(`${head}.${body}`).digest('base64url'));
 });
+
+test('music and recording are announced to the meeting and end with it', async t => {
+  const dataDir = await mkdtemp(join(tmpdir(), 'open-office-extras-'));
+  const server = await startServer({ port: 0, dataDir });
+  t.after(async () => { await server.close(); await rm(dataDir, { recursive: true, force: true }); });
+  const host = await connect(server.port, 'Host');
+  const guest = await connect(server.port, 'Guest');
+  await host.moveTo(TABLE_SEAT.standX, TABLE_SEAT.standY);
+  await guest.moveTo(1136, 1296);
+  host.send({ type: 'meeting:music', playing: true });
+  const music = await guest.next('participants', event => event.meetings?.[MEDIA_ROOM]?.music);
+  assert.ok(music.meetings[MEDIA_ROOM].music.startedAt > 0);
+  host.send({ type: 'meeting:record', recording: true });
+  const recording = await guest.next('participants', event => event.meetings?.[MEDIA_ROOM]?.recordingBy === host.id);
+  assert.equal(recording.meetings[MEDIA_ROOM].recordingBy, host.id);
+  assert.ok((await guest.next('chat', event => event.message.text === 'empezó a grabar la reunión')).message.system);
+  guest.send({ type: 'meeting:record', recording: true });
+  assert.equal((await guest.next('error')).code, 'invalid_meeting', 'one recorder at a time');
+  await host.moveTo(656, 1264);
+  const after = await guest.next('participants', event => event.meetings?.[MEDIA_ROOM] && !event.meetings[MEDIA_ROOM].recordingBy);
+  assert.equal(after.meetings[MEDIA_ROOM].recordingBy, undefined, 'recording stops when the recorder leaves');
+});

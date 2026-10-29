@@ -157,6 +157,13 @@ export async function startServer({
     for (const areaId of Object.keys(room.locks)) { if (state[areaId]) state[areaId].locked = true; else delete room.locks[areaId]; }
     for (const areaId of Object.keys(room.meetingStarts)) if (!state[areaId]) delete room.meetingStarts[areaId];
     for (const [areaId, meeting] of Object.entries(state)) meeting.startedAt = room.meetingStarts[areaId] ??= Date.now();
+    // Music and recording belong to a meeting in progress; they end with it.
+    for (const [areaId, extra] of Object.entries(room.meetingExtras)) {
+      if (!state[areaId]) { delete room.meetingExtras[areaId]; continue; }
+      if (extra.music) state[areaId].music = extra.music;
+      if (extra.recordingBy && [...room.members.values()].some((member) => member.participant.id === extra.recordingBy && meetingRoomOf(member.participant)?.id === areaId)) state[areaId].recordingBy = extra.recordingBy;
+      else delete extra.recordingBy;
+    }
     return state;
   };
   const systemMessage = (room, areaId, participant, text) => broadcast(room, { type: 'chat', message: { id: randomUUID(), participantId: participant.id, name: participant.name, text, channel: 'meeting', areaId, system: true, createdAt: new Date().toISOString() } }, (other) => meetingRoomOf(other)?.id === areaId);
@@ -194,7 +201,7 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
@@ -552,6 +559,26 @@ export async function startServer({
           if (name === area.name) delete room.areaNames[area.id]; else room.areaNames[area.id] = name;
           persistObjects(room, socket);
           broadcast(room, { type: 'areas', areaNames: room.areaNames });
+          break;
+        }
+        case 'meeting:music': {
+          const area = meetingRoomOf(participant);
+          if (!area || typeof payload.playing !== 'boolean') return error(socket, 'invalid_meeting', 'Join a meeting room to play music.');
+          const extra = room.meetingExtras[area.id] ??= {};
+          if (payload.playing) extra.music = { startedAt: Date.now(), by: participant.name }; else delete extra.music;
+          systemMessage(room, area.id, participant, payload.playing ? 'puso música para todos' : 'detuvo la música');
+          broadcastParticipants(room);
+          break;
+        }
+        case 'meeting:record': {
+          const area = meetingRoomOf(participant);
+          if (!area || typeof payload.recording !== 'boolean') return error(socket, 'invalid_meeting', 'Join a meeting room to record.');
+          const extra = room.meetingExtras[area.id] ??= {};
+          if (payload.recording) { if (extra.recordingBy && extra.recordingBy !== participant.id) return error(socket, 'invalid_meeting', 'Someone else is already recording.'); extra.recordingBy = participant.id; }
+          else if (extra.recordingBy === participant.id) delete extra.recordingBy;
+          else return;
+          systemMessage(room, area.id, participant, payload.recording ? 'empezó a grabar la reunión' : 'detuvo la grabación');
+          broadcastParticipants(room);
           break;
         }
         case 'meeting:lock': {

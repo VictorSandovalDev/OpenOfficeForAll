@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, AtSign, CheckCheck, ExternalLink, Hand, Hash, Info, MousePointerClick, StickyNote, SmilePlus, Redo2, Undo2, Pencil as PencilIcon, Smile as SmileIcon, UserPen, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
+import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, AtSign, CheckCheck, Circle, ExternalLink, Hand, Music, PictureInPicture2, Hash, Info, MousePointerClick, StickyNote, SmilePlus, Redo2, Undo2, Pencil as PencilIcon, Smile as SmileIcon, UserPen, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
 import VivoScene from './VivoScene';
 import MeetingView, { type MeetingPanel } from './MeetingView';
 import ChatView, { conversationKey, messageKey, type Conversation } from './chat/ChatView';
@@ -20,6 +20,10 @@ import { ObjectThumb } from './sprites/objects';
 import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
 import { useEditHistory } from './useEditHistory';
 import { useSfu } from './useSfu';
+import { MeetingMusic } from './meetingMusic';
+import { MeetingRecorder } from './meetingRecorder';
+import { createPortal } from 'react-dom';
+import { Tile } from './MeetingView';
 import { sanitizeLook, type AvatarLook } from './avatarLook';
 import { artPack, onArtPackChange, setArtPack, type ArtPack } from './sprites/artPack';
 import { currentAccount, loadConfig, rememberKeysFromUrl, sessionToken, signIn, signOut, storedKey, storeKey, type Account, type OfficeConfig } from './config';
@@ -101,6 +105,9 @@ export default function App() {
   const [handRaised, setHandRaised] = useState(false);
   const [reactionMenu, setReactionMenu] = useState(false);
   const [nearInteractive, setNearInteractive] = useState<string | null>(null);
+  const music = useRef<MeetingMusic | null>(null);
+  const recorder = useRef<MeetingRecorder | null>(null);
+  const [pip, setPip] = useState<Window | null>(null);
   const [openInteraction, setOpenInteraction] = useState<string | null>(null);
   const [interactionDraft, setInteractionDraft] = useState<{ id: string; type: 'link' | 'note'; url: string; text: string; title: string } | null>(null);
   const [meetingView, setMeetingView] = useState(false);
@@ -147,9 +154,18 @@ export default function App() {
   const showError = useCallback((message: string) => setNotice(message), []);
   const selfForSfu = office.participants.find(p => p.id === office.selfId);
   const sfuArea = config.sfu && selfForSfu ? meetingRoomOf(selfForSfu)?.id ?? null : null;
+  const sfuAreaForRecording = (person: { x: number; y: number }) => meetingRoomOf(person)?.id ?? null;
   const media = useMedia({ selfId: office.selfId, participants: office.participants, send: office.send, subscribeSignal: office.subscribeSignal, onError: showError, sfuRoom: sfuArea });
   const sfu = useSfu({ areaId: sfuArea, enabled: !!config.sfu, token: office.mediaToken, localStream: media.localStream, send: office.send });
   const remoteStreams = { ...media.remoteStreams, ...sfu.remoteStreams };
+  const recordingMine = !!selfForSfu && !!sfuAreaForRecording(selfForSfu) && office.meetings[sfuAreaForRecording(selfForSfu)!]?.recordingBy === selfForSfu.id;
+  const recordStreams = [media.localStream, ...Object.entries(remoteStreams).filter(([id]) => { const person = office.participants.find(p => p.id === id); return person && selfForSfu && meetingRoomOf(person)?.id === meetingRoomOf(selfForSfu)?.id; }).map(([, stream]) => stream)].filter((stream): stream is MediaStream => !!stream);
+  useEffect(() => {
+    recorder.current ??= new MeetingRecorder();
+    if (recordingMine && !recorder.current.recording) recorder.current.start(recordStreams);
+    else if (recordingMine) recorder.current.update(recordStreams);
+    else if (recorder.current.recording) void recorder.current.stop(`reunion-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.webm`);
+  }, [recordingMine, recordStreams.map(stream => stream.id + stream.getAudioTracks().length).join('|')]);
   const self = office.participants.find(p => p.id === office.selfId);
   const selectedPerson = office.participants.find(p => p.id === selected);
   const visiblePeople = office.participants.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
@@ -183,10 +199,22 @@ export default function App() {
     if (meetingArea && previousLocked.current !== undefined && previousLocked.current !== locked) setNotice(locked ? t('Bloqueada: esta reunión ahora es privada') : t('Desbloqueada: otras personas pueden unirse'));
     previousLocked.current = meetingArea ? !!locked : undefined;
   }, [meetingArea?.id, meeting?.locked]);
+  useEffect(() => { if (!meetingArea) pip?.close(); }, [meetingArea?.id]);
   useEffect(() => { if (!meetingArea && (panel === 'meeting' || channel === 'meeting')) { setChannel('office'); if (panel === 'meeting') setPanel('people'); } if (!meetingArea) setMeetingView(false); }, [meetingArea?.id]);
   const meetingPeople = meetingArea ? office.participants.filter(person => meetingRoomOf(person)?.id === meetingArea.id) : [];
   const meetingMessages = meetingArea ? office.messages.filter(message => message.channel === 'meeting' && message.areaId === meetingArea.id) : [];
   const showMeetingView = meetingView && !!meetingArea;
+  // Music for everyone in the room, started from the shared start time.
+  const musicStart = meetingArea ? meeting?.music?.startedAt ?? null : null;
+  useEffect(() => {
+    music.current ??= new MeetingMusic();
+    if (musicStart) music.current.start(musicStart); else music.current.stop();
+    if (!musicStart) return;
+    const resume = () => { if (musicStart && music.current) music.current.start(musicStart); };
+    document.addEventListener('pointerdown', resume, { once: true });
+    return () => document.removeEventListener('pointerdown', resume);
+  }, [musicStart]);
+  useEffect(() => () => music.current?.stop(), []);
   const showChatView = panel === 'chat' && !showMeetingView;
   const onlineUsers = new Set(office.participants.map(person => person.userId));
   const activeKey = conversationKey(conversation, office.userId);
@@ -285,6 +313,16 @@ export default function App() {
   }, [moreOpen]);
 
   const move = useCallback((x: number, y: number) => setNavigationTarget({ x, y, nonce: Date.now() }), []);
+  async function togglePip() {
+    if (pip) { pip.close(); return; }
+    const api = (window as unknown as { documentPictureInPicture?: { requestWindow: (options: { width: number; height: number }) => Promise<Window> } }).documentPictureInPicture;
+    if (!api) return;
+    const opened = await api.requestWindow({ width: 420, height: 320 });
+    for (const sheet of [...document.styleSheets]) { try { const style = opened.document.createElement('style'); style.textContent = [...sheet.cssRules].map(rule => rule.cssText).join('\n'); opened.document.head.appendChild(style); } catch { /* cross-origin sheet */ } }
+    opened.document.body.className = 'pip-body';
+    opened.addEventListener('pagehide', () => setPip(null));
+    setPip(opened);
+  }
   function leaveMeeting() { setNavigationTarget({ x: SPAWN.x, y: SPAWN.y, nonce: Date.now() }); setAreaCard(null); }
   const publishMove = useCallback((x: number, y: number) => office.send({ type: 'move', x, y }), [office.send]);
   const editHistory = useEditHistory({ objects: office.objects, overrides: office.overrides, send: office.send });
@@ -359,6 +397,7 @@ export default function App() {
           <IconButton label={media.screen ? t('Dejar de compartir') : t('Compartir pantalla')} active={media.screen} disabled={!online} onClick={() => void media.toggleScreen()}><Monitor size={21} /></IconButton>
           <div className="reaction-wrap"><IconButton label={t('Enviar una reacción')} active={reactionMenu} disabled={!online} onClick={() => setReactionMenu(open => !open)}><SmilePlus size={21} /></IconButton>
             {reactionMenu && <div className="reaction-menu" role="menu">{['👍', '❤️', '😂', '🎉', '👏', '😮', '🙌', '🔥'].map(emoji => <button type="button" role="menuitem" key={emoji} onClick={() => { office.send({ type: 'react', emoji }); setReactionMenu(false); }}>{emoji}</button>)}</div>}</div>
+          {meetingArea && <IconButton label={recordingMine ? t('Detener la grabación') : t('Grabar la reunión')} active={recordingMine} className={recordingMine ? 'recording' : ''} disabled={!online || (!!meeting?.recordingBy && !recordingMine)} onClick={() => office.send({ type: 'meeting:record', recording: !recordingMine })}><Circle size={18} fill={recordingMine ? 'currentColor' : 'none'} /></IconButton>}
           <IconButton label={handRaised ? t('Bajar la mano') : t('Levantar la mano')} active={handRaised} disabled={!online} onClick={() => { const next = !handRaised; setHandRaised(next); office.send({ type: 'profile', handRaised: next }); }}><Hand size={21} /></IconButton>
           {meetingArea && <IconButton label={t('Volver a mi escritorio · ⌘ D')} className="leave-meeting" onClick={leaveMeeting}><LogOut size={20} /></IconButton>}
           <div className="control-more" ref={moreRef}><button className={`icon-button ${moreOpen ? 'is-active' : ''}`} type="button" title={t('Más opciones')} aria-label={t('Más opciones')} aria-expanded={moreOpen} aria-controls="call-options" onClick={() => setMoreOpen(open => !open)}><MoreHorizontal size={22} /></button>
@@ -453,7 +492,7 @@ export default function App() {
         <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} reactions={office.reactions} interactions={office.interactions} onNearInteractive={setNearInteractive} onInteract={setOpenInteraction} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
         {meetingArea && <div className="meeting-bar" aria-label={t('Reunión en curso')}>
           <div className="meeting-bar-left"><span className="meeting-pill"><Users size={15} />{roomLabel(meetingArea.id)}</span><button type="button" className={`meeting-lock ${meeting?.locked ? 'is-locked' : ''}`} title={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-label={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-pressed={!!meeting?.locked} onClick={() => office.send({ type: 'meeting:lock', areaId: meetingArea.id, locked: !meeting?.locked })}>{meeting?.locked ? <Lock size={14} /> : <LockOpen size={14} />}</button></div>
-          <div className="meeting-bar-right"><button type="button" className="meeting-tool" title={t('Copiar enlace de la reunión')} aria-label={t('Copiar enlace de la reunión')} onClick={() => void copyMeetingLink(meetingArea.id)}><Link2 size={15} /></button><div className="meeting-view-toggle" role="group" aria-label="Vista"><button type="button" className={!showMeetingView ? 'is-active' : ''} aria-pressed={!showMeetingView} title={t('Vista de oficina')} aria-label={t('Vista de oficina')} onClick={() => setMeetingView(false)}><Map size={14} /></button><button type="button" className={showMeetingView ? 'is-active' : ''} aria-pressed={showMeetingView} title={t('Vista de reunión')} aria-label={t('Vista de reunión')} onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><LayoutGrid size={14} /></button></div></div>
+          <div className="meeting-bar-right">{meeting?.recordingBy && <span className="meeting-recording"><i />{t('Grabando')}</span>}<button type="button" className={`meeting-tool ${meeting?.music ? 'is-active' : ''}`} title={meeting?.music ? t('Detener la música') : t('Poner música para todos')} aria-label={meeting?.music ? t('Detener la música') : t('Poner música para todos')} aria-pressed={!!meeting?.music} onClick={() => office.send({ type: 'meeting:music', playing: !meeting?.music })}><Music size={15} /></button>{'documentPictureInPicture' in window && <button type="button" className={`meeting-tool ${pip ? 'is-active' : ''}`} title={t('Abrir en ventana emergente')} aria-label={t('Abrir en ventana emergente')} onClick={() => void togglePip()}><PictureInPicture2 size={15} /></button>}<button type="button" className="meeting-tool" title={t('Copiar enlace de la reunión')} aria-label={t('Copiar enlace de la reunión')} onClick={() => void copyMeetingLink(meetingArea.id)}><Link2 size={15} /></button><div className="meeting-view-toggle" role="group" aria-label="Vista"><button type="button" className={!showMeetingView ? 'is-active' : ''} aria-pressed={!showMeetingView} title={t('Vista de oficina')} aria-label={t('Vista de oficina')} onClick={() => setMeetingView(false)}><Map size={14} /></button><button type="button" className={showMeetingView ? 'is-active' : ''} aria-pressed={showMeetingView} title={t('Vista de reunión')} aria-label={t('Vista de reunión')} onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><LayoutGrid size={14} /></button></div></div>
         </div>}
         {showMeetingView && meetingArea && <MeetingView reactions={office.reactions} roomName={roomLabel(meetingArea.id)} meeting={meeting} people={meetingPeople} selfId={office.selfId} localStream={media.localStream} remoteStreams={remoteStreams} messages={meetingMessages} panel={meetingPanel} online={online} onPanel={setMeetingPanel} onSend={value => office.send({ type: 'chat', text: value, channel: 'meeting' })} onCopyLink={() => void copyMeetingLink(meetingArea.id)} />}
         {showCalendarView && <CalendarView events={office.events} roomName={roomLabel} selfUserId={office.userId} selected={selectedEvent} online={online} onSelect={setSelectedEvent} onNew={openNewEvent} onJoin={areaId => { setSelectedEvent(null); setPanel('people'); joinMeeting(areaId); }} onDelete={id => { office.send({ type: 'event:delete', id }); setSelectedEvent(null); }} />}
@@ -493,6 +532,7 @@ export default function App() {
     </form></div>}
     {newDm && <div className="modal-backdrop" onClick={() => setNewDm(false)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="dm-title" onClick={e => e.stopPropagation()}><IconButton label={t('Cerrar ventana')} className="modal-close" onClick={() => setNewDm(false)}><X size={19} /></IconButton><span className="dialog-icon"><SquarePen size={27} /></span><h2 id="dm-title">{t('Nuevo mensaje')}</h2><p>{t('Elige con quién quieres hablar.')}</p><div className="dm-picker">{office.users.map(user => <button type="button" key={user.userId} onClick={() => { setConversation({ kind: 'dm', userId: user.userId }); setPanel('chat'); setNewDm(false); }}><span className="chat-avatar small" style={{ background: user.color }}>{user.name.charAt(0).toUpperCase()}<i className={`status-dot ${onlineUsers.has(user.userId) ? 'available' : 'away'}`} /></span><span>{user.name}{user.userId === office.userId ? t(' (tú)') : ''}</span></button>)}</div></div></div>}
     {lookEditor && <AvatarEditor initial={look} name={name} onCancel={() => setLookEditor(false)} onDone={value => { setLook(value); setLookEditor(false); try { localStorage.setItem(lookStorageKey(name), JSON.stringify(value)); } catch { /* storage unavailable */ } if (profile) { setProfile({ ...profile, avatar: value }); office.send({ type: 'profile', avatar: value }); } }} />}
+    {pip && meetingArea && createPortal(<div className="pip-stage" style={{ gridTemplateColumns: `repeat(${Math.ceil(Math.sqrt(Math.max(1, meetingPeople.length)))}, minmax(0, 1fr))` }}>{meetingPeople.map(person => <Tile key={person.id} person={person} self={person.id === office.selfId} stream={person.id === office.selfId ? media.localStream ?? undefined : remoteStreams[person.id]} />)}</div>, pip.document.body)}
     {(notice || office.error) && <div className="toast" role="status"><span>{notice || office.error}</span><IconButton label={t('Cerrar aviso')} onClick={() => { setNotice(''); office.setError(''); }}><X size={15} /></IconButton></div>}
     {!profile && <div className="modal-backdrop welcome-backdrop"><form className="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onSubmit={join}><div className="welcome-art"><InvitePortraits /></div><span className="eyebrow">{t('OPEN OFFICE')}</span><h1 id="welcome-title">{t('Entrar a Vivo')}</h1><p>{t('Tu equipo y tus conversaciones, en un mismo lugar.')}</p>{config.accounts !== 'off' && !account && <div className="segmented auth-tabs">{(['login', 'register'] as const).map(mode => <button type="button" key={mode} className={authMode === mode ? 'active' : ''} onClick={() => { setAuthMode(mode); setAuthError(''); }}>{mode === 'login' ? t('Iniciar sesión') : t('Crear cuenta')}</button>)}{config.accounts === 'optional' && <button type="button" className={authMode === 'guest' ? 'active' : ''} onClick={() => { setAuthMode('guest'); setAuthError(''); }}>{t('Invitado')}</button>}</div>}
 {account ? <p className="auth-signed">{t('Sesión iniciada como {email}', { email: account.email })} · <button type="button" className="link-button" onClick={() => { void signOut(); setAccount(null); }}>{t('Cerrar sesión')}</button></p>

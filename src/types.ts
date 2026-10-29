@@ -7,7 +7,7 @@ export type EditItem = { kind: string; color: string; facing: string };
 export type ChatMessage = { id: string; participantId: string; userId?: string; name: string; text: string; channel: 'channel' | 'dm' | 'nearby' | 'meeting'; channelId?: string; dmKey?: string; to?: string; areaId?: string; system?: boolean; createdAt: string };
 export type Channel = { id: string; name: string; topic: string };
 export type DirectoryUser = { userId: string; name: string; color: string };
-export type MeetingState = { active: boolean; locked: boolean; participants: number; startedAt?: number };
+export type MeetingState = { active: boolean; locked: boolean; participants: number; startedAt?: number; music?: { startedAt: number; by: string }; recordingBy?: string };
 export type Meetings = Record<string, MeetingState>;
 export type Send = (message: Record<string, unknown>) => void;
 export type Signal = { from: string; data: { description?: RTCSessionDescriptionInit; candidate?: RTCIceCandidateInit } };

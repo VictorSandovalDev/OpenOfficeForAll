@@ -643,3 +643,11 @@ button .avatar { pointer-events: none; }
 .interaction-note { padding: 20px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow: auto; }
 .interaction-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 .modal textarea { width: 100%; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 8px 10px; font: inherit; font-size: 13px; resize: vertical; }
+
+.meeting-recording { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 8px; background: #e5484d26; color: #ff9b9e; font-size: 12px; font-weight: 600; margin-right: 4px; }
+.meeting-recording i { width: 8px; height: 8px; border-radius: 9999px; background: #e5484d; animation: recording-blink 1.2s ease-in-out infinite; }
+@keyframes recording-blink { 50% { opacity: .35; } }
+.controlbar .icon-button.recording { color: #ff6b70; background: #e5484d22; }
+.pip-body { margin: 0; background: #1c1c1c; font-family: Inter, -apple-system, sans-serif; }
+.pip-stage { display: grid; gap: 4px; padding: 4px; height: 100vh; box-sizing: border-box; }
+.pip-stage .meeting-tile { background: #ffffff08; }

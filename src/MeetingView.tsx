@@ -40,7 +40,7 @@ function startedLabel(startedAt: number | undefined, now: number) {
 }
 
 /** One participant tile: their camera, or their initial on a coloured disc when the camera is off. */
-function Tile({ person, stream, self, reaction }: { person: Participant; stream?: MediaStream; self: boolean; reaction?: string }) {
+export function Tile({ person, stream, self, reaction }: { person: Participant; stream?: MediaStream; self: boolean; reaction?: string }) {
   // Peers always negotiate a video transceiver; only a participant with the camera (or a screen) on has a picture.
   const video = !!stream && (person.camera || person.screen) && stream.getVideoTracks().some(track => track.readyState === 'live');
   return <div className={`meeting-tile${video ? ' has-video' : ''}${person.screen ? ' is-screen' : ''}`}>
