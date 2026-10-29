@@ -118,22 +118,33 @@ A catalogue of **81 objects in 251 orientations**: desks, chairs, sofas, plants,
 
 ### 🧑‍🎨 Make the avatar yours
 
-Choose skin, hair, top, bottom and shoe colours, glasses and hats. The pixel art keeps its own shading in every pose and walking frame, and everyone sees your look. Set your status (Active, Busy, Away) and a short status message.
+Pick a male or female body, then skin, hair, top, bottom and shoe colours, glasses, hats, headphones and facial hair. The pixel art keeps its own shading in every pose and walking frame, and everyone sees your look. Set your status (Active, Busy, Away) and a short status message.
 
 <img src="docs/screenshots/avatar-editor-en.png" alt="The avatar editor with categories, options and a live preview" width="100%">
 
 </td>
 </tr>
+<tr>
+<td valign="top" colspan="2">
+
+### 🎵 Meetings for the whole team
+
+Plug in an optional [LiveKit](https://livekit.io) media server and meeting rooms switch to it: each person sends their camera once, so a meeting of twenty is as smooth as a meeting of two. Proximity chats stay peer to peer. Inside a room, anyone can start **calm background music for everyone** (generated in the browser, in sync for all), **record the meeting audio** to a file with a visible *Recording* badge for the whole room, raise a hand, send emoji reactions, or pop the call out into a small always-on-top window while working elsewhere.
+
+<img src="docs/screenshots/meeting-large-en.png" alt="A meeting with five cameras, music on, a recording badge and a raised hand" width="100%">
+
+</td>
+</tr>
 </table>
 
-Also included: audio, video and screen sharing over peer-to-peer WebRTC (all off when you enter), profiles, light, dark and system themes, English and Spanish, zoom from 36 % to 400 %, a minimap, and keyboard shortcuts (⌘ / Ctrl K to search people, ⌘ / Ctrl D to return to your desk).
+Also included: audio, video and screen sharing over WebRTC (all off when you enter), optional personal accounts with passwords, interactive objects that open a link or a note when you press **X** next to them, profiles, light, dark and system themes, English and Spanish, zoom from 36 % to 400 %, a minimap, and keyboard shortcuts (⌘ / Ctrl K to search people, ⌘ / Ctrl D to return to your desk).
 
 ---
 
 ## 🌐 Built for the whole world
 
 - **Yours to host.** One Node process runs the realtime server and the client is static files. Your office, your data, your server.
-- **No accounts required.** Pick a name, pick a colour, walk in. A room is just a word in the URL.
+- **No accounts required.** Pick a name, pick a colour, walk in. A room is just a word in the URL. Turn on personal accounts when your team wants them.
 - **Open to every language.** The interface ships in English and Spanish, follows the browser's language and can be switched in Settings. Adding a language is one dictionary file in `src/i18n/`; pull requests for yours are very welcome.
 - **Open to every budget.** MIT licensed. Free for a two-person startup in Bogotá, a classroom in Lagos or a volunteer team in Manila.
 - **Open to every contributor.** A small, readable codebase: React and Vite on the client, a documented WebSocket protocol on the server, shared geometry in plain ES modules, and tests that pin the behaviour down.
@@ -175,7 +186,7 @@ flowchart LR
 ## ✅ Verification
 
 ```sh
-npm test      # 35 tests: collisions, seats, placement, meetings, navigation
+npm test      # 40 tests: collisions, seats, placement, meetings, chat, accounts, media tokens
 npm run build # type-check and production bundle
 ```
 
@@ -189,12 +200,15 @@ The collision model is compared tile by tile with the reference map, the tests w
 - [x] Slack-style chat channels and direct messages
 - [x] Calendar and activity feed
 - [x] Avatar editor: skin, hair, clothes and shoes colours, glasses and hats
+- [x] Female body, facial hair and headphones
 - [ ] More hairstyles and outfits
 - [x] Interface in English and Spanish
 - [ ] More interface languages
 - [x] Public deployment: HTTPS, invite key, admin role, TURN relay, Docker
-- [ ] Personal accounts with passwords or single sign-on
-- [ ] Media server (SFU) for large meetings
+- [x] Personal accounts with passwords
+- [ ] Single sign-on
+- [x] Media server (LiveKit) for large meetings
+- [x] Music for everyone, meeting recording and pop-out window
 
 Want one of these sooner? Open an issue or send a pull request.
 
@@ -202,7 +216,7 @@ Want one of these sooner? Open an issue or send a pull request.
 
 ## ⚠️ Current limits
 
-Offices are protected by a shared invite key and an admin key; there are no personal accounts or passwords yet, and identities are the names people choose. Calls are peer to peer, which works well for small groups; a media server for large meetings is on the roadmap.
+Personal accounts are optional (`ACCOUNTS=optional` or `required`); without them identities are the names people choose, protected by the invite and admin keys. Single sign-on is not available yet. Without a media server, calls are peer to peer, which works well for groups of up to about eight people with cameras on. Recording captures audio only, in the browser of the person who starts it.
 
 ## 🎨 Art and credits
 

@@ -35,12 +35,20 @@ Supported messages:
   `focus`), and boolean `mic`, `camera`, `screen`.
 - `meeting:lock`: `areaId` of a meeting room and `locked`. Only someone inside the room may change it;
   a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
-  Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants } }`).
+  Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants, startedAt, music?, recordingBy? } }`).
+- `meeting:music`: `playing` (boolean). Starts or stops the shared background music of the sender's meeting room;
+  `music` is `{ startedAt, by }`, and every client plays the same generated bars from `startedAt`. It ends with the meeting.
+- `meeting:record`: `recording` (boolean). One person per room may record; the room sees `recordingBy` and a system
+  message in the meeting chat. The recording stops when that person leaves. Audio is mixed and saved in their browser only.
+- `media:token`: only inside a meeting room and only when the server has `LIVEKIT_URL`, `LIVEKIT_API_KEY` and
+  `LIVEKIT_API_SECRET`. Replies `media:token` with `url`, `room` (`<office>--<areaId>`), `areaId` and a signed
+  LiveKit access token (6 hours, join, publish and subscribe for that room only). Otherwise `sfu_unavailable`.
+  `/config` reports `sfu: true` when a media server is configured.
 - `area:rename`: `areaId` of a meeting room and `name` (1–40 characters); persisted and broadcast as `areas`.
 - `join` may include `userId` (8–64 characters `[A-Za-z0-9_-]`), a stable identity per browser and name used for
   direct messages and the people directory; without it the session id is used. `welcome` returns `userId`,
   `channels`, `users` (directory) and `messages` (every channel's history plus the direct messages that include you).
-- `profile` also accepts `avatar` (`{ skin, hair, top, bottom, shoes, glasses, hat }`, palette indices validated
+- `profile` also accepts `avatar` (`{ body, skin, hair, top, bottom, shoes, glasses, hat, beard }`, palette indices validated
   against `src/avatarLook.ts`) and `statusText` (up to 60 characters; empty clears it). `join` accepts `avatar` too.
 - `chat`: `text` (1–4000 characters) and `channel`:
   - `channel` with `channelId` (`office` is accepted as an alias of `#general`): reaches everyone and is persisted

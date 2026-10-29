@@ -118,22 +118,33 @@ Un catálogo de **81 objetos en 251 orientaciones**: escritorios, sillas, sofás
 
 ### 🧑‍🎨 Un avatar a tu medida
 
-Elige el color de piel, pelo, ropa y zapatos, gafas y sombreros. El pixel art conserva su sombreado en todas las poses y al caminar, y todos ven tu aspecto. Indica tu estado (Activo, Ocupado, Ausente) y un mensaje corto.
+Elige un cuerpo masculino o femenino y después el color de piel, pelo, ropa y zapatos, gafas, sombreros, auriculares y vello facial. El pixel art conserva su sombreado en todas las poses y al caminar, y todos ven tu aspecto. Indica tu estado (Activo, Ocupado, Ausente) y un mensaje corto.
 
 <img src="docs/screenshots/avatar-editor.png" alt="El editor de avatar con categorías, opciones y vista previa" width="100%">
 
 </td>
 </tr>
+<tr>
+<td valign="top" colspan="2">
+
+### 🎵 Reuniones para todo el equipo
+
+Conecta un servidor de medios [LiveKit](https://livekit.io) opcional y las salas de reunión pasan a usarlo: cada persona envía su cámara una sola vez, así que una reunión de veinte va tan fluida como una de dos. Las conversaciones por cercanía siguen siendo entre pares. Dentro de una sala cualquiera puede poner **música tranquila para todos** (generada en el navegador y sincronizada para todos), **grabar el audio de la reunión** en un archivo con un aviso de *Grabando* visible para toda la sala, levantar la mano, enviar reacciones o sacar la llamada a una ventana emergente pequeña que queda siempre encima mientras trabajas en otra cosa.
+
+<img src="docs/screenshots/meeting-large.png" alt="Una reunión con cinco cámaras, música, el aviso de grabación y una mano levantada" width="100%">
+
+</td>
+</tr>
 </table>
 
-Además: audio, vídeo y pantalla compartida con WebRTC entre pares (todo apagado al entrar), perfiles, temas claro, oscuro y del sistema, inglés y español, zoom del 36 % al 400 %, minimapa y atajos de teclado (⌘ / Ctrl K para buscar personas, ⌘ / Ctrl D para volver a tu escritorio).
+Además: audio, vídeo y pantalla compartida con WebRTC (todo apagado al entrar), cuentas personales opcionales con contraseña, objetos interactivos que abren un enlace o una nota al pulsar **X** a su lado, perfiles, temas claro, oscuro y del sistema, inglés y español, zoom del 36 % al 400 %, minimapa y atajos de teclado (⌘ / Ctrl K para buscar personas, ⌘ / Ctrl D para volver a tu escritorio).
 
 ---
 
 ## 🌐 Hecho para todo el mundo
 
 - **Lo alojas tú.** Un solo proceso de Node ejecuta el servidor de tiempo real y el cliente son archivos estáticos. Tu oficina, tus datos, tu servidor.
-- **Sin cuentas.** Elige un nombre y un color y entra. Una sala es solo una palabra en la dirección.
+- **Sin cuentas obligatorias.** Elige un nombre y un color y entra. Una sala es solo una palabra en la dirección. Activa las cuentas personales cuando tu equipo las necesite.
 - **Abierto a todos los idiomas.** La interfaz está en inglés y en español, sigue el idioma del navegador y se cambia en Ajustes. Añadir un idioma es un solo archivo de diccionario en `src/i18n/`; las contribuciones con el tuyo son muy bienvenidas.
 - **Abierto a todos los presupuestos.** Licencia MIT. Gratis para una startup de dos personas en Bogotá, un aula en Lagos o un equipo de voluntarios en Manila.
 - **Abierto a todos los colaboradores.** Un código pequeño y legible: React y Vite en el cliente, un protocolo WebSocket documentado en el servidor, la geometría compartida en módulos ES sencillos y pruebas que fijan el comportamiento.
@@ -175,7 +186,7 @@ flowchart LR
 ## ✅ Verificación
 
 ```sh
-npm test      # 35 pruebas: colisiones, asientos, colocación, reuniones, navegación
+npm test      # 40 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
 npm run build # comprobación de tipos y paquete de producción
 ```
 
@@ -189,12 +200,15 @@ El modelo de colisiones se compara baldosa por baldosa con el mapa de referencia
 - [x] Canales de chat al estilo de Slack y mensajes directos
 - [x] Calendario y actividad
 - [x] Editor de avatar: colores de piel, pelo, ropa y zapatos, gafas y sombreros
+- [x] Cuerpo femenino, vello facial y auriculares
 - [ ] Más peinados y conjuntos
 - [x] Interfaz en inglés y en español
 - [ ] Más idiomas para la interfaz
 - [x] Despliegue público: HTTPS, clave de invitación, rol de administrador, TURN, Docker
-- [ ] Cuentas personales con contraseña o inicio de sesión único
-- [ ] Servidor de medios (SFU) para reuniones grandes
+- [x] Cuentas personales con contraseña
+- [ ] Inicio de sesión único
+- [x] Servidor de medios (LiveKit) para reuniones grandes
+- [x] Música para todos, grabación de reuniones y ventana emergente
 
 ¿Quieres alguna antes? Abre un issue o envía un pull request.
 
@@ -202,7 +216,7 @@ El modelo de colisiones se compara baldosa por baldosa con el mapa de referencia
 
 ## ⚠️ Límites actuales
 
-Las oficinas se protegen con una clave de invitación compartida y una clave de administrador; todavía no hay cuentas personales ni contraseñas, y la identidad es el nombre que elige cada persona. Las llamadas son entre pares, lo que funciona bien en grupos pequeños; un servidor de medios para reuniones grandes está en la hoja de ruta.
+Las cuentas personales son opcionales (`ACCOUNTS=optional` o `required`); sin ellas, la identidad es el nombre que elige cada persona, protegido por las claves de invitación y de administrador. Todavía no hay inicio de sesión único. Sin servidor de medios las llamadas son entre pares, lo que funciona bien hasta unas ocho personas con cámara. La grabación guarda solo el audio, en el navegador de quien la inicia.
 
 ## 🎨 Arte y créditos
 
