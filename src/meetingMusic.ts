@@ -12,8 +12,12 @@ export class MeetingMusic {
   private timer: number | null = null;
   private nextBar = 0;
   private barIndex = 0;
+  private volume = 0.18;
+  /** Change the loudness while playing. */
+  setVolume(volume: number) { this.volume = volume; if (this.master && this.context) this.master.gain.setTargetAtTime(volume, this.context.currentTime, 0.05); }
 
   start(startedAt: number, volume = 0.18) {
+    this.volume = volume;
     this.stop();
     const context = new AudioContext();
     const master = context.createGain(); master.gain.value = volume;

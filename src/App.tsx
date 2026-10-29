@@ -20,7 +20,7 @@ import { ObjectThumb } from './sprites/objects';
 import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
 import { useEditHistory } from './useEditHistory';
 import { useSfu } from './useSfu';
-import { footstepsEnabled, setFootstepsEnabled } from './footsteps';
+import { effectsVolume, musicVolume, playStep, setEffectsVolume, setMusicVolume } from './footsteps';
 import { fetchWorkspace, knownWorkspaces, rememberWorkspace, workspaceUrl } from './workspaces';
 import { categoryOf, colorName, facingName, objectDescription, objectName, searchText } from './catalogNames';
 import { MeetingMusic } from './meetingMusic';
@@ -241,9 +241,9 @@ export default function App() {
   const musicStart = meetingArea ? meeting?.music?.startedAt ?? null : null;
   useEffect(() => {
     music.current ??= new MeetingMusic();
-    if (musicStart) music.current.start(musicStart); else music.current.stop();
+    if (musicStart) music.current.start(musicStart, musicVolume() * 0.3); else music.current.stop();
     if (!musicStart) return;
-    const resume = () => { if (musicStart && music.current) music.current.start(musicStart); };
+    const resume = () => { if (musicStart && music.current) music.current.start(musicStart, musicVolume() * 0.3); };
     document.addEventListener('pointerdown', resume, { once: true });
     return () => document.removeEventListener('pointerdown', resume);
   }, [musicStart]);
@@ -359,6 +359,13 @@ export default function App() {
   const userName = (userId: string) => office.users.find(user => user.userId === userId)?.name ?? t('Alguien');
   const deskLabel = (areaId: string) => { const owner = office.desks[areaId]; const n = DESK_AREAS.findIndex(area => area.id === areaId) + 1; return owner === office.userId ? t('Tu escritorio') : owner ? t('Escritorio de {name}', { name: userName(owner) }) : t('Escritorio {n} (libre)', { n }); };
   const myDesk = DESK_AREAS.find(area => office.desks[area.id] === office.userId) ?? null;
+  // The desk you are standing in: its name shows at the top left of the map with its actions, as in the reference.
+  const selfTile = self ? { tx: Math.floor(self.x / 32), ty: Math.floor(self.y / 32) } : null;
+  const hereDesk = selfTile ? DESK_AREAS.find(area => selfTile.tx >= area.x && selfTile.tx < area.x + area.w && selfTile.ty >= area.y && selfTile.ty < area.y + area.h) ?? null : null;
+  const hereOwnerId = hereDesk ? office.desks[hereDesk.id] ?? null : null;
+  const hereOwner = hereOwnerId ? office.users.find(user => user.userId === hereOwnerId) : undefined;
+  const [deskMenu, setDeskMenu] = useState(false);
+  useEffect(() => setDeskMenu(false), [hereDesk?.id]);
   /** Walks to a desk and sits at its chair (or stands next to it when the chair is taken). */
   function goToDesk(areaId: string) {
     const area = DESK_AREAS.find(candidate => candidate.id === areaId); if (!area) return;
@@ -394,7 +401,8 @@ export default function App() {
   }, [editItem, selectedObject, rotateEditItem, rotateSelected, office.send, editHistory, panel]);
   const remove = useCallback((id: string) => { editHistory.record.remove(id); office.send({ type: 'object:remove', id }); }, [office.send, editHistory.record]);
   const moveObject = useCallback((id: string, x: number, y: number, free?: boolean) => { editHistory.record.update(id); office.send({ type: 'object:update', id, x, y, free: !!free }); }, [office.send, editHistory.record]);
-  const [footsteps, setFootsteps] = useState(footstepsEnabled);
+  const [effects, setEffects] = useState(effectsVolume);
+  const [musicLevel, setMusicLevel] = useState(musicVolume);
   const [freePlacement, setFreePlacement] = useState(() => { try { return localStorage.getItem('office-free-placement') === '1'; } catch { return false; } });
   useEffect(() => { try { localStorage.setItem('office-free-placement', freePlacement ? '1' : '0'); } catch { /* storage unavailable */ } }, [freePlacement]);
   async function join(e: React.FormEvent) {
@@ -510,19 +518,10 @@ export default function App() {
             <button className="area-row" disabled={!online} onClick={() => move(SPAWN.x, SPAWN.y)}><Coffee size={16} /><span>{t('Lobby')}</span><ArrowRight size={14} /></button>
           </details>
           <details className="office-places desk-list"><summary><Monitor size={15} />{t('Escritorios')}<ChevronDown size={13} /></summary>
-            {myDesk && <p className="desk-hint">{t('Tu escritorio: ⌘ D te lleva a él.')}</p>}
-            {DESK_AREAS.map(area => { const owner = office.desks[area.id]; const mine = owner === office.userId; return <div className={`desk-row${mine ? ' mine' : ''}`} key={area.id}>
-              <button className="area-row" disabled={!online} onClick={() => goToDesk(area.id)} title={t('Ir a este escritorio')}><Monitor size={16} /><span>{deskLabel(area.id)}</span><ArrowRight size={14} /></button>
-              <div className="desk-actions">
-                {!owner && !myDesk && <button disabled={!online} onClick={() => office.send({ type: 'desk:assign', areaId: area.id, userId: office.userId })}>{t('Reclamar')}</button>}
-                {!owner && myDesk && <button disabled={!online} onClick={() => office.send({ type: 'desk:assign', areaId: area.id, userId: office.userId })}>{t('Cambiarme aquí')}</button>}
-                {owner && (mine || canEdit) && <button disabled={!online} onClick={() => office.send({ type: 'desk:assign', areaId: area.id, userId: null })}>{t('Liberar')}</button>}
-                {canEdit && <select aria-label={t('Asignar {desk} a', { desk: deskLabel(area.id) })} disabled={!online} value={owner ?? ''} onChange={e => office.send({ type: 'desk:assign', areaId: area.id, userId: e.target.value || null })}>
-                  <option value="">{t('Asignar a…')}</option>
-                  {office.users.map(user => <option key={user.userId} value={user.userId}>{user.name}</option>)}
-                </select>}
-              </div>
-            </div>; })}
+            <p className="desk-hint">{myDesk ? t('Tu escritorio: ⌘ D te lleva a él.') : t('Entra a un escritorio para reclamarlo o asignarlo.')}</p>
+            {DESK_AREAS.map(area => { const owner = office.desks[area.id]; const ownerUser = owner ? office.users.find(user => user.userId === owner) : undefined; return <button key={area.id} className={`area-row desk-row${owner === office.userId ? ' mine' : ''}`} disabled={!online} onClick={() => goToDesk(area.id)} title={t('Ir a este escritorio')}>
+              {ownerUser ? <Avatar person={{ name: ownerUser.name, color: ownerUser.color }} size={20} /> : <Monitor size={16} />}<span>{deskLabel(area.id)}</span><ArrowRight size={14} />
+            </button>; })}
           </details>
           <div className="sidebar-foot"><span className={`connection ${online ? 'connected' : ''}`}><i />{online ? t('Conectado') : profile ? t('Conectando…') : t('Sin conexión')}</span><span>{t('Open Office')}</span></div>
         </>}
@@ -569,6 +568,17 @@ export default function App() {
       </aside>}
       <main className={`map-area${showMeetingView ? ' is-meeting-view' : ''}${pageView ? ' is-chat-view' : ''}`} aria-label={showMeetingView ? t('Vista de reunión') : t('Oficina Vivo')}>
         <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} onZoom={setZoom} freePlacement={freePlacement} focusRooms={office.focusRooms} onFocusClosed={setKnockPrompt} deskLabels={Object.fromEntries(DESK_AREAS.map(area => [area.id, deskLabel(area.id)]))} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} reactions={office.reactions} interactions={office.interactions} onNearInteractive={setNearInteractive} onInteract={setOpenInteraction} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
+        {!meetingArea && hereDesk && !showMeetingView && !pageView && <div className="meeting-bar desk-bar">
+          <div className="meeting-bar-left desk-pill-wrap">
+            <button type="button" className="meeting-pill desk-pill" aria-expanded={deskMenu} onClick={() => setDeskMenu(open => !open)}><Monitor size={15} />{deskLabel(hereDesk.id)}<ChevronDown size={14} /></button>
+            {deskMenu && <div className="desk-menu" role="menu">
+              <div className="desk-menu-owner">{hereOwner ? <Avatar person={{ name: hereOwner.name, color: hereOwner.color }} size={28} /> : <span className="desk-menu-free"><Monitor size={15} /></span>}<div><strong>{deskLabel(hereDesk.id)}</strong><small>{hereOwnerId ? (hereOwnerId === office.userId ? t('Es tu escritorio. ⌘ D te trae aquí.') : t('Asignado a {name}', { name: hereOwner?.name ?? t('Alguien') })) : t('Nadie tiene este escritorio todavía.')}{FOCUS_ROOMS.some(room => room.id === hereDesk.id) ? ` · ${t('Zona de concentración')}` : ''}</small></div></div>
+              {!hereOwnerId && <button role="menuitem" className="primary" disabled={!online} onClick={() => { office.send({ type: 'desk:assign', areaId: hereDesk.id, userId: office.userId }); setDeskMenu(false); }}>{myDesk ? t('Cambiarme a este escritorio') : t('Reclamar este escritorio')}</button>}
+              {hereOwnerId && (hereOwnerId === office.userId || canEdit) && <button role="menuitem" disabled={!online} onClick={() => { office.send({ type: 'desk:assign', areaId: hereDesk.id, userId: null }); setDeskMenu(false); }}>{hereOwnerId === office.userId ? t('Liberar mi escritorio') : t('Quitar la asignación')}</button>}
+              {canEdit && <label className="desk-menu-assign">{t('Asignar a')}<select disabled={!online} value={hereOwnerId ?? ''} onChange={e => { office.send({ type: 'desk:assign', areaId: hereDesk.id, userId: e.target.value || null }); setDeskMenu(false); }}><option value="">{t('Nadie')}</option>{office.users.map(user => <option key={user.userId} value={user.userId}>{user.name}</option>)}</select></label>}
+            </div>}
+          </div>
+        </div>}
         {meetingArea && <div className="meeting-bar" aria-label={t('Reunión en curso')}>
           <div className="meeting-bar-left"><span className="meeting-pill"><Users size={15} />{roomLabel(meetingArea.id)}</span><button type="button" className={`meeting-lock ${meeting?.locked ? 'is-locked' : ''}`} title={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-label={meeting?.locked ? t('Desbloquear reunión') : t('Bloquear reunión')} aria-pressed={!!meeting?.locked} onClick={() => office.send({ type: 'meeting:lock', areaId: meetingArea.id, locked: !meeting?.locked })}>{meeting?.locked ? <Lock size={14} /> : <LockOpen size={14} />}</button></div>
           <div className="meeting-bar-right">{meeting?.recordingBy && <span className="meeting-recording"><i />{t('Grabando')}</span>}<button type="button" className={`meeting-tool ${meeting?.music ? 'is-active' : ''}`} title={meeting?.music ? t('Detener la música') : t('Poner música para todos')} aria-label={meeting?.music ? t('Detener la música') : t('Poner música para todos')} aria-pressed={!!meeting?.music} onClick={() => office.send({ type: 'meeting:music', playing: !meeting?.music })}><Music size={15} /></button>{'documentPictureInPicture' in window && <button type="button" className={`meeting-tool ${pip ? 'is-active' : ''}`} title={t('Abrir en ventana emergente')} aria-label={t('Abrir en ventana emergente')} onClick={() => void togglePip()}><PictureInPicture2 size={15} /></button>}<button type="button" className="meeting-tool" title={t('Copiar enlace de la reunión')} aria-label={t('Copiar enlace de la reunión')} onClick={() => void copyMeetingLink(meetingArea.id)}><Link2 size={15} /></button><div className="meeting-view-toggle" role="group" aria-label="Vista"><button type="button" className={!showMeetingView ? 'is-active' : ''} aria-pressed={!showMeetingView} title={t('Vista de oficina')} aria-label={t('Vista de oficina')} onClick={() => setMeetingView(false)}><Map size={14} /></button><button type="button" className={showMeetingView ? 'is-active' : ''} aria-pressed={showMeetingView} title={t('Vista de reunión')} aria-label={t('Vista de reunión')} onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><LayoutGrid size={14} /></button></div></div>
@@ -653,7 +663,7 @@ export default function App() {
         <label>{t('Nombre completo')}<span className="required">*</span><input value={name} onChange={e => setName(e.target.value)} required maxLength={40} placeholder={t('p. ej. Ana Pérez')} /></label>
         <div className="profile-actions"><button className="primary" type="submit">{t('Guardar')}</button></div></form>
         : dialog === 'invite' ? <><span className="dialog-icon"><Users size={27} /></span><h2 id="dialog-title">{t('Invitar colaboradores')}</h2><p>{isLocalHost ? t('Abre este enlace en otra pestaña de este computador para compartir la oficina.') : t('Comparte este enlace con tu equipo para que entre a la oficina.')}</p><label>{t('Enlace de la oficina')}<input readOnly value={inviteLink()} onFocus={e => e.target.select()} /></label><button className="primary enter-button" onClick={() => void copyLink()}>{copied ? <Check size={17} /> : <Copy size={17} />}{copied ? t('Enlace copiado') : t('Copiar enlace')}</button>{isLocalHost ? <p className="footnote">{t('Esta oficina se ejecuta en tu computador. El acceso desde otros equipos necesita configurar un servidor.')}</p> : config.accessRequired ? <p className="footnote">{t('El enlace incluye la clave de invitación: compártelo solo con tu equipo.')}</p> : null}</>
-          : dialog === 'settings' ? <><span className="dialog-icon"><Settings2 size={27} /></span><h2 id="dialog-title">{t('Apariencia')}</h2><p>{t('Elige cómo se ve la interfaz de tu oficina.')}</p><label>{t('Tema')}<select value={theme} onChange={e => setTheme(e.target.value as Theme)}><option value="system">{t('Sistema')}</option><option value="light">{t('Claro')}</option><option value="dark">{t('Oscuro')}</option></select></label><label>{t('Idioma')}<select value={lang} onChange={e => setLanguage(e.target.value as Language)}>{LANGUAGES.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label><label>{t('Arte del mapa')}<select value={art} onChange={e => setArtPack(e.target.value as ArtPack)}><option value="reference">{t('Referencia (idéntico a Gather)')}</option><option value="original">{t('Original (libre para redistribuir)')}</option></select></label><label className="settings-toggle"><input type="checkbox" checked={footsteps} onChange={e => { setFootstepsEnabled(e.target.checked); setFootsteps(e.target.checked); }} />{t('Sonido de pasos al caminar')}</label><p className="footnote">{t('La opción Sistema se adapta a la apariencia de tu computador.')}</p><button className="primary enter-button" onClick={() => setDialog(null)}>{t('Listo')}</button></>
+          : dialog === 'settings' ? <><span className="dialog-icon"><Settings2 size={27} /></span><h2 id="dialog-title">{t('Apariencia')}</h2><p>{t('Elige cómo se ve la interfaz de tu oficina.')}</p><label>{t('Tema')}<select value={theme} onChange={e => setTheme(e.target.value as Theme)}><option value="system">{t('Sistema')}</option><option value="light">{t('Claro')}</option><option value="dark">{t('Oscuro')}</option></select></label><label>{t('Idioma')}<select value={lang} onChange={e => setLanguage(e.target.value as Language)}>{LANGUAGES.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label><label>{t('Arte del mapa')}<select value={art} onChange={e => setArtPack(e.target.value as ArtPack)}><option value="reference">{t('Referencia (idéntico a Gather)')}</option><option value="original">{t('Original (libre para redistribuir)')}</option></select></label><label className="settings-volume">{t('Efectos de sonido')}<span><input type="range" min={0} max={100} step={5} value={Math.round(effects * 100)} onChange={e => { const v = Number(e.target.value) / 100; setEffects(v); setEffectsVolume(v); }} onPointerUp={() => playStep('wood')} aria-label={t('Volumen de los efectos de sonido')} /><output>{effects ? `${Math.round(effects * 100)} %` : t('Silencio')}</output></span></label><label className="settings-volume">{t('Música de reunión')}<span><input type="range" min={0} max={100} step={5} value={Math.round(musicLevel * 100)} onChange={e => { const v = Number(e.target.value) / 100; setMusicLevel(v); setMusicVolume(v); music.current?.setVolume(v * 0.3); }} aria-label={t('Volumen de la música de reunión')} /><output>{musicLevel ? `${Math.round(musicLevel * 100)} %` : t('Silencio')}</output></span></label><p className="footnote">{t('La opción Sistema se adapta a la apariencia de tu computador.')}</p><button className="primary enter-button" onClick={() => setDialog(null)}>{t('Listo')}</button></>
             : <><span className="dialog-icon"><CircleHelp size={27} /></span><h2 id="dialog-title">{t('Controles de la oficina')}</h2><p>{t('Acércate a tus compañeros para conversar.')}</p><div className="shortcuts"><div><span>{t('Caminar')}</span><kbd>↑ ↓ ← → / WASD</kbd></div><div><span>{t('Caminar más rápido')}</span><kbd>{t('Shift + flechas')}</kbd></div><div><span>{t('Ir a un lugar')}</span><kbd>{t('Doble clic')}</kbd></div><div><span>{t('Sentarse / levantarse')}</span><kbd>{t('Clic en silla / E')}</kbd></div><div><span>{t('Explorar el mapa')}</span><kbd>Arrastrar</kbd></div><div><span>{t('Buscar personas')}</span><kbd>⌘ / Ctrl + K</kbd></div><div><span>{t('Volver al área de trabajo')}</span><kbd>⌘ / Ctrl + D</kbd></div></div><button className="primary enter-button" onClick={() => setDialog(null)}>{t('Entendido')}</button></>}
     </div></div>}
   </div>;

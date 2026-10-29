@@ -12,8 +12,13 @@ export function floorMaterial(point: { x: number; y: number }): Material {
   return floor.startsWith('Carpet') ? 'carpet' : floor.includes('Grass') ? 'grass' : 'wood';
 }
 
-export const footstepsEnabled = () => { try { return localStorage.getItem(STORAGE) !== 'off'; } catch { return true; } };
-export const setFootstepsEnabled = (on: boolean) => { try { localStorage.setItem(STORAGE, on ? 'on' : 'off'); } catch { /* storage unavailable */ } };
+/** Sound effects volume, 0 to 1 (0 silences them). */
+export function effectsVolume() { try { const saved = localStorage.getItem('office-effects-volume'); if (saved !== null) return Math.min(1, Math.max(0, Number(saved) || 0)); return localStorage.getItem(STORAGE) === 'off' ? 0 : 0.7; } catch { return 0.7; } }
+export const setEffectsVolume = (value: number) => { try { localStorage.setItem('office-effects-volume', String(Math.min(1, Math.max(0, value)))); } catch { /* storage unavailable */ } };
+export const footstepsEnabled = () => effectsVolume() > 0;
+/** Meeting music volume, 0 to 1. */
+export function musicVolume() { try { const saved = localStorage.getItem('office-music-volume'); return saved === null ? 0.6 : Math.min(1, Math.max(0, Number(saved) || 0)); } catch { return 0.6; } }
+export const setMusicVolume = (value: number) => { try { localStorage.setItem('office-music-volume', String(Math.min(1, Math.max(0, value)))); } catch { /* storage unavailable */ } };
 
 let context: AudioContext | null = null;
 let noise: AudioBuffer | null = null;
@@ -43,7 +48,7 @@ export function playStep(material: Material, running = false) {
   const now = ctx.currentTime, vary = 0.85 + Math.random() * 0.3;
   left = !left; // alternate feet: a touch higher and lower
   const pitch = vary * (left ? 1.04 : 0.96);
-  const level = (running ? 1.25 : 1) * 0.5;
+  const level = (running ? 1.25 : 1) * 0.7 * effectsVolume();
   const out = ctx.createGain(); out.gain.value = level; out.connect(ctx.destination);
 
   const burst = (filterType: BiquadFilterType, frequency: number, q: number, gain: number, attack: number, decay: number) => {

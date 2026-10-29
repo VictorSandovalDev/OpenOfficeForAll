@@ -653,10 +653,6 @@ button .avatar { pointer-events: none; }
 .pip-stage .meeting-tile { background: #ffffff08; }
 /* Desks in the side panel */
 .desk-list .desk-hint { margin: 2px 10px 6px; font-size: 12px; color: var(--muted, #a1a1aa); }
-.desk-row { display: flex; flex-direction: column; gap: 4px; padding-bottom: 6px; }
-.desk-row.mine .area-row span { font-weight: 600; }
-.desk-actions { display: flex; gap: 6px; padding: 0 10px 0 38px; }
-.desk-actions:empty { display: none; }
 .desk-actions button, .desk-actions select { height: 26px; padding: 0 9px; border-radius: 7px; border: 1px solid var(--line, #3a3a42); background: var(--surface-2, #26262c); color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
 .desk-actions select { flex: 1; min-width: 0; }
 .desk-actions button:disabled, .desk-actions select:disabled { opacity: .5; cursor: default; }
@@ -769,3 +765,24 @@ button .avatar { pointer-events: none; }
 .scene-base-object.is-editable:focus-visible:not(.is-selected), .scene-added-object.is-editable:focus-visible:not(.is-selected) { filter: drop-shadow(0 0 1px #ffffffaa); }
 .settings-toggle { display: flex !important; flex-direction: row !important; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
 .settings-toggle input { width: 16px; height: 16px; accent-color: var(--accent, #5a4fcf); }
+/* Desk label at the top left of the map, with its menu (like the meeting room label) */
+.desk-pill-wrap { position: relative; }
+.desk-pill { border: 0; cursor: pointer; font: inherit; font-size: 14px; font-weight: 500; background: #1d1d22cc !important; color: #fff !important; backdrop-filter: blur(6px); }
+.desk-pill:hover { background: #2a2a32e6 !important; }
+.desk-menu { position: absolute; top: 34px; left: 0; width: 280px; padding: 10px; border-radius: 12px; background: #1f1f24; color: #f2f2f4; border: 1px solid #ffffff1a; box-shadow: 0 14px 36px #0009; display: grid; gap: 8px; }
+.desk-menu-owner { display: flex; align-items: center; gap: 10px; padding: 2px 2px 6px; border-bottom: 1px solid #ffffff14; }
+.desk-menu-owner div { display: grid; gap: 2px; min-width: 0; }
+.desk-menu-owner strong { font-size: 14px; }
+.desk-menu-owner small { font-size: 12px; color: #a9a9b2; }
+.desk-menu-free { width: 28px; height: 28px; border-radius: 9999px; display: grid; place-items: center; background: #2c2c34; color: #c4c4cc; flex: none; }
+.desk-menu > button { height: 32px; border-radius: 8px; border: 1px solid #ffffff1f; background: #2b2b33; color: #f2f2f4; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.desk-menu > button.primary { background: #3b3df0; border-color: #3b3df0; }
+.desk-menu-assign { display: grid; gap: 4px; font-size: 12px; color: #a9a9b2; }
+.desk-menu-assign select { height: 30px; border-radius: 7px; border: 1px solid #ffffff1f; background: #26262c; color: #f2f2f4; font: inherit; font-size: 13px; padding: 0 6px; }
+.desk-list .desk-row { display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%; }
+.desk-list .desk-row.mine > span { font-weight: 600; }
+.desk-list .desk-row > span { flex: 1; text-align: left; }
+.settings-volume { display: grid; gap: 6px; }
+.settings-volume span { display: flex; align-items: center; gap: 10px; }
+.settings-volume input[type=range] { flex: 1; accent-color: var(--accent, #5a4fcf); }
+.settings-volume output { min-width: 64px; text-align: right; font-size: 13px; opacity: .75; }
