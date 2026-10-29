@@ -432,4 +432,12 @@ export const EN: Record<string, string> = {
   "{name} toca la puerta.": "{name} is knocking.",
   "Dejar pasar": "Let in",
   "Ignorar": "Ignore",
+  "Objeto para colocar": "Object to place",
+  "Colocando": "Placing",
+  "Seleccionado": "Selected",
+  "Clic en el mapa para colocar · R gira · Esc termina": "Click the map to place · R rotates · Esc finishes",
+  "Arrastra para mover · R gira · Suprimir elimina": "Drag to move · R rotates · Delete removes",
+  "Girar": "Rotate",
+  "Interacción": "Interaction",
+  "Deseleccionar": "Deselect",
 };

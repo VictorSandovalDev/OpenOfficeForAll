@@ -82,7 +82,6 @@ function BaseObject({ object, selected, editing, onSelectObject, onGrab }: { obj
     onPointerDown={e => { if (editing) { e.stopPropagation(); onGrab(object.id, e); } }} onClick={e => { if (editing) e.stopPropagation(); }}
     onKeyDown={e => { if (editing && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onSelectObject(object.id); } }}>
     {editing && <title>{label}</title>}
-    {selected && <rect x={object.x - object.originX - 2} y={object.y - object.originY - 2} width={object.w + 4} height={object.h + 4} rx="3" fill="#303fe022" stroke="#6b78ff" strokeWidth="2" />}
     <g transform={`translate(${object.x} ${object.y})`}><ObjectArt object={object} /></g>
   </g>;
 }
@@ -124,7 +123,6 @@ function AddedObject({ object, selected, editing, onSelectObject, onGrab }: { ob
     onPointerDown={e => { if (editing) { e.stopPropagation(); onGrab(object.id, e); } }} onClick={e => { if (editing) e.stopPropagation(); }}
     onKeyDown={e => { if (editing && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onSelectObject(object.id); } }}>
     {editing && <title>{label}</title>}
-    {selected && <rect x={data.x - data.originX - 2} y={data.y - data.originY - 2} width={data.w + 4} height={data.h + 4} rx="3" fill="#303fe022" stroke="#6b78ff" strokeWidth="2" />}
     <g transform={`translate(${data.x} ${data.y})`}><ObjectArt object={data} /></g>
   </g>;
 }

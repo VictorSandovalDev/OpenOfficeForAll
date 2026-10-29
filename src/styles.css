@@ -716,3 +716,18 @@ button .avatar { pointer-events: none; }
 .focus-card button { height: 30px; padding: 0 12px; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .focus-card .secondary { border: 1px solid #3a3a42; background: #2f2f36; color: #f2f2f4; }
 .focus-card.focus-door { background: #2a2540; border-color: #5a4fcf66; }
+/* Decorator: the selected object glows on the map and is shown in a card at the top right. */
+.scene-base-object.is-selected, .scene-added-object.is-selected { filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 5px #8b7bffcc); }
+.selection-card { position: fixed; top: 96px; right: 24px; z-index: 55; width: 370px; display: flex; gap: 14px; padding: 14px; border-radius: 16px; background: #1d1d22f2; color: #f2f2f4; border: 1px solid #ffffff1a; box-shadow: 0 14px 40px #0009; backdrop-filter: blur(8px); animation: selection-in .16s ease-out; }
+@keyframes selection-in { from { opacity: 0; transform: translateY(-6px); } }
+.selection-card-art { flex: none; width: 92px; height: 92px; border-radius: 12px; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, #3a3550, #23222c); }
+.selection-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.selection-card-eyebrow { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #a99cff; font-weight: 700; }
+.selection-card-body strong { font-size: 15px; line-height: 1.25; }
+.selection-card-meta { font-size: 12.5px; color: #c4c4cc; }
+.selection-card-hint { font-size: 11px; color: #8d8d96; margin-top: 2px; }
+.selection-card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.selection-card-actions button { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border-radius: 8px; border: 1px solid #ffffff1f; background: #2b2b33; color: #f2f2f4; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.selection-card-actions button:hover { background: #35353f; }
+.selection-card-actions button.danger { color: #ff9b9e; }
+.selection-card-close { position: absolute; top: 8px; right: 8px; }
