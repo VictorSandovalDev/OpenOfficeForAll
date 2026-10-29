@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Open Office For All</title>
+<meta name="description" content="A free, open-source virtual office for remote teams. Walk around a pixel-art office, talk to whoever is nearby, meet in rooms. Host it yourself, in any country and any language." />
+<meta property="og:title" content="Open Office For All" />
+<meta property="og:description" content="A free, open-source virtual office for remote teams. Host it yourself." />
+<meta property="og:image" content="assets/office.jpg" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<style>
+  :root { --ink: #16161a; --muted: #5f5f6b; --line: #e6e4ee; --bg: #fbfaf7; --card: #ffffff; --brand: #3b3df0; --brand-2: #7c6cf2; --grass: #4e8a48; --wood: #a27f6b; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #f2f2f5; --muted: #a8a8b4; --line: #2b2b33; --bg: #111114; --card: #1a1a1f; } }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { width: min(1120px, 100% - 32px); margin: 0 auto; }
+  img.pixel { image-rendering: pixelated; }
+
+  header.bar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line); }
+  header.bar .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; }
+  .brand img { width: 30px; height: 30px; }
+  nav.links { margin-left: auto; display: flex; gap: 22px; font-size: 14.5px; }
+  nav.links a { text-decoration: none; color: var(--muted); }
+  nav.links a:hover { color: var(--ink); }
+  .lang { display: flex; border: 1px solid var(--line); border-radius: 9999px; overflow: hidden; }
+  .lang button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; padding: 6px 11px; cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 10px; font-weight: 650; text-decoration: none; font-size: 15px; }
+  .btn.primary { background: var(--brand); color: #fff; }
+  .btn.primary:hover { background: #2a2dd6; }
+  .btn.ghost { border: 1px solid var(--line); background: var(--card); }
+
+  .hero { padding: 72px 0 40px; display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+  .eyebrow { display: inline-flex; gap: 8px; align-items: center; padding: 5px 12px; border-radius: 9999px; background: color-mix(in srgb, var(--brand) 12%, transparent); color: var(--brand-2); font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+  h1 { font-size: clamp(38px, 5.4vw, 62px); line-height: 1.04; letter-spacing: -.03em; margin: 18px 0 18px; }
+  h1 .accent { background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 560px; margin: 0 0 28px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .fine { margin-top: 16px; font-size: 13.5px; color: var(--muted); }
+  .hero-art { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px -30px #0006; aspect-ratio: 16 / 10; background: var(--grass); }
+  .hero-art img.map { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bubble { position: absolute; display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 9999px; background: #1d1d22e6; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 8px 20px #0005; }
+  .bubble img { width: 26px; height: 34px; object-fit: contain; background: #ffffff1a; border-radius: 9999px; padding: 2px 3px; }
+  .bubble i { width: 8px; height: 8px; border-radius: 9999px; background: #3ac07a; display: inline-block; }
+  .b1 { left: 8%; top: 14%; } .b2 { right: 8%; bottom: 14%; }
+
+  section { padding: 64px 0; }
+  .kicker { font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-2); }
+  h2 { font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -.02em; line-height: 1.12; margin: 10px 0 14px; }
+  .sub { color: var(--muted); max-width: 640px; margin: 0 0 36px; font-size: 17px; }
+
+  .values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .value { padding: 22px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+  .value b { display: block; font-size: 17px; margin: 10px 0 6px; }
+  .value p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  .icon { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 12%, transparent); font-size: 20px; }
+
+  .feature { display: grid; grid-template-columns: 1fr 1.15fr; gap: 44px; align-items: center; padding: 28px 0; }
+  .feature.flip { grid-template-columns: 1.15fr 1fr; }
+  .feature.flip .copy { order: 2; }
+  .feature h3 { font-size: 26px; letter-spacing: -.01em; margin: 6px 0 10px; }
+  .feature p { color: var(--muted); margin: 0 0 14px; }
+  .feature ul { margin: 0; padding-left: 18px; color: var(--muted); }
+  .feature li { margin: 4px 0; }
+  .shot { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 24px 60px -30px #0007; background: #222; }
+  .shot img { display: block; width: 100%; }
+
+  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .size { border-radius: 16px; overflow: hidden; background: var(--card); border: 1px solid var(--line); }
+  .size img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .size div { padding: 16px 18px 20px; }
+  .size b { font-size: 18px; } .size .people { float: right; font-size: 13px; color: var(--brand-2); font-weight: 700; }
+  .size p { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  .grid-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 28px; margin: 0; padding: 0; list-style: none; }
+  .grid-list li { padding: 14px 0; border-top: 1px solid var(--line); }
+  .grid-list b { display: block; margin-bottom: 3px; }
+  .grid-list span { color: var(--muted); font-size: 14.5px; }
+
+  .start { border-radius: 22px; padding: 40px; background: linear-gradient(135deg, #1b1b3a, #2b1e57); color: #fff; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+  .start h2 { color: #fff; } .start p { color: #c9c7e8; }
+  pre { margin: 0; padding: 18px 20px; border-radius: 14px; background: #0d0d14; color: #e8e6ff; font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; border: 1px solid #ffffff14; }
+  pre .c { color: #8886b0; }
+
+  footer { padding: 36px 0 48px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 40px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+
+  [data-lang="es"] .en, [data-lang="en"] .es { display: none !important; }
+
+  @media (max-width: 900px) {
+    .hero, .feature, .feature.flip, .start { grid-template-columns: 1fr; }
+    .feature.flip .copy { order: 0; }
+    .values { grid-template-columns: 1fr 1fr; }
+    .sizes, .grid-list { grid-template-columns: 1fr; }
+    nav.links { display: none; }
+    .hero { padding-top: 40px; }
+  }
+  @media (max-width: 520px) { .values { grid-template-columns: 1fr; } .start { padding: 26px; } .lang { margin-left: auto; } }
+</style>
+</head>
+<body data-lang="en">
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/favicon.svg" alt="" />Open Office For All</a>
+    <nav class="links">
+      <a href="#features"><span class="en">Features</span><span class="es">Funciones</span></a>
+      <a href="#sizes"><span class="en">Office sizes</span><span class="es">Tamaños</span></a>
+      <a href="#start"><span class="en">Get started</span><span class="es">Empezar</span></a>
+      <a href="https://github.com/VictorSandovalDev/OpenOfficeForAll">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow"><span class="en">Free · open source · MIT</span><span class="es">Gratis · código abierto · MIT</span></span>
+      <h1><span class="en">A virtual office your team can <span class="accent">actually walk into</span>.</span><span class="es">Una oficina virtual en la que tu equipo <span class="accent">puede entrar de verdad</span>.</span></h1>
+      <p class="lead"><span class="en">Move around a cosy pixel-art office, talk to whoever is next to you, sit at your desk and close the door for a meeting. No subscriptions, no seat limits, no vendor. Run it on your own server, in any country and any language.</span><span class="es">Muévete por una acogedora oficina en pixel art, habla con quien tengas al lado, siéntate en tu escritorio y cierra la puerta para reunirte. Sin suscripciones, sin límite de puestos y sin depender de nadie. Ejecútalo en tu propio servidor, en cualquier país y en cualquier idioma.</span></p>
+      <div class="cta">
+        <a class="btn primary" href="#start"><span class="en">Host your office</span><span class="es">Monta tu oficina</span> →</a>
+        <a class="btn ghost" href="https://github.com/VictorSandovalDev/OpenOfficeForAll">★ <span class="en">Star on GitHub</span><span class="es">Ver en GitHub</span></a>
+      </div>
+      <p class="fine"><span class="en">Your office, your data, your server.</span><span class="es">Tu oficina, tus datos, tu servidor.</span></p>
+    </div>
+    <div class="hero-art">
+      <img class="map" src="assets/office.jpg" alt="A pixel-art office with meeting rooms, desks, a lounge and a garden" />
+      <span class="bubble b1"><img class="pixel" src="assets/avatar-2.png" alt="" /><i></i>Ana</span>
+      <span class="bubble b2"><img class="pixel" src="assets/avatar-1.png" alt="" /><i></i>Leo</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="values">
+        <div class="value"><span class="icon">🚶</span><b class="en">Presence, not calls</b><b class="es">Presencia, no llamadas</b><p class="en">Walk up to a colleague and you hear each other. Walk away and you don't.</p><p class="es">Acércate a un compañero y os oís. Aléjate y dejáis de oíros.</p></div>
+        <div class="value"><span class="icon">🔓</span><b class="en">Truly open</b><b class="es">Abierto de verdad</b><p class="en">MIT licence and original art: use it, fork it, ship it, teach with it.</p><p class="es">Licencia MIT y arte original: úsalo, modifícalo, publícalo y enseña con él.</p></div>
+        <div class="value"><span class="icon">🏠</span><b class="en">Self-hosted</b><b class="es">En tu servidor</b><p class="en">One Node process and static files. Docker, HTTPS and a TURN relay included.</p><p class="es">Un proceso de Node y archivos estáticos. Incluye Docker, HTTPS y un relé TURN.</p></div>
+        <div class="value"><span class="icon">🌍</span><b class="en">For the whole world</b><b class="es">Para todo el mundo</b><p class="en">English and Spanish today, ready for more. Works in any modern browser.</p><p class="es">Inglés y español hoy, listo para más. Funciona en cualquier navegador moderno.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <span class="kicker en">Features</span><span class="kicker es">Funciones</span>
+      <h2><span class="en">Everything a team needs to feel together</span><span class="es">Todo lo que un equipo necesita para sentirse cerca</span></h2>
+
+      <div class="feature">
+        <div class="copy">
+          <h3 class="en">Spaces for every team</h3><h3 class="es">Espacios para cada equipo</h3>
+          <p class="en">Create as many workspaces as you like, each with its own name, map, people, chat, calendar and desks.</p>
+          <p class="es">Crea todos los espacios que quieras, cada uno con su nombre, su mapa, sus personas, su chat, su calendario y sus escritorios.</p>
+          <ul class="en"><li>A shared list of every space on your server</li><li>See who is inside right now</li><li>Rename or delete spaces from the dashboard</li></ul>
+          <ul class="es"><li>Una lista compartida de todos los espacios de tu servidor</li><li>Mira quién está dentro ahora</li><li>Renombra o elimina espacios desde el panel</li></ul>
+        </div>
+        <div class="shot"><img src="assets/dashboard-en.png" alt="The workspace dashboard with map cards" loading="lazy" /></div>
+      </div>
+
+      <div class="feature flip">
+        <div class="copy">
+          <h3 class="en">Desks and focus rooms</h3><h3 class="es">Escritorios y oficinas de concentración</h3>
+          <p class="en">Walk into a desk to claim it or give it to a teammate, and press ⌘ / Ctrl D to sit back at yours. Private offices switch you to Do not disturb and close the door: others knock, you let them in.</p>
+          <p class="es">Entra a un escritorio para reclamarlo o dárselo a un compañero, y pulsa ⌘ / Ctrl D para volver al tuyo. Las oficinas privadas te ponen en «No molestar» y cierran la puerta: los demás tocan y tú les dejas pasar.</p>
+        </div>
+        <div class="shot"><img src="assets/desk-menu-en.png" alt="The desk label with its menu" loading="lazy" /></div>
+      </div>
+
+      <div class="feature">
+        <div class="copy">
+          <h3 class="en">Meetings that just work</h3><h3 class="es">Reuniones que funcionan solas</h3>
+          <p class="en">Step into a meeting room and the doors close. Camera, microphone and screen sharing over WebRTC, an optional LiveKit media server for large meetings, music for everyone, recording, reactions and a raised hand.</p>
+          <p class="es">Entra a una sala de reuniones y se cierran las puertas. Cámara, micrófono y pantalla compartida con WebRTC, un servidor de medios LiveKit opcional para reuniones grandes, música para todos, grabación, reacciones y mano levantada.</p>
+          <p class="en">Zoom out with the wheel and the office turns into a clean overview of rooms and people.</p>
+          <p class="es">Aléjate con la rueda y la oficina pasa a una vista limpia de salas y personas.</p>
+        </div>
+        <div class="shot"><img src="assets/simplified-en.png" alt="The simplified overview of the office" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sizes">
+    <div class="wrap">
+      <span class="kicker en">Office sizes</span><span class="kicker es">Tamaños de oficina</span>
+      <h2><span class="en">From a small studio to a campus</span><span class="es">Desde un estudio pequeño hasta un campus</span></h2>
+      <p class="sub"><span class="en">Pick a map when you create a space. Every one is fully furnished and you can redecorate anything with the built-in editor.</span><span class="es">Elige un mapa al crear un espacio. Todos vienen amueblados y puedes redecorar lo que quieras con el editor integrado.</span></p>
+      <div class="sizes">
+        <div class="size"><img src="assets/studio.jpg" alt="" loading="lazy" /><div><span class="people"><span class="en">up to 6</span><span class="es">hasta 6</span></span><b class="en">Studio</b><b class="es">Estudio</b><p class="en">Lobby, a team area with six desks, one meeting room, kitchen and a koi pond.</p><p class="es">Vestíbulo, zona de equipo con seis escritorios, una sala de reuniones, cocina y un estanque.</p></div></div>
+        <div class="size"><img src="assets/office.jpg" alt="" loading="lazy" /><div><span class="people"><span class="en">up to 10</span><span class="es">hasta 10</span></span><b class="en">Office</b><b class="es">Oficina</b><p class="en">Ten desks, five meeting rooms, four focus offices, a lounge and a garden.</p><p class="es">Diez escritorios, cinco salas de reunión, cuatro oficinas de concentración, sala de estar y jardín.</p></div></div>
+        <div class="size"><img src="assets/campus.jpg" alt="" loading="lazy" /><div><span class="people"><span class="en">20 and more</span><span class="es">20 o más</span></span><b class="en">Campus</b><b class="es">Campus</b><p class="en">Two buildings side by side: twenty desks, ten meeting rooms and eight focus offices.</p><p class="es">Dos edificios lado a lado: veinte escritorios, diez salas de reunión y ocho oficinas de concentración.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="kicker en">And also</span><span class="kicker es">Y además</span>
+      <h2><span class="en">Built in, not bolted on</span><span class="es">Integrado, no añadido</span></h2>
+      <ul class="grid-list">
+        <li><b class="en">Chat channels and DMs</b><b class="es">Canales y mensajes directos</b><span class="en">#general, your own channels, mentions and formatting.</span><span class="es">#general, tus propios canales, menciones y formato.</span></li>
+        <li><b class="en">Shared calendar</b><b class="es">Calendario compartido</b><span class="en">Schedule a meeting in a room; Join walks you there.</span><span class="es">Programa una reunión en una sala; Unirse te lleva allí.</span></li>
+        <li><b class="en">Decorator</b><b class="es">Decorador</b><span class="en">Eighty objects by category, free placement, undo and redo.</span><span class="es">Ochenta objetos por categoría, colocación libre, deshacer y rehacer.</span></li>
+        <li><b class="en">Your avatar</b><b class="es">Tu avatar</b><span class="en">Two bodies, colours, glasses, hats, headphones and facial hair.</span><span class="es">Dos cuerpos, colores, gafas, sombreros, auriculares y vello facial.</span></li>
+        <li><b class="en">Personal accounts</b><b class="es">Cuentas personales</b><span class="en">Optional email and password, or just a name and an invite link.</span><span class="es">Correo y contraseña opcionales, o solo un nombre y un enlace de invitación.</span></li>
+        <li><b class="en">Footsteps and sound</b><b class="es">Pasos y sonido</b><span class="en">Footsteps that change with the floor, with their own volume.</span><span class="es">Pasos que cambian según el suelo, con su propio volumen.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="wrap start">
+      <div>
+        <h2><span class="en">Your office in two minutes</span><span class="es">Tu oficina en dos minutos</span></h2>
+        <p class="en">Run it on your computer to try it, then put it on any server with Docker. The deployment guide covers HTTPS, invite keys, admins and TURN.</p>
+        <p class="es">Pruébala en tu computador y luego súbela a cualquier servidor con Docker. La guía de despliegue explica HTTPS, claves de invitación, administradores y TURN.</p>
+        <div class="cta"><a class="btn primary" href="https://github.com/VictorSandovalDev/OpenOfficeForAll#-quick-start"><span class="en">Read the guide</span><span class="es">Leer la guía</span> →</a><a class="btn ghost" style="color:#16161a" href="https://github.com/VictorSandovalDev/OpenOfficeForAll/blob/main/docs/DEPLOY.md"><span class="en">Deploy with Docker</span><span class="es">Desplegar con Docker</span></a></div>
+      </div>
+      <pre><span class="c"># <span class="en">try it locally</span><span class="es">pruébala en local</span></span>
+git clone https://github.com/VictorSandovalDev/OpenOfficeForAll
+cd OpenOfficeForAll
+npm install
+npm run dev
+<span class="c"># <span class="en">open</span><span class="es">abre</span> http://127.0.0.1:5173</span></pre>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Open Office For All · <span class="en">MIT licence</span><span class="es">Licencia MIT</span></span>
+    <span><a href="https://github.com/VictorSandovalDev/OpenOfficeForAll">GitHub</a> · <span class="en">Original art made with PixelLab</span><span class="es">Arte original hecho con PixelLab</span></span>
+  </div>
+</footer>
+
+<script>
+  const setLang = (lang) => {
+    document.body.dataset.lang = lang; document.documentElement.lang = lang;
+    document.querySelectorAll('[data-set-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setLang === lang)));
+    try { localStorage.setItem('oofa-lang', lang); } catch {}
+  };
+  let saved = null; try { saved = localStorage.getItem('oofa-lang'); } catch {}
+  setLang(saved === 'es' || saved === 'en' ? saved : (navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en');
+  document.querySelectorAll('[data-set-lang]').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.setLang)));
+</script>
+</body>
+</html>
