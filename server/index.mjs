@@ -7,7 +7,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { OFFICE_SIZE as MAP, MEDIA_RADIUS, CHAT_RADIUS, SPAWN, sharesConversationArea } from '../shared/office-world.js';
 import { canApproachSeat, canExitSeat, getOfficeSeat, getOfficeSeats, SEAT_INTERACTION_RADIUS } from '../shared/office-seats.js';
 import { BASE_OBJECTS, baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
-import { focusRoomOf, meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
+import { FOCUS_ROOMS, focusRoomOf, meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
 import { createAccounts } from './accounts.mjs';
 import { AREAS } from '../shared/vivo-map.js';
 
@@ -237,9 +237,24 @@ export async function startServer({
     const state = meetings(room);
     for (const [areaId, meeting] of Object.entries(state)) if (!before[areaId]) for (const member of meetingMembers(room, areaId)) systemMessage(room, areaId, member.participant, 'se unió');
     room.lastMeetings = state;
-    broadcast(room, { type: 'participants', participants: participants(room), meetings: state });
+    for (const areaId of Object.keys(room.focus)) if (!insideFocus(room, areaId).length) delete room.focus[areaId]; // an empty office closes again for the next person
+    broadcast(room, { type: 'participants', participants: participants(room), meetings: state, focusRooms: focusState(room) });
   };
   const lockedAgainst = (room, participant, point) => { const area = meetingRoomOf(point); return !!area && !!room.locks[area.id] && meetingRoomOf(participant)?.id !== area.id; };
+  /** Focus offices close their door while someone is inside: only people let in from inside may enter. */
+  const insideFocus = (room, areaId, except) => [...room.members.values()].filter((member) => member.participant !== except && focusRoomOf(member.participant)?.id === areaId);
+  const focusClosedAgainst = (room, participant, point) => {
+    const zone = focusRoomOf(point);
+    if (!zone || focusRoomOf(participant)?.id === zone.id || !insideFocus(room, zone.id, participant).length) return false;
+    const state = room.focus[zone.id];
+    return !state?.open && !state?.guests?.includes(participant.id);
+  };
+  const focusState = (room) => Object.fromEntries(FOCUS_ROOMS.flatMap((area) => {
+    const inside = insideFocus(room, area.id);
+    if (!inside.length) return [];
+    const state = room.focus[area.id] ?? {};
+    return [[area.id, { occupied: true, open: !!state.open, guests: state.guests ?? [], people: inside.map((member) => member.participant.id) }]];
+  }));
   /** Reject placements that trap a standing participant or seal an occupied chair's exits. */
   const placementProblem = (room, object, others, overrides = room.overrides) => {
     const next = object ? [...others, object] : others;
@@ -266,7 +281,7 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], desks: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], desks: {}, focus: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       room.workspaceName = await workspaceName(slug);
       try {
@@ -527,6 +542,7 @@ export async function startServer({
           const point = position(payload.x, payload.y);
           if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.');
           if (lockedAgainst(room, participant, point)) return error(socket, 'meeting_locked', 'This meeting is locked.');
+          if (focusClosedAgainst(room, participant, point)) return send(socket, { type: 'error', code: 'focus_closed', areaId: focusRoomOf(point).id, message: 'Someone is focusing in this office. Knock to ask to come in.' });
           const dx = point.x - participant.x;
           const dy = point.y - participant.y;
           if (dx || dy) participant.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'east' : 'west') : (dy > 0 ? 'south' : 'north');
@@ -539,6 +555,7 @@ export async function startServer({
           const seat = getOfficeSeat(payload.seatId, room.objects, room.overrides);
           if (!seat) return error(socket, 'invalid_seat', 'Choose a chair in this office.');
           if (lockedAgainst(room, participant, seat)) return error(socket, 'meeting_locked', 'This meeting is locked.');
+          if (focusClosedAgainst(room, participant, seat)) return send(socket, { type: 'error', code: 'focus_closed', areaId: focusRoomOf(seat).id, message: 'Someone is focusing in this office. Knock to ask to come in.' });
           if (participant.status === 'away' || (participant.seatId && participant.seatId !== seat.id)
             || [...room.members.values()].some(member => member !== client && member.participant.seatId === seat.id)
             || !canExitSeat(seat, room.objects, room.overrides)) return error(socket, 'seat_unavailable', 'This chair is currently unavailable.');
@@ -616,6 +633,36 @@ export async function startServer({
           room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
           persistChat(room);
           broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'focus:knock': {
+          const area = FOCUS_ROOMS.find((candidate) => candidate.id === payload.areaId);
+          if (!area || focusRoomOf(participant)?.id === area.id) return error(socket, 'invalid_focus', 'Knock on an office you are outside of.');
+          const inside = insideFocus(room, area.id);
+          if (!inside.length) return;
+          const now = Date.now(); client.knocks ??= {};
+          if (now - (client.knocks[area.id] ?? 0) < 8000) return error(socket, 'knock_rate_limit', 'Wait a moment before knocking again.');
+          client.knocks[area.id] = now;
+          for (const member of inside) send(member.socket, { type: 'focus:knock', areaId: area.id, from: { id: participant.id, name: participant.name } });
+          break;
+        }
+        case 'focus:admit': {
+          const zone = focusRoomOf(participant);
+          if (!zone || zone.id !== payload.areaId || typeof payload.participantId !== 'string') return error(socket, 'invalid_focus', 'Only someone inside can let people in.');
+          const guest = [...room.members.values()].find((member) => member.participant.id === payload.participantId);
+          if (!guest) return;
+          const state = room.focus[zone.id] ??= { open: false, guests: [] };
+          if (!state.guests.includes(guest.participant.id)) state.guests.push(guest.participant.id);
+          send(guest.socket, { type: 'focus:admitted', areaId: zone.id, by: participant.name });
+          broadcastParticipants(room);
+          break;
+        }
+        case 'focus:door': {
+          const zone = focusRoomOf(participant);
+          if (!zone || zone.id !== payload.areaId || typeof payload.open !== 'boolean') return error(socket, 'invalid_focus', 'Only someone inside can open or close the door.');
+          const state = room.focus[zone.id] ??= { open: false, guests: [] };
+          state.open = payload.open;
+          broadcastParticipants(room);
           break;
         }
         case 'workspace:rename': {

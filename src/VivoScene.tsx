@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DoorOpen, Headphones, Sofa } from 'lucide-react';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
-import type { EditItem, OfficeObject, Participant, Facing } from './types';
+import type { EditItem, FocusRoom, OfficeObject, Participant, Facing } from './types';
 import './scene.css';
 import { AREAS, TILE, WORLD } from '../shared/vivo-map.js';
 import { DOORWAYS, WALLS } from '../shared/vivo-geometry.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { asMapObject, baseAsEditorObject, catalogEntry, effectiveBaseObjects, type Overrides } from '../shared/office-objects.js';
-import { deskAt, FOCUS_ROOMS, MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
+import { deskAt, FOCUS_ROOMS, focusRoomOf, MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
 import type { Interaction, Meetings } from './types';
 import { blockedWith, canStep, findTilePath, nearestFreeTile, RUN_STEP_MS, sameTile, STEP_MS, tileCenter, tileOf, type Blocked, type Point, type Tile } from './navigation';
 import { FloorPatterns, floorKey, floorPatternId } from './sprites/floors';
@@ -29,6 +29,10 @@ type Props = {
   onZoom?: (zoom: number) => void;
   /** Who each desk belongs to, shown when hovering a desk. */
   deskLabels?: Record<string, string>;
+  /** Occupied focus offices; a closed one blocks everyone outside who was not let in. */
+  focusRooms?: Record<string, FocusRoom>;
+  /** Clicking a closed focus office from outside. */
+  onFocusClosed?: (areaId: string) => void;
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
@@ -160,7 +164,7 @@ function SimpleAreaIcons({ scale }: { scale: number }) {
     </g>;
   })}</g>;
 }
-export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, deskLabels = {}, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
+export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, deskLabels = {}, focusRooms = {}, onFocusClosed, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
   const [hoverTile, setHoverTile] = useState<Tile | null>(null);
   const editingMode = editorOpen || editItem !== null || selectedObject !== null;
@@ -182,7 +186,9 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   const self = participants.find(p => p.id === selfId);
   const seats = useMemo(() => getOfficeSeats(objects, overrides), [objects, overrides]);
   const selfRoomId = self ? meetingRoomOf(self)?.id ?? null : null;
-  const lockedRooms = useMemo(() => MEETING_ROOMS.filter(area => meetings[area.id]?.locked && area.id !== selfRoomId), [meetings, selfRoomId]);
+  const selfFocusId = self ? focusRoomOf(self)?.id ?? null : null;
+  const closedFocus = useMemo(() => FOCUS_ROOMS.filter(area => { const state = focusRooms[area.id]; return state?.occupied && !state.open && area.id !== selfFocusId && !(selfId && state.guests.includes(selfId)); }), [focusRooms, selfFocusId, selfId]);
+  const lockedRooms = useMemo(() => [...MEETING_ROOMS.filter(area => meetings[area.id]?.locked && area.id !== selfRoomId), ...closedFocus], [meetings, selfRoomId, closedFocus]);
   const blocked = useMemo<Blocked>(() => {
     const base = blockedWith(objects, overrides);
     if (!lockedRooms.length) return base;
@@ -471,7 +477,9 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       else if (point && self && self.status !== 'away' && !(event.target as Element).closest('.scene-avatar, .scene-added-object, .scene-seat')) {
         const target = tileOf(point);
         const area = meetingRoomAt(target.tx, target.ty);
-        if (area && area.id !== selfRoomId) onAreaClick(area.id); else navigateTo(target);
+        const closed = closedFocus.find(room => target.tx >= room.x && target.tx < room.x + room.w && target.ty >= room.y && target.ty < room.y + room.h);
+        if (closed) { onFocusClosed?.(closed.id); navigateTo({ tx: closed.x + Math.floor(closed.w / 2), ty: closed.y + closed.h }); }
+        else if (area && area.id !== selfRoomId) onAreaClick(area.id); else navigateTo(target);
       }
     }
     drag.current = null; setDragging(false);
@@ -507,13 +515,18 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     key: `person-${person.id}`, y: seatObjectY(person) ?? position.y + TILE / 2 - 1, order: 3,
     node: <g transform={`translate(${Math.round(position.x)} ${Math.round(footOf(position).y) + (person.seatId ? -2 : 0)})`}><Avatar person={person} self={person.id === selfId} facing={facing} moving={moving} frame={frame} frames={lookMaps[lookKey(sanitizeLook(person.avatar))]} reaction={reactions.filter(item => item.participantId === person.id).at(-1)?.emoji} onSelect={() => person.id === selfId && person.seatId ? requestStand() : onSelect(person.id)} /></g>,
   });
+  const doorwayPeople = participants.map(person => ({ id: person.id, inside: focusRoomOf(person)?.id ?? null, ...tileOf(person.id === selfId ? local : remoteRender[person.id] ?? person) }));
   // Door artwork follows the reference: wooden doors only on the large meeting room, a light marker on huddle doorways, bare gaps elsewhere.
   const doorLayers: Layer[] = DOORWAYS.flatMap(door => {
     const area = AREAS.find(candidate => candidate.id === door.area);
-    const style: 'doors' | 'marker' | null = area?.type === 'MeetingRoom' ? ((area.capacity ?? 0) >= 6 ? 'doors' : door.orientation === 'Vertical' ? 'marker' : null) : null;
+    // Focus offices always show their door; it is shut while someone focuses inside, and swings open for whoever stands in the doorway.
+    const isFocus = FOCUS_ROOMS.some(room => room.id === door.area);
+    const atDoor = isFocus && doorwayPeople.some(({ id, inside, tx, ty }) => (inside === door.area || focusRooms[door.area]?.guests.includes(id)) && tx >= door.tx && tx <= door.tx + 1 && ty >= door.ty && ty <= door.ty + 1);
+    const focusDoor = isFocus && !!focusRooms[door.area]?.occupied && !focusRooms[door.area]?.open && !atDoor;
+    const style: 'doors' | 'marker' | null = isFocus ? 'doors' : area?.type === 'MeetingRoom' ? ((area.capacity ?? 0) >= 6 ? 'doors' : door.orientation === 'Vertical' ? 'marker' : null) : null;
     if (!style) return [];
     return [{ key: `door-${door.area}-${door.tx}-${door.ty}`, y: door.side === 'n' ? door.ty * TILE - 1 : door.side === 's' ? (door.ty + 1) * TILE - 1 : door.ty * TILE + 1, order: 1,
-      node: <g transform={`translate(${door.side === 'e' ? (door.tx + 1) * TILE : door.tx * TILE} ${door.side === 's' ? (door.ty + 1) * TILE : door.ty * TILE})`}><DoorwayPiece orientation={door.orientation} side={door.side} style={style} closed={!!meetings[door.area]?.active} locked={!!meetings[door.area]?.locked} /></g> }];
+      node: <g transform={`translate(${door.side === 'e' ? (door.tx + 1) * TILE : door.tx * TILE} ${door.side === 's' ? (door.ty + 1) * TILE : door.ty * TILE})`}><DoorwayPiece orientation={door.orientation} side={door.side} style={style} closed={focusDoor || !!meetings[door.area]?.active} locked={focusDoor || !!meetings[door.area]?.locked} /></g> }];
   });
   // A placed object standing inside the sprite box of a furniture piece with a footprint (desk, table, counter) draws right after it.
   const placedData = objects.map(object => asMapObject(object) as MapObjectData);

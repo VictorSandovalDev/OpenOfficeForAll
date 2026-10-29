@@ -13,3 +13,5 @@ export type Send = (message: Record<string, unknown>) => void;
 export type Signal = { from: string; data: { description?: RTCSessionDescriptionInit; candidate?: RTCIceCandidateInit } };
 export type Interaction = { type: 'link'; url: string; title?: string } | { type: 'note'; text: string; title?: string };
 export type CalendarEvent = { id: string; title: string; description: string; start: string; end: string; areaId: string | null; organizer: string; organizerId: string };
+/** An occupied focus office: its door stays closed unless opened or the person was let in. */
+export type FocusRoom = { occupied: boolean; open: boolean; guests: string[]; people: string[] };

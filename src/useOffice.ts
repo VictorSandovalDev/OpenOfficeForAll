@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Interaction, CalendarEvent, Channel, ChatMessage, DirectoryUser, Meetings, OfficeObject, Participant, Signal } from './types';
+import type { Interaction, CalendarEvent, Channel, ChatMessage, DirectoryUser, FocusRoom, Meetings, OfficeObject, Participant, Signal } from './types';
 
 /** A stable identity per browser and name, so direct messages and unread markers survive reconnections
     while two people sharing one browser (two tabs, two names) stay distinct. */
@@ -30,6 +30,10 @@ export function useOffice(room: string, profile: {name: string;color: string;ava
   const [interactions,setInteractions] = useState<Record<string, Interaction>>({});
   const [users,setUsers] = useState<DirectoryUser[]>([]);
   const [desks,setDesks] = useState<Record<string,string>>({});
+  const [focusRooms,setFocusRooms] = useState<Record<string,FocusRoom>>({});
+  const [knocks,setKnocks] = useState<{areaId:string;from:{id:string;name:string};at:number}[]>([]);
+  const [focusClosed,setFocusClosed] = useState<{areaId:string;at:number}|null>(null);
+  const [admitted,setAdmitted] = useState<{areaId:string;by:string;at:number}|null>(null);
   const [workspace,setWorkspace] = useState<{slug:string;name:string}|null>(null);
   const userId = useMemo(() => browserUserId(profile?.name ?? ''), [profile?.name]);
   const [createdChannel,setCreatedChannel] = useState<{id:string;nonce:number}|null>(null);
@@ -54,7 +58,9 @@ export function useOffice(room: string, profile: {name: string;color: string;ava
       ws.onmessage=(event)=>{
         let data;try {data=JSON.parse(event.data);}catch{return;}
         if(data.type==='welcome'){selfRef.current=data.id;setSelfId(data.id);setRole(data.role==='admin'?'admin':'member');setAccessDenied(false);setLoginRequired(false);if(data.workspace)setWorkspace(data.workspace);setDesks(data.desks??{});setParticipants(data.participants);setMeetings(data.meetings??{});setAreaNames(data.areaNames??{});setChannels(data.channels??[]);setUsers(data.users??[]);setEvents(data.events??[]);setInteractions(data.interactions??{});setMessages(data.messages);setObjects(data.objects);setOverrides(data.overrides??{});setConnection('online');setError('');}
-        if(data.type==='participants'){setParticipants(data.participants);if(data.meetings)setMeetings(data.meetings);}
+        if(data.type==='participants'){setParticipants(data.participants);if(data.meetings)setMeetings(data.meetings);setFocusRooms(data.focusRooms??{});}
+        if(data.type==='focus:knock')setKnocks(list=>[...list.filter(k=>k.from.id!==data.from.id),{areaId:data.areaId,from:data.from,at:Date.now()}]);
+        if(data.type==='focus:admitted')setAdmitted({areaId:data.areaId,by:data.by,at:Date.now()});
         if(data.type==='areas')setAreaNames(data.areaNames??{});
         if(data.type==='users')setUsers(data.users??[]);
         if(data.type==='desks')setDesks(data.desks??{});
@@ -67,7 +73,7 @@ export function useOffice(room: string, profile: {name: string;color: string;ava
         if(data.type==='objects'){setObjects(data.objects);setOverrides(data.overrides??{});}
         if(data.type==='chat')setMessages(old=>[...old,data.message].slice(-2000));
         if(data.type==='signal')listeners.current.forEach(fn=>fn(data));
-        if(data.type==='error'){if(data.code==='access_denied'){setAccessDenied(true);disposed=true;}else if(data.code==='login_required'){setLoginRequired(true);disposed=true;}else setError(data.message);}
+        if(data.type==='error'){if(data.code==='access_denied'){setAccessDenied(true);disposed=true;}else if(data.code==='login_required'){setLoginRequired(true);disposed=true;}else if(data.code==='focus_closed'){setFocusClosed({areaId:data.areaId,at:Date.now()});}else setError(data.message);}
       };
       ws.onclose=()=>{if(disposed)return;setConnection('offline');setParticipants([]);setSelfId(null);timer=setTimeout(connect,Math.min(1000*2**retries++,10000));};
       ws.onerror=()=>setError('No se pudo conectar con la oficina. Reintentando…');
@@ -77,5 +83,5 @@ export function useOffice(room: string, profile: {name: string;color: string;ava
   },[enabled,room]);
   const send=useCallback((data:Record<string,unknown>)=>{if(socket.current?.readyState===WebSocket.OPEN)socket.current.send(JSON.stringify(data));},[]);
   const subscribeSignal=useCallback((listener:(signal:Signal)=>void)=>{listeners.current.add(listener);return()=>{listeners.current.delete(listener);};},[]);
-  return {selfId,desks,workspace,mediaToken,interactions,reactions,role,accessDenied,loginRequired,userId,participants,meetings,areaNames,channels,users,events,createdChannel,messages,objects,overrides,connection,error,setError,send,subscribeSignal};
+  return {selfId,desks,workspace,focusRooms,knocks,setKnocks,focusClosed,setFocusClosed,admitted,mediaToken,interactions,reactions,role,accessDenied,loginRequired,userId,participants,meetings,areaNames,channels,users,events,createdChannel,messages,objects,overrides,connection,error,setError,send,subscribeSignal};
 }

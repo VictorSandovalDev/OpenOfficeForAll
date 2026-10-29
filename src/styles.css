@@ -709,3 +709,10 @@ button .avatar { pointer-events: none; }
 .workspace-home .workspace-panel .muted { color: #a1a1aa; opacity: 1; }
 .workspace-home .secondary { height: 38px; padding: 0 16px; border-radius: 9px; border: 1px solid #3a3a42; background: #26262c; color: #f2f2f4; font: inherit; font-weight: 600; cursor: pointer; }
 .workspace-home .primary:disabled { opacity: .55; cursor: default; }
+/* Focus offices: knocking, letting people in and the door control */
+.focus-cards { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 60; display: grid; gap: 8px; width: min(560px, calc(100vw - 32px)); }
+.focus-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #24242a; color: #f2f2f4; border: 1px solid #3a3a42; box-shadow: 0 8px 24px #0007; font-size: 13px; }
+.focus-card > span { flex: 1; }
+.focus-card button { height: 30px; padding: 0 12px; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.focus-card .secondary { border: 1px solid #3a3a42; background: #2f2f36; color: #f2f2f4; }
+.focus-card.focus-door { background: #2a2540; border-color: #5a4fcf66; }

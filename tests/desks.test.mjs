@@ -80,6 +80,8 @@ test('alone in a top office you switch to focus; leaving restores your status; y
   const inside = await bruno.next('participants', event => statusOf(event, anaId) === 'focus');
   assert.equal(inside.participants.find(person => person.id === anaId).focusZone, 'e6db33b1');
   assert.equal(inside.participants.find(person => person.id === anaId).statusBeforeFocus, undefined, 'internal state stays on the server');
+  ana.send({ type: 'focus:admit', areaId: 'e6db33b1', participantId: bruno.welcome.id });
+  await bruno.next('focus:admitted');
   bruno.send({ type: 'move', x: office.x + 32, y: office.y });
   const both = await ana.next('participants', event => event.participants.some(person => person.id === bruno.welcome.id && person.x === office.x + 32));
   assert.equal(statusOf(both, bruno.welcome.id), 'available', 'the second person is not alone, so stays available');
@@ -94,4 +96,36 @@ test('alone in a top office you switch to focus; leaving restores your status; y
   ana.send({ type: 'move', x: office.x, y: office.y + 32 });
   const stays = await bruno.next('participants', event => event.participants.some(person => person.id === anaId && person.y === office.y + 32));
   assert.equal(statusOf(stays, anaId), 'available', 'a status chosen inside is kept');
+});
+
+test('a focus office closes while occupied: others knock and come in only when let in', async t => {
+  const server = await fixture(t);
+  const ana = await connect(server.port, 'Ana', 'user-ana-0001');
+  const bruno = await connect(server.port, 'Bruno', 'user-bruno-001');
+  const carla = await connect(server.port, 'Carla', 'user-carla-001');
+  const office = { x: 14.5 * 32, y: 17 * 32 }, door = { x: 14.5 * 32, y: 20.5 * 32 };
+  ana.send({ type: 'move', ...office });
+  const closed = await bruno.next('participants', event => event.focusRooms?.e6db33b1?.occupied);
+  assert.equal(closed.focusRooms.e6db33b1.open, false);
+  bruno.send({ type: 'move', ...door });
+  bruno.send({ type: 'move', ...office });
+  assert.equal((await bruno.next('error')).code, 'focus_closed', 'the door is closed');
+  bruno.send({ type: 'focus:knock', areaId: 'e6db33b1' });
+  const knock = await ana.next('focus:knock');
+  assert.deepEqual(knock.from, { id: bruno.welcome.id, name: 'Bruno' });
+  carla.send({ type: 'focus:admit', areaId: 'e6db33b1', participantId: carla.welcome.id });
+  assert.equal((await carla.next('error')).code, 'invalid_focus', 'only someone inside lets people in');
+  ana.send({ type: 'focus:admit', areaId: 'e6db33b1', participantId: bruno.welcome.id });
+  assert.equal((await bruno.next('focus:admitted')).by, 'Ana');
+  bruno.send({ type: 'move', ...office });
+  await ana.next('participants', event => event.participants.some(person => person.id === bruno.welcome.id && person.y === office.y));
+  carla.send({ type: 'move', ...office });
+  assert.equal((await carla.next('error')).code, 'focus_closed', 'a guest is let in, not everyone');
+  ana.send({ type: 'focus:door', areaId: 'e6db33b1', open: true });
+  await carla.next('participants', event => event.focusRooms?.e6db33b1?.open === true);
+  carla.send({ type: 'move', ...office });
+  await ana.next('participants', event => event.participants.some(person => person.id === carla.welcome.id && person.y === office.y));
+  for (const client of [ana, bruno, carla]) client.send({ type: 'move', x: 20 * 32, y: 25 * 32 });
+  const empty = await ana.next('participants', event => event.participants.every(person => person.y === 25 * 32));
+  assert.equal(empty.focusRooms.e6db33b1, undefined, 'an empty office is free again');
 });

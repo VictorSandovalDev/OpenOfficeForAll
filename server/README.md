@@ -41,6 +41,10 @@ Supported messages:
   `GET /api/workspaces/<slug>` returns its name. Every workspace is its own room (map, chat, calendar, desks);
   `empty` starts with every piece of furniture removed. `welcome` carries `workspace`; editors send
   `workspace:rename` with `name`, and everyone receives `workspace`. Saved in `server/data/workspaces.json`.
+- Closed focus offices: while someone is inside, moving or sitting there from outside fails with `focus_closed`
+  (and its `areaId`). Outsiders send `focus:knock` with `areaId`; people inside receive `focus:knock` with `from`.
+  Inside, `focus:admit` (`areaId`, `participantId`) lets one person in (they receive `focus:admitted`) and
+  `focus:door` (`areaId`, `open`) opens or closes the door for everyone. `participants` carries `focusRooms`.
 - Focus offices: the four private offices along the top. Someone who enters one alone while `available` is
   switched to `focus` (Do not disturb, so proximity calls do not connect) and gets `focusZone`; leaving restores
   the previous status. Choosing a status by hand inside the office is respected until they leave.

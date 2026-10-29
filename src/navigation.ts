@@ -8,7 +8,7 @@ export type Blocked = Set<string>;
 export { TILE, WORLD, BLOCKED, BLOCKED_EDGES, canStep, isBlockedTile };
 
 /** Reference walking pace: one tile every 142.86 ms (7 tiles per second). */
-export const STEP_MS = 1000 / 7;
+export const STEP_MS = 1000 / 6; // six tiles a second: a calm walking pace
 export const RUN_STEP_MS = STEP_MS / 1.6;
 
 export const tileOf = (point: Point): Tile => ({ tx: Math.floor(point.x / TILE), ty: Math.floor(point.y / TILE) });
