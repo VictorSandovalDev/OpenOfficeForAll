@@ -14,6 +14,7 @@ export const FURNITURE_ASSETS: Record<string, string> = {
   'book-open/blue/Down': 'book-open-blue-down.png',
   'bookcase-tall/black/Down': 'bookcase-tall-black-down.png',
   'bookcase-tall/white/Down': 'bookcase-tall-white-down.png',
+  'cubicle-shelves/black/Up': 'cubicle-shelves-black-up.png',
   'document-single/white/Down': 'document-single-white-down.png',
   'ficus/black/Down': 'ficus-black-down.png',
   'filing-cabinet/black/Down': 'filing-cabinet-black-down.png',
