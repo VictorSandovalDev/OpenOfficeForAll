@@ -9,7 +9,7 @@
 **Una oficina virtual libre y de código abierto para todos los equipos del mundo.**
 
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-2ea44f?style=for-the-badge)](LICENSE)
-[![Pruebas](https://img.shields.io/badge/pruebas-29%20en%20verde-303fe0?style=for-the-badge)](#-verificación)
+[![CI](https://img.shields.io/github/actions/workflow/status/VictorSandovalDev/OpenOfficeForAll/ci.yml?branch=main&style=for-the-badge&label=pruebas)](https://github.com/VictorSandovalDev/OpenOfficeForAll/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-5fa04e?style=for-the-badge&logo=node.js&logoColor=white)](#-inicio-rápido)
 [![React 19](https://img.shields.io/badge/react-19-149eca?style=for-the-badge&logo=react&logoColor=white)](#%EF%B8%8F-arquitectura)
 [![Autoalojado](https://img.shields.io/badge/tus%20datos-tu%20servidor-f5a623?style=for-the-badge)](#-hecho-para-todo-el-mundo)
