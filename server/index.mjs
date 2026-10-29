@@ -519,6 +519,17 @@ export async function startServer({
           if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           if (typeof payload.id !== 'string') return error(socket, 'invalid_object', 'An object ID is required.');
+          if (isBaseObjectId(payload.id) && payload.reset === true) {
+            // Back to the reference map's own placement (used by undo).
+            if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`${payload.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
+            const nextOverrides = { ...room.overrides }; delete nextOverrides[payload.id];
+            const problem = placementProblem(room, null, room.objects, nextOverrides);
+            if (problem) return error(socket, 'invalid_object', problem);
+            room.overrides = nextOverrides;
+            persistObjects(room, socket);
+            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+            break;
+          }
           if (isBaseObjectId(payload.id)) {
             const current = baseAsEditorObject(payload.id, room.overrides);
             const override = { ...(room.overrides[payload.id] ?? {}) };

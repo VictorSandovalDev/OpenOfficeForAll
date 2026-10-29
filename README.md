@@ -109,7 +109,7 @@ A week calendar shared by the whole office. Schedule a meeting in a room and eve
 
 ### 🛋️ Decorate everything
 
-A catalogue of **81 objects in 251 orientations**: desks, chairs, sofas, plants, shelves, lamps and tech. Place, drag, rotate (**R**) and delete, including the original furniture. Items dropped on a desk sit on the desk, and the server validates every placement so nobody gets trapped.
+A catalogue of **81 objects in 251 orientations**: desks, chairs, sofas, plants, shelves, lamps and tech. Place, drag, rotate (**R**), delete and undo (**⌘ Z**), including the original furniture. Items dropped on a desk sit on the desk, and the server validates every placement so nobody gets trapped.
 
 <img src="docs/screenshots/decorator.png" alt="The decorator with its catalogue, grid and edit banner" width="100%">
 

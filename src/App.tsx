@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, AtSign, CheckCheck, Hand, Hash, Info, Pencil as PencilIcon, Smile as SmileIcon, UserPen, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
+import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, AtSign, CheckCheck, Hand, Hash, Info, Redo2, Undo2, Pencil as PencilIcon, Smile as SmileIcon, UserPen, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
 import VivoScene from './VivoScene';
 import MeetingView, { type MeetingPanel } from './MeetingView';
 import ChatView, { conversationKey, messageKey, type Conversation } from './chat/ChatView';
@@ -18,6 +18,7 @@ import { meetingRoom, meetingRoomOf, roomSeats } from '../shared/office-meetings
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { ObjectThumb } from './sprites/objects';
 import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
+import { useEditHistory } from './useEditHistory';
 import { sanitizeLook, type AvatarLook } from './avatarLook';
 import { artPack, onArtPackChange, setArtPack, type ArtPack } from './sprites/artPack';
 import { loadConfig, rememberKeysFromUrl, storedKey, storeKey, type OfficeConfig } from './config';
@@ -270,20 +271,23 @@ export default function App() {
   const move = useCallback((x: number, y: number) => setNavigationTarget({ x, y, nonce: Date.now() }), []);
   function leaveMeeting() { setNavigationTarget({ x: SPAWN.x, y: SPAWN.y, nonce: Date.now() }); setAreaCard(null); }
   const publishMove = useCallback((x: number, y: number) => office.send({ type: 'move', x, y }), [office.send]);
-  const place = useCallback((x: number, y: number) => { if (editItem) office.send({ type: 'object:add', ...editItem, x, y }); }, [editItem, office.send]);
-  const rotateSelected = useCallback(() => { if (selectedObject) office.send({ type: 'object:update', id: selectedObject, rotate: true }); }, [selectedObject, office.send]);
+  const editHistory = useEditHistory({ objects: office.objects, overrides: office.overrides, send: office.send });
+  const place = useCallback((x: number, y: number) => { if (editItem) { editHistory.record.add({ ...editItem, x, y }); office.send({ type: 'object:add', ...editItem, x, y }); } }, [editItem, office.send, editHistory.record]);
+  const rotateSelected = useCallback(() => { if (selectedObject) { editHistory.record.update(selectedObject); office.send({ type: 'object:update', id: selectedObject, rotate: true }); } }, [selectedObject, office.send, editHistory.record]);
   const rotateEditItem = useCallback(() => setEditItem(item => { if (!item) return item; const facing = nextFacing({ id: 'x', ...item, x: 0, y: 0 }); return facing ? { ...item, facing } : item; }), []);
   useEffect(() => {
     function key(e: KeyboardEvent) {
       if (e.target instanceof HTMLElement && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('[role="dialog"]'))) return;
       if (e.key.toLowerCase() === 'r' && (editItem || selectedObject)) { e.preventDefault(); if (editItem) rotateEditItem(); else rotateSelected(); }
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedObject) { e.preventDefault(); office.send({ type: 'object:remove', id: selectedObject }); setSelectedObject(null); }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedObject) { e.preventDefault(); editHistory.record.remove(selectedObject); office.send({ type: 'object:remove', id: selectedObject }); setSelectedObject(null); }
+      if (panel === 'build' && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) editHistory.redo(); else editHistory.undo(); setSelectedObject(null); }
+      if (panel === 'build' && e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'y') { e.preventDefault(); editHistory.redo(); setSelectedObject(null); }
     }
     window.addEventListener('keydown', key);
     return () => window.removeEventListener('keydown', key);
-  }, [editItem, selectedObject, rotateEditItem, rotateSelected, office.send]);
-  const remove = useCallback((id: string) => office.send({ type: 'object:remove', id }), [office.send]);
-  const moveObject = useCallback((id: string, x: number, y: number) => office.send({ type: 'object:update', id, x, y }), [office.send]);
+  }, [editItem, selectedObject, rotateEditItem, rotateSelected, office.send, editHistory, panel]);
+  const remove = useCallback((id: string) => { editHistory.record.remove(id); office.send({ type: 'object:remove', id }); }, [office.send, editHistory.record]);
+  const moveObject = useCallback((id: string, x: number, y: number) => { editHistory.record.update(id); office.send({ type: 'object:update', id, x, y }); }, [office.send, editHistory.record]);
   function join(e: React.FormEvent) {
     e.preventDefault(); if (!name.trim()) return;
     const saved = readLook(name); setLook(saved);
@@ -402,6 +406,7 @@ export default function App() {
         </div>}
         {panel === 'build' && <>
           <div className="panel-search"><Search size={16} /><input value={catalogQuery} onChange={e => setCatalogQuery(e.target.value)} placeholder={t('Buscar una decoración')} aria-label={t('Buscar en el catálogo')} /></div>
+          <div className="history-buttons"><button type="button" className="secondary" disabled={!editHistory.canUndo} title={t('Deshacer (⌘ Z)')} onClick={() => { editHistory.undo(); setSelectedObject(null); }}><Undo2 size={15} />{t('Deshacer')}</button><button type="button" className="secondary" disabled={!editHistory.canRedo} title={t('Rehacer (⌘ ⇧ Z)')} onClick={() => { editHistory.redo(); setSelectedObject(null); }}><Redo2 size={15} />{t('Rehacer')}</button></div>
           <p className="panel-description">{editItem ? t('Clic en la oficina para colocar · R gira · Esc termina') : selectedObject ? t('Arrastra para mover · R gira · Suprimir elimina · Esc deselecciona') : t('Elige un objeto del catálogo, o haz clic en uno del mapa para moverlo, girarlo o eliminarlo. Mientras editas no puedes caminar.')}</p>
           {editItem && <div className="edit-toolbar"><ObjectThumb item={editItem} size={44} /><div><strong>{editItem.kind.replace(/-/g, ' ')}</strong><span>{editItem.color} · {editItem.facing}</span></div><IconButton label={t('Girar (R)')} onClick={rotateEditItem}><RotateCw size={16} /></IconButton><IconButton label={t('Terminar')} onClick={() => setEditItem(null)}><X size={16} /></IconButton></div>}
           {selectedObject && !editItem && <div className="edit-toolbar"><div><strong>{t('Objeto seleccionado')}</strong><span>{(office.objects.find(o => o.id === selectedObject)?.kind ?? baseObject(selectedObject)?.kind ?? '').replace(/-/g, ' ')}</span></div><IconButton label={t('Girar (R)')} onClick={rotateSelected}><RotateCw size={16} /></IconButton><IconButton label={t('Eliminar')} onClick={() => { remove(selectedObject); setSelectedObject(null); }}><Trash2 size={16} /></IconButton></div>}
@@ -427,7 +432,7 @@ export default function App() {
           <div className="area-card-actions"><button className="primary area-card-go" disabled={!online || !!cardMeeting?.locked} onClick={() => joinMeeting(cardArea.id)}><Video size={15} />{cardMeeting?.locked ? t('Reunión privada') : cardMeeting?.active ? t('Unirse a la reunión') : t('Iniciar reunión')}</button><button type="button" className="area-card-tool" title={t('Copiar enlace de la reunión')} aria-label={t('Copiar enlace de la reunión')} onClick={() => void copyMeetingLink(cardArea.id)}><Link2 size={15} /></button><button type="button" className="area-card-tool" title={t('Cambiar el nombre de la sala')} aria-label={t('Cambiar el nombre de la sala')} onClick={() => { setRoomName(roomLabel(cardArea.id)); setRenaming(cardArea.id); }}><Pencil size={15} /></button></div>
         </div>}
         {!online && profile && <div className="connection-banner" role="status">{t('Reconectando a la oficina…')}</div>}
-        {panel === 'build' && <div className="edit-banner"><Sparkles size={16} /><span>{editItem ? t('Clic para colocar · R gira · Esc termina') : t('Modo edición · arrastra para mover · R gira · Suprimir elimina')}</span><button type="button" className="edit-exit" onClick={() => { setEditItem(null); setSelectedObject(null); setPanel('people'); }}><DoorOpen size={14} />{t('Salir de edición')}</button></div>}
+        {panel === 'build' && <div className="edit-banner"><Sparkles size={16} /><span>{editItem ? t('Clic para colocar · R gira · Esc termina') : t('Modo edición · arrastra para mover · R gira · Suprimir elimina')}</span><button type="button" className="edit-exit" disabled={!editHistory.canUndo} aria-label={t('Deshacer (⌘ Z)')} title={t('Deshacer (⌘ Z)')} onClick={() => { editHistory.undo(); setSelectedObject(null); }}><Undo2 size={14} /></button><button type="button" className="edit-exit" disabled={!editHistory.canRedo} aria-label={t('Rehacer (⌘ ⇧ Z)')} title={t('Rehacer (⌘ ⇧ Z)')} onClick={() => { editHistory.redo(); setSelectedObject(null); }}><Redo2 size={14} /></button><button type="button" className="edit-exit" onClick={() => { setEditItem(null); setSelectedObject(null); setPanel('people'); }}><DoorOpen size={14} />{t('Salir de edición')}</button></div>}
         {selectedPerson && <div className="person-popover"><IconButton label={t('Cerrar perfil')} className="close-profile" onClick={() => setSelected(null)}><X size={15} /></IconButton><Avatar person={selectedPerson} size={54} /><h2>{selectedPerson.name}</h2><span className="muted">{STATUS[selectedPerson.status]}</span><div>{selectedPerson.id === office.selfId ? <button className="secondary" onClick={() => { setDialog('profile'); setSelected(null); }}>{t('Editar perfil')}</button> : <button className="primary" onClick={() => { move(selectedPerson.x - 32, selectedPerson.y); setSelected(null); }}>Acercarme <ArrowRight size={15} /></button>}</div></div>}
         {!showMeetingView && (media.localStream || Object.keys(media.remoteStreams).length > 0) && <div className="video-strip">{media.localStream && <div className="video-tile"><StreamVideo stream={media.localStream} muted /><span>{self?.name} · Tú</span></div>}{Object.entries(media.remoteStreams).map(([id, stream]) => <div className="video-tile" key={id}><StreamVideo stream={stream} /><span>{office.participants.find(p => p.id === id)?.name || t('Participante')}</span></div>)}</div>}
         {!showMeetingView && !pageView && <div className="zoom-controls" aria-label={t('Controles del mapa')}>

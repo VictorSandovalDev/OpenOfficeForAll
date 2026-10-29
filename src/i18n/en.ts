@@ -329,4 +329,8 @@ export const EN: Record<string, string> = {
   "Referencia (idéntico a Gather)": "Reference (identical to Gather)",
   "Original (libre para redistribuir)": "Original (free to redistribute)",
   "Organiza {name}": "Organized by {name}",
+  "Deshacer": "Undo",
+  "Rehacer": "Redo",
+  "Deshacer (⌘ Z)": "Undo (⌘ Z)",
+  "Rehacer (⌘ ⇧ Z)": "Redo (⌘ ⇧ Z)",
 };

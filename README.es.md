@@ -109,7 +109,7 @@ Un calendario semanal compartido por toda la oficina. Programa una reunión en u
 
 ### 🛋️ Decora todo
 
-Un catálogo de **81 objetos en 251 orientaciones**: escritorios, sillas, sofás, plantas, estanterías, lámparas y tecnología. Coloca, arrastra, gira (**R**) y elimina, también los muebles originales. Lo que dejas sobre un escritorio queda encima, y el servidor valida cada colocación para que nadie quede atrapado.
+Un catálogo de **81 objetos en 251 orientaciones**: escritorios, sillas, sofás, plantas, estanterías, lámparas y tecnología. Coloca, arrastra, gira (**R**), elimina y deshaz (**⌘ Z**), también los muebles originales. Lo que dejas sobre un escritorio queda encima, y el servidor valida cada colocación para que nadie quede atrapado.
 
 <img src="docs/screenshots/decorator.png" alt="El decorador con su catálogo, la cuadrícula y el aviso de modo edición" width="100%">
 

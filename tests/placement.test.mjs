@@ -148,3 +148,14 @@ test('base-map objects can be rotated and removed through overrides that persist
   const restored = await connect(server.port, 'Restored');
   assert.deepEqual(restored.welcome.overrides, removed.overrides);
 });
+
+test('a map object can be reset to its exact original placement, as undo does', async t => {
+  const server = await fixture(t);
+  const editor = await connect(server.port, 'Editor');
+  editor.send({ type: 'object:update', id: 'b34830e2', x: 880, y: 1104 });
+  const moved = await editor.next('objects');
+  assert.ok(moved.overrides.b34830e2, 'the move is stored as an override');
+  editor.send({ type: 'object:update', id: 'b34830e2', reset: true });
+  const reset = await editor.next('objects');
+  assert.equal(reset.overrides.b34830e2, undefined, 'reset removes the override entirely');
+});

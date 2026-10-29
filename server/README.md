@@ -61,6 +61,7 @@ Supported messages:
   blocking every exit beside an occupied chair return `invalid_object`. The
   standing check uses the same object footprint and avatar radius as walking;
   it only checks the newly placed object, not unrelated static geometry.
+- `object:update` with `reset: true` on a map object removes its override and returns it to the exact reference placement (used by undo).
 - `object:update`: object `id` plus `rotate: true` (next available facing), an explicit `facing`,
   or new `x`/`y`. Occupied chairs cannot be edited. Validated like `object:add`. The `id` may
   also name a base-map object (`shared/vivo-map.js`): the change is stored as an override.

@@ -610,3 +610,7 @@ button .avatar { pointer-events: none; }
 .profile-picture .avatar { border-radius: 9999px; }
 
 .form-error { color: #e5484d; font-size: 12px; margin: -4px 0 8px; }
+
+.history-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.history-buttons .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; border-radius: 10px; font-size: 12px; }
+.edit-banner .edit-exit:disabled { opacity: .4; cursor: default; }
