@@ -393,4 +393,5 @@ export const EN: Record<string, string> = {
   "Asignar {desk} a": "Assign {desk} to",
   "Asignar a…": "Assign to…",
   "Tu escritorio": "Your desk",
+  "No hay objetos con ese nombre.": "No objects with that name.",
 };

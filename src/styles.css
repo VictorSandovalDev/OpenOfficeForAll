@@ -660,3 +660,6 @@ button .avatar { pointer-events: none; }
 .desk-actions button, .desk-actions select { height: 26px; padding: 0 9px; border-radius: 7px; border: 1px solid var(--line, #3a3a42); background: var(--surface-2, #26262c); color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
 .desk-actions select { flex: 1; min-width: 0; }
 .desk-actions button:disabled, .desk-actions select:disabled { opacity: .5; cursor: default; }
+/* Decorator: category headings with counts, each item shows its colour under its name. */
+.catalog-list h3 .catalog-count { font-weight: 500; opacity: .55; margin-left: 4px; }
+.catalog-grid button small { display: block; font-size: 10.5px; line-height: 1.2; opacity: .6; text-transform: none; }
