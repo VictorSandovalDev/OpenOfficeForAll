@@ -303,7 +303,8 @@ export async function startServer({
   const visibleHistory = (room, userId) => Object.entries(room.history).filter(([key]) => !key.startsWith('dm:') || key.split(':').slice(1).includes(userId)).flatMap(([, messages]) => messages).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const directory = (room) => Object.entries(room.users).map(([userId, user]) => ({ userId, ...user }));
 
-  const server = http.createServer((request, response) => {
+  // Large headers (many cookies on localhost) are accepted instead of answering HTTP 431.
+  const server = http.createServer({ maxHeaderSize: 64 * 1024 }, (request, response) => {
     if (request.method === 'GET' && request.url === '/health') {
       response.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
       response.end(JSON.stringify({ ok: true, service: 'open-office', rooms: rooms.size, participants: [...rooms.values()].reduce((sum, room) => sum + room.members.size, 0) }));

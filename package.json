@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "dev:client": "vite --host 127.0.0.1",
-    "dev:server": "node server/index.mjs",
+    "dev:client": "node --max-http-header-size=65536 node_modules/vite/bin/vite.js --host 127.0.0.1",
+    "dev:server": "node --max-http-header-size=65536 server/index.mjs",
     "build": "tsc --noEmit && vite build",
     "test": "node --test tests/*.test.mjs",
     "preview": "vite preview --host 127.0.0.1"
