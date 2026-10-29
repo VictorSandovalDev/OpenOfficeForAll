@@ -452,7 +452,6 @@ export const EN: Record<string, string> = {
   "Todavía no has entrado a ningún espacio.": "You have not entered any space yet.",
   "Elige un mapa": "Choose a map",
   "Oficina amueblada": "Furnished office",
-  "Igual que Vivo: salas de reunión, escritorios, cocina y jardín, con la decoración actual.": "Just like Vivo: meeting rooms, desks, kitchen and garden, with the current decoration.",
   "Solo los administradores pueden cambiar el nombre.": "Only admins can rename this space.",
   "No se pudo cambiar el nombre.": "The name could not be changed.",
   "Cambiar nombre": "Rename",
@@ -472,4 +471,5 @@ export const EN: Record<string, string> = {
   "Silencio": "Muted",
   "Música de reunión": "Meeting music",
   "Volumen de la música de reunión": "Meeting music volume",
+  "Con el mismo mapa y la misma decoración que la oficina principal: salas de reunión, escritorios, cocina y jardín.": "With the same map and decoration as the main office: meeting rooms, desks, kitchen and garden.",
 };

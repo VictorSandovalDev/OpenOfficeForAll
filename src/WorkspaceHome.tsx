@@ -114,7 +114,7 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
       <button type="button" className="dashboard-dialog-close" aria-label={t('Cerrar ventana')} onClick={onClose}><X size={18} /></button>
       <h2 id="create-title">{t('Crear un espacio de trabajo')}</h2>
       <p className="dashboard-dialog-lead">{t('Cada espacio tiene su propio mapa, sus personas, su chat y su calendario.')}</p>
-      <figure className="template-preview"><img src={THUMBNAIL.office} alt="" /><figcaption><strong>{t('Oficina amueblada')}</strong><small>{t('Igual que Vivo: salas de reunión, escritorios, cocina y jardín, con la decoración actual.')}</small></figcaption></figure>
+      <figure className="template-preview"><img src={THUMBNAIL.office} alt="" /><figcaption><strong>{t('Oficina amueblada')}</strong><small>{t('Con el mismo mapa y la misma decoración que la oficina principal: salas de reunión, escritorios, cocina y jardín.')}</small></figcaption></figure>
       <label className="dashboard-label">{t('Nombre del espacio')}<input ref={input} value={name} onChange={e => setName(e.target.value)} placeholder={t('p. ej. Equipo de diseño')} minLength={2} maxLength={60} required /></label>
       {keyRequired && <label className="dashboard-label">{t('Clave de invitación')}<input type="password" value={key} onChange={e => setKey(e.target.value)} autoComplete="off" maxLength={200} /></label>}
       {error && <p className="form-error" role="alert">{error}</p>}
