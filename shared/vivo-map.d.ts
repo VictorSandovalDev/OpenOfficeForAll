@@ -6,3 +6,5 @@ export type MapObject = { id: string; parent: string | null; kind: string; famil
 export const AREAS: Area[];
 export const OBJECTS: MapObject[];
 export const EXTRA_OBJECTS: MapObject[];
+export const SPAWN_TILE: { readonly tx: number; readonly ty: number };
+export const MAP_ID: string;

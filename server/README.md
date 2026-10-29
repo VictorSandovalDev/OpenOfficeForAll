@@ -38,7 +38,8 @@ Supported messages:
   Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants, startedAt, music?, recordingBy? } }`).
 - `object:add` and `object:update` accept `free: true` to keep the exact position instead of the grid; the object is
   drawn at that point and still blocks the tiles it stands on. Moving without `free` returns it to the grid.
-- Workspaces: `POST /api/workspaces` with `name` (2–60 characters), `template` (`office` or `empty`) and, when
+- Workspaces: `POST /api/workspaces` with `name` (2–60 characters), `map` (`vivo`, `studio` for small teams or
+  `campus` for large teams; built from Vivo's own rooms in `shared/maps/`), `template` (`office` or `empty`) and, when
   the server has an invite key, `key`; replies `201 { slug, name }` with a unique address made from the name.
   `GET /api/workspaces/<slug>` returns its name and template; `PATCH /api/workspaces/<slug>` with `name` renames it
   (with `admin` when only admins may edit). The `office` template copies the current design of the template office

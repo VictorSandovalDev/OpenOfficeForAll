@@ -43,10 +43,10 @@ test('workspaces get a name, a unique address and their own map; the name can be
   const server = await fixture(t);
   const created = await post(server.port, { name: 'Diseño Web' });
   assert.equal(created.status, 201);
-  assert.deepEqual(await created.json(), { slug: 'diseno-web', name: 'Diseño Web' });
+  assert.deepEqual(await created.json(), { slug: 'diseno-web', name: 'Diseño Web', map: 'vivo' });
   assert.equal((await (await post(server.port, { name: 'Diseño web' })).json()).slug, 'diseno-web-2', 'the same name gets its own address');
   assert.equal((await post(server.port, { name: 'x' })).status, 400);
-  assert.deepEqual(await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces/diseno-web`)).json(), { slug: 'diseno-web', name: 'Diseño Web', template: 'office' });
+  assert.deepEqual(await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces/diseno-web`)).json(), { slug: 'diseno-web', name: 'Diseño Web', template: 'office', map: 'vivo' });
   assert.equal((await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces/mi-oficina`)).json()).name, 'Vivo', 'the original office keeps its name');
   const ana = await connect(server.port, 'Ana', 'user-ana-0001', 'diseno-web');
   assert.deepEqual(ana.welcome.workspace, { slug: 'diseno-web', name: 'Diseño Web' });
@@ -120,4 +120,20 @@ test('everyone sees the same list of workspaces, and empty ones can be deleted (
   assert.equal((await del('mi-oficina')).status, 400, 'the main office stays');
   assert.equal((await del(slug)).status, 200);
   assert.deepEqual((await list()).map(item => item.slug), ['mi-oficina']);
+});
+
+test('a workspace can use another map: people enter at its own lobby and only its desks exist', async t => {
+  const server = await fixture(t);
+  const created = await (await post(server.port, { name: 'Equipo pequeño', map: 'studio' })).json();
+  assert.equal(created.map, 'studio');
+  const ana = await connect(server.port, 'Ana', 'user-ana-0001', created.slug);
+  const me = ana.welcome.participants.find(person => person.id === ana.welcome.id);
+  assert.deepEqual([me.x, me.y], [10 * 32 + 16, 27 * 32 + 16], 'the studio lobby');
+  ana.send({ type: 'desk:assign', areaId: 'e6db33b1', userId: 'user-ana-0001' });
+  assert.equal((await ana.next('error')).code, 'invalid_desk', 'a Vivo focus office is not part of the studio');
+  ana.send({ type: 'desk:assign', areaId: '900985a6', userId: 'user-ana-0001' });
+  assert.deepEqual((await ana.next('desks')).desks, { '900985a6': 'user-ana-0001' }, 'the team desks were reused');
+  const vivo = await connect(server.port, 'Bruno', 'user-bruno-001', 'mi-oficina');
+  const bruno = vivo.welcome.participants.find(person => person.id === vivo.welcome.id);
+  assert.deepEqual([bruno.x, bruno.y], [20 * 32 + 16, 39 * 32 + 16], 'Vivo keeps its own lobby in the same server');
 });

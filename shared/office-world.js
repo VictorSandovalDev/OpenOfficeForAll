@@ -1,4 +1,4 @@
-import { TILE, WORLD } from './vivo-map.js';
+import { SPAWN_TILE as MAP_SPAWN, TILE, WORLD } from './vivo-map.js';
 import { areaOf, sharesConversationArea as sharesArea } from './vivo-geometry.js';
 
 export { TILE };
@@ -6,7 +6,7 @@ export const OFFICE_SIZE = Object.freeze({ width: WORLD.width, height: WORLD.hei
 export const MEDIA_RADIUS = 220;
 export const CHAT_RADIUS = 200;
 // New participants enter the Lobby, like the office entry of the reference.
-export const SPAWN_TILE = Object.freeze({ tx: 20, ty: 39 });
+export const SPAWN_TILE = MAP_SPAWN;
 export const SPAWN = Object.freeze({ x: SPAWN_TILE.tx * TILE + TILE / 2, y: SPAWN_TILE.ty * TILE + TILE / 2 });
 
 export const tileCenter = (tx, ty) => ({ x: tx * TILE + TILE / 2, y: ty * TILE + TILE / 2 });

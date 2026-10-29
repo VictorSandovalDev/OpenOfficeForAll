@@ -2,9 +2,14 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Check, Copy, LayoutGrid, MoreVertical, Pencil, Plus, Search, Trash2, Users, X } from 'lucide-react';
 import { locale, t } from './i18n';
 import { loadConfig, storedKey } from './config';
-import { createWorkspace, deleteWorkspace, fetchWorkspace, forgetWorkspace, knownWorkspaces, listWorkspaces, rememberWorkspace, renameWorkspace, visitedLabel, type ServerWorkspace, workspaceUrl, type KnownWorkspace, type Template } from './workspaces';
+import { createWorkspace, deleteWorkspace, fetchWorkspace, forgetWorkspace, knownWorkspaces, listWorkspaces, rememberWorkspace, renameWorkspace, visitedLabel, type ServerWorkspace, workspaceUrl, type KnownWorkspace, type Template, type OfficeMap } from './workspaces';
 
 const THUMBNAIL: Record<Template, string> = { office: '/thumbnails/office.jpg', empty: '/thumbnails/empty.jpg' };
+const MAP_OPTIONS: { id: OfficeMap; name: string; detail: string }[] = [
+  { id: 'studio', name: 'Estudio', detail: 'Para equipos pequeños: 6 escritorios, una sala de reuniones, vestíbulo, cocina y estanque.' },
+  { id: 'vivo', name: 'Oficina', detail: 'La oficina principal con su decoración: 10 escritorios, 5 salas de reunión y 4 oficinas de concentración.' },
+  { id: 'campus', name: 'Campus', detail: 'Para equipos grandes: dos edificios con 20 escritorios, 10 salas de reunión y 8 oficinas de concentración.' },
+];
 
 /** Start page, laid out like the reference dashboard: recent and created workspaces as map cards, and a create dialog. */
 export default function WorkspaceHome() {
@@ -31,16 +36,16 @@ export default function WorkspaceHome() {
   useEffect(() => { document.title = t('Tus espacios de trabajo · Open Office'); }, []);
   // Learn the template (map thumbnail) and current name of spaces we only visited.
   useEffect(() => {
-    for (const item of list.filter(entry => !entry.template)) void fetchWorkspace(item.slug).then(found => {
+    for (const item of list.filter(entry => !entry.template || !entry.map)) void fetchWorkspace(item.slug).then(found => {
       if (!found) return;
-      rememberWorkspaceQuietly(item, found.name, found.template);
+      rememberWorkspaceQuietly(item, found.name, found.template, found.map);
       setList(knownWorkspaces());
     });
   }, []);
   useEffect(() => { const close = () => setMenu(null); window.addEventListener('click', close); return () => window.removeEventListener('click', close); }, []);
 
   const shown = useMemo(() => (tab === 'all'
-      ? server.map(entry => ({ ...(list.find(item => item.slug === entry.slug) ?? { visitedAt: 0, template: 'office' as const }), slug: entry.slug, name: entry.name, createdAt: entry.createdAt ? Date.parse(entry.createdAt) : undefined }))
+      ? server.map(entry => ({ ...(list.find(item => item.slug === entry.slug) ?? { visitedAt: 0, template: 'office' as const }), slug: entry.slug, name: entry.name, map: entry.map, createdAt: entry.createdAt ? Date.parse(entry.createdAt) : undefined }))
       : list)
     .filter(item => tab !== 'created' || item.createdAt)
     .filter(item => !query || `${item.name} ${item.slug}`.toLowerCase().includes(query.toLowerCase()))
@@ -65,7 +70,7 @@ export default function WorkspaceHome() {
         <label className="dashboard-search"><Search size={15} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={t('Buscar')} aria-label={t('Buscar espacios')} /></label>
       </div>
       {shown.length > 0 ? <div className="dashboard-grid">{shown.map(item => <article className="space-card" key={item.slug}>
-        <a className="space-thumb" href={workspaceUrl(item.slug)} onClick={() => rememberWorkspace(item.slug, item.name)}><img src={THUMBNAIL[item.template ?? 'office']} alt="" loading="lazy" /></a>
+        <a className="space-thumb" href={workspaceUrl(item.slug)} onClick={() => rememberWorkspace(item.slug, item.name)}><img src={item.map && item.map !== 'vivo' ? `/thumbnails/${item.map}.jpg` : THUMBNAIL[item.template ?? 'office']} alt="" loading="lazy" /></a>
         <div className="space-meta">
           {renaming?.slug === item.slug
             ? <form className="space-rename" onSubmit={e => { e.preventDefault(); void saveName(); }}><input autoFocus value={renaming.name} onChange={e => setRenaming({ ...renaming, name: e.target.value, error: undefined })} onKeyDown={e => { if (e.key === 'Escape') setRenaming(null); }} maxLength={60} aria-label={t('Nombre del espacio')} /><button type="submit" aria-label={t('Guardar')}><Check size={15} /></button>{renaming.error && <small role="alert">{renaming.error}</small>}</form>
@@ -99,17 +104,18 @@ export default function WorkspaceHome() {
   </div>;
 }
 
-function rememberWorkspaceQuietly(item: KnownWorkspace, name: string, template: Template) {
+function rememberWorkspaceQuietly(item: KnownWorkspace, name: string, template: Template, map?: string) {
   // Keep the visit time: only the name and the map type are refreshed.
   try {
-    const all = knownWorkspaces().map(entry => entry.slug === item.slug ? { ...entry, name, template } : entry);
+    const all = knownWorkspaces().map(entry => entry.slug === item.slug ? { ...entry, name, template, ...(map ? { map } : {}) } : entry);
     localStorage.setItem('office-workspaces', JSON.stringify(all));
   } catch { /* storage unavailable */ }
 }
 
 function CreateDialog({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState('');
-  const template: Template = 'office'; // every new workspace starts as a copy of the designed office
+  const template: Template = 'office'; // furnished; the main office's map also copies its current decoration
+  const [map, setMap] = useState<OfficeMap>('vivo');
   const [key, setKey] = useState('');
   const [keyRequired, setKeyRequired] = useState(false);
   const [error, setError] = useState('');
@@ -121,10 +127,10 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
     event.preventDefault();
     if (busy || name.trim().length < 2) return;
     setBusy(true); setError('');
-    const result = await createWorkspace(name.trim(), template, key || storedKey('key', 'mi-oficina'));
+    const result = await createWorkspace(name.trim(), template, key || storedKey('key', 'mi-oficina'), map);
     setBusy(false);
     if ('error' in result) { setError(result.error === 'access_denied' ? t('La clave de invitación no es válida.') : result.error === 'too_many_attempts' ? t('Demasiados intentos. Espera un momento.') : result.error === 'invalid_name' ? t('El nombre necesita entre 2 y 60 caracteres.') : t('No se pudo crear el espacio. Inténtalo de nuevo.')); return; }
-    rememberWorkspace(result.slug, result.name, { created: true, template });
+    rememberWorkspace(result.slug, result.name, { created: true, template, map });
     location.href = workspaceUrl(result.slug) + (key ? `&key=${encodeURIComponent(key)}` : '');
   }
 
@@ -133,7 +139,15 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
       <button type="button" className="dashboard-dialog-close" aria-label={t('Cerrar ventana')} onClick={onClose}><X size={18} /></button>
       <h2 id="create-title">{t('Crear un espacio de trabajo')}</h2>
       <p className="dashboard-dialog-lead">{t('Cada espacio tiene su propio mapa, sus personas, su chat y su calendario.')}</p>
-      <figure className="template-preview"><img src={THUMBNAIL.office} alt="" /><figcaption><strong>{t('Oficina amueblada')}</strong><small>{t('Con el mismo mapa y la misma decoración que la oficina principal: salas de reunión, escritorios, cocina y jardín.')}</small></figcaption></figure>
+      <span className="dashboard-label">{t('Elige el tamaño de la oficina')}</span>
+      <div className="template-grid map-grid">
+        {MAP_OPTIONS.map(option => <button type="button" key={option.id} className={`template-card${map === option.id ? ' selected' : ''}`} aria-pressed={map === option.id} onClick={() => setMap(option.id)}>
+          <img src={`/thumbnails/${option.id}.jpg`} alt="" />
+          <strong>{t(option.name)}</strong>
+          <small>{t(option.detail)}</small>
+          {map === option.id && <span className="template-check"><Check size={14} /></span>}
+        </button>)}
+      </div>
       <label className="dashboard-label">{t('Nombre del espacio')}<input ref={input} value={name} onChange={e => setName(e.target.value)} placeholder={t('p. ej. Equipo de diseño')} minLength={2} maxLength={60} required /></label>
       {keyRequired && <label className="dashboard-label">{t('Clave de invitación')}<input type="password" value={key} onChange={e => setKey(e.target.value)} autoComplete="off" maxLength={200} /></label>}
       {error && <p className="form-error" role="alert">{error}</p>}

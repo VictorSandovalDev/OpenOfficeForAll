@@ -479,4 +479,10 @@ export const EN: Record<string, string> = {
   "Hay personas dentro. Espera a que salgan.": "People are inside. Wait until they leave.",
   "Solo los administradores pueden eliminar espacios.": "Only admins can delete spaces.",
   "No se pudo eliminar el espacio.": "The space could not be deleted.",
+  "Elige el tamaño de la oficina": "Choose the office size",
+  "Estudio": "Studio",
+  "Campus": "Campus",
+  "Para equipos pequeños: 6 escritorios, una sala de reuniones, vestíbulo, cocina y estanque.": "For small teams: 6 desks, one meeting room, lobby, kitchen and pond.",
+  "La oficina principal con su decoración: 10 escritorios, 5 salas de reunión y 4 oficinas de concentración.": "The main office with its decoration: 10 desks, 5 meeting rooms and 4 focus offices.",
+  "Para equipos grandes: dos edificios con 20 escritorios, 10 salas de reunión y 8 oficinas de concentración.": "For large teams: two buildings with 20 desks, 10 meeting rooms and 8 focus offices.",
 };

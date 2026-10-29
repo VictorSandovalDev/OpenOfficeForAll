@@ -3,16 +3,33 @@ import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as nodeModule from 'node:module';
+import { resolveSync as mapResolve } from './map-hooks.mjs';
 import { WebSocket, WebSocketServer } from 'ws';
-import { OFFICE_SIZE as MAP, MEDIA_RADIUS, CHAT_RADIUS, SPAWN, sharesConversationArea } from '../shared/office-world.js';
-import { canApproachSeat, canExitSeat, getOfficeSeat, getOfficeSeats, SEAT_INTERACTION_RADIUS } from '../shared/office-seats.js';
-import { BASE_OBJECTS, baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
-import { FOCUS_ROOMS, focusRoomOf, meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
+import { MEDIA_RADIUS, CHAT_RADIUS, sharesConversationArea as defaultSharesConversationArea } from '../shared/office-world.js';
+import { SEAT_INTERACTION_RADIUS } from '../shared/office-seats.js';
+import { catalogEntry } from '../shared/office-objects.js';
 import { createAccounts } from './accounts.mjs';
-import { AREAS } from '../shared/vivo-map.js';
+import { MAP_IDS } from '../shared/maps/index.js';
 
-/** Desk areas of the office; each can belong to one person. */
-const DESK_IDS = new Set(AREAS.filter((area) => area.type === 'Desk').map((area) => area.id));
+// One copy of the map geometry per office map (see map-hooks.mjs).
+if (!globalThis.__officeMapHooks) {
+  globalThis.__officeMapHooks = true;
+  if (nodeModule.registerHooks) nodeModule.registerHooks({ resolve: mapResolve });
+  else nodeModule.register('./map-hooks.mjs', import.meta.url);
+}
+const kits = new Map();
+export function mapKit(id = 'vivo') {
+  const mapId = MAP_IDS.includes(id) ? id : 'vivo';
+  if (!kits.has(mapId)) kits.set(mapId, (async () => {
+    const q = `?map=${mapId}`;
+    const [world, seats, objects, meetings, map] = await Promise.all(['office-world.js', 'office-seats.js', 'office-objects.js', 'office-meetings.js', 'vivo-map.js'].map((file) => import(new URL(`../shared/${file}${q}`, import.meta.url).href)));
+    return { id: mapId, MAP: world.OFFICE_SIZE, SPAWN: world.SPAWN, sharesConversationArea: world.sharesConversationArea, canApproachSeat: seats.canApproachSeat, canExitSeat: seats.canExitSeat, getOfficeSeat: seats.getOfficeSeat, getOfficeSeats: seats.getOfficeSeats,
+      BASE_OBJECTS: objects.BASE_OBJECTS, baseAsEditorObject: objects.baseAsEditorObject, isBaseObjectId: objects.isBaseObjectId, nextFacing: objects.nextFacing, officeObjectBlocksPoint: objects.officeObjectBlocksPoint, validOverride: objects.validOverride,
+      FOCUS_ROOMS: meetings.FOCUS_ROOMS, focusRoomOf: meetings.focusRoomOf, meetingRoom: meetings.meetingRoom, meetingRoomOf: meetings.meetingRoomOf, DESK_IDS: new Set(map.AREAS.filter((area) => area.type === 'Desk').map((area) => area.id)) };
+  })());
+  return kits.get(mapId);
+}
 
 const OBJECT_KIND = /^[a-z0-9-]{1,64}$/;
 const OBJECT_COLOR = /^[a-z]{1,24}$/;
@@ -58,9 +75,9 @@ const channelName = (value) => typeof value === 'string' ? value.toLowerCase().t
 const dmKey = (a, b) => `dm:${[a, b].sort().join(':')}`;
 const cleanText = (value, max) => typeof value === 'string' ? value.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').trim().slice(0, max) : '';
 
-function position(x, y) {
+function position(x, y, size = { width: 1e6, height: 1e6 }) {
   if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return null;
-  return { x: Math.max(0, Math.min(MAP.width, x)), y: Math.max(0, Math.min(MAP.height, y)) };
+  return { x: Math.max(0, Math.min(size.width, x)), y: Math.max(0, Math.min(size.height, y)) };
 }
 
 function displayName(value) {
@@ -68,7 +85,7 @@ function displayName(value) {
 }
 
 export function canConnect(a, b) {
-  return a.status === 'available' && b.status === 'available' && sharesConversationArea(a, b, MEDIA_RADIUS);
+  return a.status === 'available' && b.status === 'available' && defaultSharesConversationArea(a, b, MEDIA_RADIUS);
 }
 
 function takeToken(bucket, capacity, perSecond) {
@@ -166,13 +183,13 @@ export async function startServer({
     try { await stat(join(dataDir, `${slug}.json`)); return true; } catch { /* free */ }
     try { await stat(join(dataDir, `${slug}.chat.json`)); return true; } catch { return false; }
   }
-  async function createWorkspace(name, template) {
+  async function createWorkspace(name, template, map = 'vivo') {
     const base = slugify(name);
     let slug = base;
     for (let n = 2; await slugTaken(slug); n++) slug = `${base}-${n}`.slice(0, 63);
     const list = await loadWorkspaces();
-    list[slug] = { name, template, createdAt: new Date().toISOString() };
-    if (template === 'office') {
+    list[slug] = { name, template, map, createdAt: new Date().toISOString() };
+    if (template === 'office' && map === ((await loadWorkspaces())[templateRoom]?.map ?? 'vivo')) {
       // Copy the design (furniture, moved or removed pieces, room names, interactive objects), not the people or the chat.
       let design = null;
       const live = rooms.get(templateRoom);
@@ -185,7 +202,7 @@ export async function startServer({
     }
     if (template === 'empty') {
       // An empty office keeps floors and walls; every piece of furniture starts removed and can be added back.
-      const overrides = Object.fromEntries(BASE_OBJECTS.map((object) => [object.id, { removed: true }]));
+      const overrides = Object.fromEntries((await mapKit(map)).BASE_OBJECTS.map((object) => [object.id, { removed: true }]));
       await mkdir(dataDir, { recursive: true });
       await writeFile(join(dataDir, `${slug}.json`), JSON.stringify({ version: 2, objects: [], overrides, areaNames: {}, interactions: {} }), { mode: 0o600 });
     }
@@ -211,10 +228,10 @@ export async function startServer({
     for (const member of room.members.values()) if (predicate(member.participant)) send(member.socket, payload);
   };
   /** Meeting rooms: active while someone is inside; a locked room admits nobody new until it empties. */
-  const meetingMembers = (room, areaId) => [...room.members.values()].filter((member) => meetingRoomOf(member.participant)?.id === areaId);
+  const meetingMembers = (room, areaId) => [...room.members.values()].filter((member) => room.kit.meetingRoomOf(member.participant)?.id === areaId);
   const meetings = (room) => {
     const state = {};
-    for (const member of room.members.values()) { const area = meetingRoomOf(member.participant); if (area) (state[area.id] ??= { active: true, locked: false, participants: 0 }).participants += 1; }
+    for (const member of room.members.values()) { const area = room.kit.meetingRoomOf(member.participant); if (area) (state[area.id] ??= { active: true, locked: false, participants: 0 }).participants += 1; }
     for (const areaId of Object.keys(room.locks)) { if (state[areaId]) state[areaId].locked = true; else delete room.locks[areaId]; }
     for (const areaId of Object.keys(room.meetingStarts)) if (!state[areaId]) delete room.meetingStarts[areaId];
     for (const [areaId, meeting] of Object.entries(state)) meeting.startedAt = room.meetingStarts[areaId] ??= Date.now();
@@ -222,25 +239,25 @@ export async function startServer({
     for (const [areaId, extra] of Object.entries(room.meetingExtras)) {
       if (!state[areaId]) { delete room.meetingExtras[areaId]; continue; }
       if (extra.music) state[areaId].music = extra.music;
-      if (extra.recordingBy && [...room.members.values()].some((member) => member.participant.id === extra.recordingBy && meetingRoomOf(member.participant)?.id === areaId)) state[areaId].recordingBy = extra.recordingBy;
+      if (extra.recordingBy && [...room.members.values()].some((member) => member.participant.id === extra.recordingBy && room.kit.meetingRoomOf(member.participant)?.id === areaId)) state[areaId].recordingBy = extra.recordingBy;
       else delete extra.recordingBy;
     }
     return state;
   };
-  const systemMessage = (room, areaId, participant, text) => broadcast(room, { type: 'chat', message: { id: randomUUID(), participantId: participant.id, name: participant.name, text, channel: 'meeting', areaId, system: true, createdAt: new Date().toISOString() } }, (other) => meetingRoomOf(other)?.id === areaId);
+  const systemMessage = (room, areaId, participant, text) => broadcast(room, { type: 'chat', message: { id: randomUUID(), participantId: participant.id, name: participant.name, text, channel: 'meeting', areaId, system: true, createdAt: new Date().toISOString() } }, (other) => room.kit.meetingRoomOf(other)?.id === areaId);
   /** Focus offices: alone in one, an active person switches to focus; leaving restores the previous status.
       A status chosen by hand inside the office is respected until the person leaves. */
   const applyFocusZones = (room) => {
     const people = [...room.members.values()].map((member) => member.participant);
     for (const person of people) {
-      const zone = focusRoomOf(person);
+      const zone = room.kit.focusRoomOf(person);
       if (person.focusZone && person.focusZone !== zone?.id) {
         if (person.status === 'focus') person.status = person.statusBeforeFocus ?? 'available';
         delete person.focusZone; delete person.statusBeforeFocus;
       }
       if (person.focusDeclined && person.focusDeclined !== zone?.id) delete person.focusDeclined;
       if (!zone || person.focusZone || person.focusDeclined === zone.id || person.status !== 'available') continue;
-      const alone = !people.some((other) => other !== person && focusRoomOf(other)?.id === zone.id);
+      const alone = !people.some((other) => other !== person && room.kit.focusRoomOf(other)?.id === zone.id);
       if (alone) { person.statusBeforeFocus = person.status; person.status = 'focus'; person.focusZone = zone.id; }
     }
   };
@@ -253,16 +270,16 @@ export async function startServer({
     for (const areaId of Object.keys(room.focus)) if (!insideFocus(room, areaId).length) delete room.focus[areaId]; // an empty office closes again for the next person
     broadcast(room, { type: 'participants', participants: participants(room), meetings: state, focusRooms: focusState(room) });
   };
-  const lockedAgainst = (room, participant, point) => { const area = meetingRoomOf(point); return !!area && !!room.locks[area.id] && meetingRoomOf(participant)?.id !== area.id; };
+  const lockedAgainst = (room, participant, point) => { const area = room.kit.meetingRoomOf(point); return !!area && !!room.locks[area.id] && room.kit.meetingRoomOf(participant)?.id !== area.id; };
   /** Focus offices close their door while someone is inside: only people let in from inside may enter. */
-  const insideFocus = (room, areaId, except) => [...room.members.values()].filter((member) => member.participant !== except && focusRoomOf(member.participant)?.id === areaId);
+  const insideFocus = (room, areaId, except) => [...room.members.values()].filter((member) => member.participant !== except && room.kit.focusRoomOf(member.participant)?.id === areaId);
   const focusClosedAgainst = (room, participant, point) => {
-    const zone = focusRoomOf(point);
-    if (!zone || focusRoomOf(participant)?.id === zone.id || !insideFocus(room, zone.id, participant).length) return false;
+    const zone = room.kit.focusRoomOf(point);
+    if (!zone || room.kit.focusRoomOf(participant)?.id === zone.id || !insideFocus(room, zone.id, participant).length) return false;
     const state = room.focus[zone.id];
     return !state?.open && !state?.guests?.includes(participant.id);
   };
-  const focusState = (room) => Object.fromEntries(FOCUS_ROOMS.flatMap((area) => {
+  const focusState = (room) => Object.fromEntries(room.kit.FOCUS_ROOMS.flatMap((area) => {
     const inside = insideFocus(room, area.id);
     if (!inside.length) return [];
     const state = room.focus[area.id] ?? {};
@@ -273,16 +290,16 @@ export async function startServer({
     const next = object ? [...others, object] : others;
     for (const member of room.members.values()) {
       if (!member.participant.seatId) {
-        if (object && officeObjectBlocksPoint(object, member.participant)) return 'Leave space around people before placing furniture.';
+        if (object && room.kit.officeObjectBlocksPoint(object, member.participant)) return 'Leave space around people before placing furniture.';
         continue;
       }
-      const seat = getOfficeSeat(member.participant.seatId, next, overrides);
+      const seat = room.kit.getOfficeSeat(member.participant.seatId, next, overrides);
       if (!seat) return 'Someone is sitting on this object.';
-      if (!canExitSeat(seat, next, overrides)) return 'Leave a free exit beside occupied chairs.';
+      if (!room.kit.canExitSeat(seat, next, overrides)) return 'Leave a free exit beside occupied chairs.';
     }
     return null;
   };
-  const standParticipant = (room, participant, seat = getOfficeSeat(participant.seatId, room.objects, room.overrides)) => {
+  const standParticipant = (room, participant, seat = room.kit.getOfficeSeat(participant.seatId, room.objects, room.overrides)) => {
     delete participant.seatId;
     if (seat) Object.assign(participant, { x: seat.standX, y: seat.standY });
   };
@@ -297,6 +314,7 @@ export async function startServer({
     const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], desks: {}, focus: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       room.workspaceName = await workspaceName(slug);
+      room.kit = await mapKit((await loadWorkspaces())[slug]?.map);
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
         if (raw.length > 256_000) return;
@@ -306,15 +324,15 @@ export async function startServer({
           for (const [id, interaction] of Object.entries(saved.interactions).slice(0, 500)) { const clean = cleanInteraction(interaction); if (clean && typeof id === 'string' && id.length <= 64) room.interactions[id] = clean; }
         }
         if (saved.areaNames && typeof saved.areaNames === 'object') {
-          for (const [id, name] of Object.entries(saved.areaNames).slice(0, 100)) if (meetingRoom(id) && displayName(name)) room.areaNames[id] = displayName(name);
+          for (const [id, name] of Object.entries(saved.areaNames).slice(0, 100)) if (room.kit.meetingRoom(id) && displayName(name)) room.areaNames[id] = displayName(name);
         }
         if (saved.overrides && typeof saved.overrides === 'object') {
-          for (const [id, override] of Object.entries(saved.overrides).slice(0, MAX_OBJECTS)) if (validOverride(id, override)) room.overrides[id] = { ...override };
+          for (const [id, override] of Object.entries(saved.overrides).slice(0, MAX_OBJECTS)) if (room.kit.validOverride(id, override)) room.overrides[id] = { ...override };
         }
         const ids = new Set();
         room.objects = saved.objects.slice(0, MAX_OBJECTS).flatMap((object) => {
           if (!object || typeof object.kind !== 'string' || typeof object.id !== 'string' || object.id.length > 64 || ids.has(object.id) || !validObject(object)) return [];
-          const point = position(object.x, object.y);
+          const point = position(object.x, object.y, room.kit.MAP);
           if (!point) return [];
           ids.add(object.id);
           return [{ id: object.id, kind: object.kind, ...(typeof object.color === 'string' ? { color: object.color } : {}), ...(typeof object.facing === 'string' ? { facing: object.facing } : {}), ...point, ...(object.free === true ? { free: true } : {}) }];
@@ -348,14 +366,14 @@ export async function startServer({
         if (Array.isArray(saved.events)) room.events = saved.events.slice(0, MAX_EVENTS).flatMap((event) => {
           const start = isoTime(event?.start), end = isoTime(event?.end);
           if (!start || !end || end <= start || typeof event.id !== 'string' || !cleanText(event.title, 120)) return [];
-          return [{ id: event.id, title: cleanText(event.title, 120), description: cleanText(event.description, 1000), start, end, areaId: typeof event.areaId === 'string' && meetingRoom(event.areaId) ? event.areaId : null, organizer: displayName(event.organizer) || 'Invitado', organizerId: String(event.organizerId ?? '') }];
+          return [{ id: event.id, title: cleanText(event.title, 120), description: cleanText(event.description, 1000), start, end, areaId: typeof event.areaId === 'string' && room.kit.meetingRoom(event.areaId) ? event.areaId : null, organizer: displayName(event.organizer) || 'Invitado', organizerId: String(event.organizerId ?? '') }];
         });
       } catch (cause) {
         if (cause.code !== 'ENOENT') console.warn(`Could not load calendar for room ${slug}: ${cause.message}`);
       }
       try {
         const saved = JSON.parse(await readFile(join(dataDir, `${slug}.desks.json`), 'utf8'));
-        for (const [areaId, userId] of Object.entries(saved.desks ?? {})) if (DESK_IDS.has(areaId) && typeof userId === 'string' && USER_ID.test(userId)) room.desks[areaId] = userId;
+        for (const [areaId, userId] of Object.entries(saved.desks ?? {})) if (room.kit.DESK_IDS.has(areaId) && typeof userId === 'string' && USER_ID.test(userId)) room.desks[areaId] = userId;
       } catch (cause) {
         if (cause.code !== 'ENOENT') console.warn(`Could not load desks for room ${slug}: ${cause.message}`);
       }
@@ -434,7 +452,7 @@ export async function startServer({
         if (accessKey && !sameSecret(key, accessKey)) return reply(403, { error: 'access_denied' });
         void loadWorkspaces().then((list) => {
           const slugs = new Set([templateRoom, ...Object.keys(list)]);
-          reply(200, { workspaces: [...slugs].map((slug) => ({ slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), createdAt: list[slug]?.createdAt ?? null, online: rooms.get(slug)?.members.size ?? 0, main: slug === templateRoom })) });
+          reply(200, { workspaces: [...slugs].map((slug) => ({ slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), map: list[slug]?.map ?? 'vivo', createdAt: list[slug]?.createdAt ?? null, online: rooms.get(slug)?.members.size ?? 0, main: slug === templateRoom })) });
         });
         return;
       }
@@ -463,7 +481,7 @@ export async function startServer({
       if (request.method === 'GET' && request.url.startsWith('/api/workspaces/')) {
         const slug = decodeURIComponent(request.url.slice('/api/workspaces/'.length));
         if (!ROOM_SLUG.test(slug)) return reply(400, { error: 'invalid_workspace' });
-        void loadWorkspaces().then((list) => reply(200, { slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), template: list[slug]?.template ?? 'office' }));
+        void loadWorkspaces().then((list) => reply(200, { slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), template: list[slug]?.template ?? 'office', map: list[slug]?.map ?? 'vivo' }));
         return;
       }
       const renaming = request.method === 'PATCH' && request.url.startsWith('/api/workspaces/');
@@ -491,7 +509,8 @@ export async function startServer({
           return reply(200, { slug, name });
         }
         const template = payload.template === 'empty' ? 'empty' : 'office';
-        try { return reply(201, await createWorkspace(name, template)); }
+        const map = MAP_IDS.includes(payload.map) ? payload.map : 'vivo';
+        try { return reply(201, { ...(await createWorkspace(name, template, map)), map }); }
         catch (cause) { console.error(`Could not create workspace: ${cause.message}`); return reply(500, { error: 'workspace_failed' }); }
       });
       return;
@@ -580,7 +599,7 @@ export async function startServer({
         clearTimeout(joinTimeout);
         client.room = room;
         const participantId = randomUUID();
-        client.participant = { id: participantId, userId: account ? `acct-${account.id}` : typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || account?.name || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
+        client.participant = { id: participantId, userId: account ? `acct-${account.id}` : typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || account?.name || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: room.kit.SPAWN.x, y: room.kit.SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
         const look = sanitizeLook(payload.avatar); if (look) client.participant.avatar = look;
         client.participant.role = adminKey && sameSecret(payload.adminKey, adminKey) ? 'admin' : 'member';
         if (account) client.participant.verified = true;
@@ -597,10 +616,10 @@ export async function startServer({
       switch (payload.type) {
         case 'move': {
           if (participant.seatId) return error(socket, 'seat_unavailable', 'Stand up before moving.');
-          const point = position(payload.x, payload.y);
+          const point = position(payload.x, payload.y, room.kit.MAP);
           if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.');
           if (lockedAgainst(room, participant, point)) return error(socket, 'meeting_locked', 'This meeting is locked.');
-          if (focusClosedAgainst(room, participant, point)) return send(socket, { type: 'error', code: 'focus_closed', areaId: focusRoomOf(point).id, message: 'Someone is focusing in this office. Knock to ask to come in.' });
+          if (focusClosedAgainst(room, participant, point)) return send(socket, { type: 'error', code: 'focus_closed', areaId: room.kit.focusRoomOf(point).id, message: 'Someone is focusing in this office. Knock to ask to come in.' });
           const dx = point.x - participant.x;
           const dy = point.y - participant.y;
           if (dx || dy) participant.facing = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'east' : 'west') : (dy > 0 ? 'south' : 'north');
@@ -610,15 +629,15 @@ export async function startServer({
           break;
         }
         case 'seat:sit': {
-          const seat = getOfficeSeat(payload.seatId, room.objects, room.overrides);
+          const seat = room.kit.getOfficeSeat(payload.seatId, room.objects, room.overrides);
           if (!seat) return error(socket, 'invalid_seat', 'Choose a chair in this office.');
           if (lockedAgainst(room, participant, seat)) return error(socket, 'meeting_locked', 'This meeting is locked.');
-          if (focusClosedAgainst(room, participant, seat)) return send(socket, { type: 'error', code: 'focus_closed', areaId: focusRoomOf(seat).id, message: 'Someone is focusing in this office. Knock to ask to come in.' });
+          if (focusClosedAgainst(room, participant, seat)) return send(socket, { type: 'error', code: 'focus_closed', areaId: room.kit.focusRoomOf(seat).id, message: 'Someone is focusing in this office. Knock to ask to come in.' });
           if (participant.status === 'away' || (participant.seatId && participant.seatId !== seat.id)
             || [...room.members.values()].some(member => member !== client && member.participant.seatId === seat.id)
-            || !canExitSeat(seat, room.objects, room.overrides)) return error(socket, 'seat_unavailable', 'This chair is currently unavailable.');
+            || !room.kit.canExitSeat(seat, room.objects, room.overrides)) return error(socket, 'seat_unavailable', 'This chair is currently unavailable.');
           if (Math.hypot(participant.x - seat.x, participant.y - seat.y) > SEAT_INTERACTION_RADIUS) return error(socket, 'seat_too_far', 'Walk closer to the chair before sitting.');
-          if (participant.seatId !== seat.id && !canApproachSeat(participant, seat, room.objects, room.overrides)) return error(socket, 'seat_unavailable', 'Walk to the accessible side of the chair first.');
+          if (participant.seatId !== seat.id && !room.kit.canApproachSeat(participant, seat, room.objects, room.overrides)) return error(socket, 'seat_unavailable', 'Walk to the accessible side of the chair first.');
           Object.assign(participant, { x: seat.x, y: seat.y, facing: seat.facing, seatId: seat.id });
           broadcastParticipants(room);
           break;
@@ -634,7 +653,7 @@ export async function startServer({
           if (name) { participant.name = name; changed = true; }
           if (typeof payload.color === 'string' && COLOR.test(payload.color)) { participant.color = payload.color; changed = true; }
           if (STATUSES.has(payload.status)) {
-            if (participant.status !== payload.status && focusRoomOf(participant)) { participant.focusDeclined = focusRoomOf(participant).id; delete participant.focusZone; delete participant.statusBeforeFocus; }
+            if (participant.status !== payload.status && room.kit.focusRoomOf(participant)) { participant.focusDeclined = room.kit.focusRoomOf(participant).id; delete participant.focusZone; delete participant.statusBeforeFocus; }
             participant.status = payload.status; changed = true;
           }
           if (payload.avatar !== undefined) { const look = sanitizeLook(payload.avatar); if (look) { participant.avatar = look; changed = true; } }
@@ -675,10 +694,10 @@ export async function startServer({
             broadcast(room, { type: 'chat', message }, (other) => other.userId === participant.userId || other.userId === payload.to);
             break;
           }
-          const meetingArea = kind === 'meeting' ? meetingRoomOf(participant) : null;
+          const meetingArea = kind === 'meeting' ? room.kit.meetingRoomOf(participant) : null;
           if (kind === 'meeting' && !meetingArea) return error(socket, 'invalid_chat', 'Join a meeting room to use its chat.');
           const message = { ...base, channel: kind, ...(meetingArea ? { areaId: meetingArea.id } : {}) };
-          broadcast(room, { type: 'chat', message }, (other) => meetingArea ? meetingRoomOf(other)?.id === meetingArea.id : sharesConversationArea(participant, other, CHAT_RADIUS));
+          broadcast(room, { type: 'chat', message }, (other) => meetingArea ? room.kit.meetingRoomOf(other)?.id === meetingArea.id : room.kit.sharesConversationArea(participant, other, CHAT_RADIUS));
           break;
         }
         case 'channel:create': {
@@ -694,8 +713,8 @@ export async function startServer({
           break;
         }
         case 'focus:knock': {
-          const area = FOCUS_ROOMS.find((candidate) => candidate.id === payload.areaId);
-          if (!area || focusRoomOf(participant)?.id === area.id) return error(socket, 'invalid_focus', 'Knock on an office you are outside of.');
+          const area = room.kit.FOCUS_ROOMS.find((candidate) => candidate.id === payload.areaId);
+          if (!area || room.kit.focusRoomOf(participant)?.id === area.id) return error(socket, 'invalid_focus', 'Knock on an office you are outside of.');
           const inside = insideFocus(room, area.id);
           if (!inside.length) return;
           const now = Date.now(); client.knocks ??= {};
@@ -705,7 +724,7 @@ export async function startServer({
           break;
         }
         case 'focus:admit': {
-          const zone = focusRoomOf(participant);
+          const zone = room.kit.focusRoomOf(participant);
           if (!zone || zone.id !== payload.areaId || typeof payload.participantId !== 'string') return error(socket, 'invalid_focus', 'Only someone inside can let people in.');
           const guest = [...room.members.values()].find((member) => member.participant.id === payload.participantId);
           if (!guest) return;
@@ -716,7 +735,7 @@ export async function startServer({
           break;
         }
         case 'focus:door': {
-          const zone = focusRoomOf(participant);
+          const zone = room.kit.focusRoomOf(participant);
           if (!zone || zone.id !== payload.areaId || typeof payload.open !== 'boolean') return error(socket, 'invalid_focus', 'Only someone inside can open or close the door.');
           const state = room.focus[zone.id] ??= { open: false, guests: [] };
           state.open = payload.open;
@@ -737,7 +756,7 @@ export async function startServer({
         case 'desk:assign': {
           // Anyone may claim a free desk or give up their own; assigning desks to others needs edit rights.
           const areaId = payload.areaId, userId = payload.userId === null ? null : payload.userId;
-          if (typeof areaId !== 'string' || !DESK_IDS.has(areaId) || (userId !== null && (typeof userId !== 'string' || !room.users[userId]))) return error(socket, 'invalid_desk', 'Choose a desk and someone from this office.');
+          if (typeof areaId !== 'string' || !room.kit.DESK_IDS.has(areaId) || (userId !== null && (typeof userId !== 'string' || !room.users[userId]))) return error(socket, 'invalid_desk', 'Choose a desk and someone from this office.');
           const owner = room.desks[areaId] ?? null;
           const self = participant.userId;
           const allowed = canEdit(participant) || (userId === self && owner === null) || (userId === null && owner === self);
@@ -752,7 +771,7 @@ export async function startServer({
           break;
         }
         case 'media:token': {
-          const area = meetingRoomOf(participant);
+          const area = room.kit.meetingRoomOf(participant);
           if (!livekit || !area) return error(socket, 'sfu_unavailable', 'The media server is only used inside meeting rooms.');
           const roomName = `${room.slug}--${area.id}`;
           send(socket, { type: 'media:token', url: livekit.url, room: roomName, areaId: area.id, token: livekitToken({ key: livekit.key, secret: livekit.secret, identity: participant.id, name: participant.name, room: roomName }) });
@@ -768,7 +787,7 @@ export async function startServer({
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           const title = cleanText(payload.title, 120), start = isoTime(payload.start), end = isoTime(payload.end);
           if (!title || !start || !end || end <= start || Date.parse(end) - Date.parse(start) > 24 * 3_600_000) return error(socket, 'invalid_event', 'Give the meeting a title and a start before its end, within one day.');
-          if (payload.areaId != null && !(typeof payload.areaId === 'string' && meetingRoom(payload.areaId))) return error(socket, 'invalid_event', 'Choose a meeting room of this office.');
+          if (payload.areaId != null && !(typeof payload.areaId === 'string' && room.kit.meetingRoom(payload.areaId))) return error(socket, 'invalid_event', 'Choose a meeting room of this office.');
           if (room.events.length >= MAX_EVENTS) room.events.sort((a, b) => a.end.localeCompare(b.end)).shift();
           const event = { id: randomUUID(), title, description: cleanText(payload.description, 1000), start, end, areaId: payload.areaId ?? null, organizer: participant.name, organizerId: participant.userId };
           room.events.push(event);
@@ -797,7 +816,7 @@ export async function startServer({
         case 'area:rename': {
           if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
-          const area = typeof payload.areaId === 'string' ? meetingRoom(payload.areaId) : null;
+          const area = typeof payload.areaId === 'string' ? room.kit.meetingRoom(payload.areaId) : null;
           const name = displayName(payload.name);
           if (!area || !name) return error(socket, 'invalid_area', 'Choose a meeting room and a name of 1 to 40 characters.');
           if (name === area.name) delete room.areaNames[area.id]; else room.areaNames[area.id] = name;
@@ -806,7 +825,7 @@ export async function startServer({
           break;
         }
         case 'meeting:music': {
-          const area = meetingRoomOf(participant);
+          const area = room.kit.meetingRoomOf(participant);
           if (!area || typeof payload.playing !== 'boolean') return error(socket, 'invalid_meeting', 'Join a meeting room to play music.');
           const extra = room.meetingExtras[area.id] ??= {};
           if (payload.playing) extra.music = { startedAt: Date.now(), by: participant.name }; else delete extra.music;
@@ -815,7 +834,7 @@ export async function startServer({
           break;
         }
         case 'meeting:record': {
-          const area = meetingRoomOf(participant);
+          const area = room.kit.meetingRoomOf(participant);
           if (!area || typeof payload.recording !== 'boolean') return error(socket, 'invalid_meeting', 'Join a meeting room to record.');
           const extra = room.meetingExtras[area.id] ??= {};
           if (payload.recording) { if (extra.recordingBy && extra.recordingBy !== participant.id) return error(socket, 'invalid_meeting', 'Someone else is already recording.'); extra.recordingBy = participant.id; }
@@ -826,9 +845,9 @@ export async function startServer({
           break;
         }
         case 'meeting:lock': {
-          const area = typeof payload.areaId === 'string' ? meetingRoom(payload.areaId) : null;
+          const area = typeof payload.areaId === 'string' ? room.kit.meetingRoom(payload.areaId) : null;
           if (!area || typeof payload.locked !== 'boolean') return error(socket, 'invalid_meeting', 'Choose a meeting room and a lock state.');
-          if (meetingRoomOf(participant)?.id !== area.id) return error(socket, 'invalid_meeting', 'Only people in the meeting can lock it.');
+          if (room.kit.meetingRoomOf(participant)?.id !== area.id) return error(socket, 'invalid_meeting', 'Only people in the meeting can lock it.');
           if (!!room.locks[area.id] === payload.locked) return;
           if (payload.locked) room.locks[area.id] = participant.id; else delete room.locks[area.id];
           systemMessage(room, area.id, participant, payload.locked ? 'bloqueó la reunión' : 'desbloqueó la reunión');
@@ -838,7 +857,7 @@ export async function startServer({
         case 'object:add': {
           if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
-          const point = position(payload.x, payload.y);
+          const point = position(payload.x, payload.y, room.kit.MAP);
           if (!point || typeof payload.kind !== 'string' || !validObject(payload)) return error(socket, 'invalid_object', 'Choose a supported object and finite position.');
           if (room.objects.length >= MAX_OBJECTS) return error(socket, 'object_limit', 'This room has reached its object limit.');
           const addedObject = { id: randomUUID(), kind: payload.kind, ...(typeof payload.color === 'string' ? { color: payload.color } : {}), ...(typeof payload.facing === 'string' ? { facing: payload.facing } : {}), ...point, ...(payload.free === true ? { free: true } : {}) };
@@ -853,7 +872,7 @@ export async function startServer({
           if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           if (typeof payload.id !== 'string') return error(socket, 'invalid_object', 'An object ID is required.');
-          if (isBaseObjectId(payload.id) && payload.reset === true) {
+          if (room.kit.isBaseObjectId(payload.id) && payload.reset === true) {
             // Back to the reference map's own placement (used by undo).
             if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`${payload.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
             const nextOverrides = { ...room.overrides }; delete nextOverrides[payload.id];
@@ -864,14 +883,14 @@ export async function startServer({
             broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
             break;
           }
-          if (isBaseObjectId(payload.id)) {
-            const current = baseAsEditorObject(payload.id, room.overrides);
+          if (room.kit.isBaseObjectId(payload.id)) {
+            const current = room.kit.baseAsEditorObject(payload.id, room.overrides);
             const override = { ...(room.overrides[payload.id] ?? {}) };
             delete override.removed;
-            if (payload.rotate) { const facing = nextFacing(current); if (facing) override.facing = facing; }
+            if (payload.rotate) { const facing = room.kit.nextFacing(current); if (facing) override.facing = facing; }
             if (typeof payload.facing === 'string' && OBJECT_FACINGS.has(payload.facing)) override.facing = payload.facing;
-            if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(override, point); if (payload.free === true) override.free = true; else delete override.free; }
-            if (!validOverride(payload.id, override)) return error(socket, 'invalid_object', 'Unsupported variant.');
+            if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y, room.kit.MAP); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(override, point); if (payload.free === true) override.free = true; else delete override.free; }
+            if (!room.kit.validOverride(payload.id, override)) return error(socket, 'invalid_object', 'Unsupported variant.');
             if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`${payload.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
             const nextOverrides = { ...room.overrides, [payload.id]: override };
             const problem = placementProblem(room, null, room.objects, nextOverrides);
@@ -885,9 +904,9 @@ export async function startServer({
           if (index === -1) return error(socket, 'invalid_object', 'Unknown object.');
           const current = room.objects[index];
           const updated = { ...current };
-          if (payload.rotate) { const facing = nextFacing(current); if (facing) updated.facing = facing; }
+          if (payload.rotate) { const facing = room.kit.nextFacing(current); if (facing) updated.facing = facing; }
           if (typeof payload.facing === 'string' && OBJECT_FACINGS.has(payload.facing)) updated.facing = payload.facing;
-          if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(updated, point); if (payload.free === true) updated.free = true; else delete updated.free; }
+          if (payload.x !== undefined || payload.y !== undefined) { const point = position(payload.x, payload.y, room.kit.MAP); if (!point) return error(socket, 'invalid_position', 'Position must contain finite numbers.'); Object.assign(updated, point); if (payload.free === true) updated.free = true; else delete updated.free; }
           if (!validObject(updated)) return error(socket, 'invalid_object', 'Unsupported variant.');
           if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`object:${current.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
           const others = room.objects.filter((object) => object.id !== current.id);
@@ -900,7 +919,7 @@ export async function startServer({
         }
         case 'object:interaction': {
           if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
-          if (typeof payload.id !== 'string' || !(isBaseObjectId(payload.id) || room.objects.some((object) => object.id === payload.id))) return error(socket, 'invalid_object', 'Unknown object.');
+          if (typeof payload.id !== 'string' || !(room.kit.isBaseObjectId(payload.id) || room.objects.some((object) => object.id === payload.id))) return error(socket, 'invalid_object', 'Unknown object.');
           if (payload.interaction === null) delete room.interactions[payload.id];
           else { const clean = cleanInteraction(payload.interaction); if (!clean) return error(socket, 'invalid_object', 'Give a valid website address or a note.'); room.interactions[payload.id] = clean; }
           persistObjects(room, socket);
@@ -911,7 +930,7 @@ export async function startServer({
           if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           if (typeof payload.id !== 'string') return error(socket, 'invalid_object', 'An object ID is required.');
-          if (isBaseObjectId(payload.id)) {
+          if (room.kit.isBaseObjectId(payload.id)) {
             if (room.overrides[payload.id]?.removed) return;
             if ([...room.members.values()].some((member) => member.participant.seatId?.startsWith(`${payload.id}:`))) return error(socket, 'invalid_object', 'Someone is sitting on this object.');
             const nextOverrides = { ...room.overrides, [payload.id]: { removed: true } };
@@ -924,7 +943,7 @@ export async function startServer({
           }
           const index = room.objects.findIndex((object) => object.id === payload.id);
           if (index === -1) return;
-          const removedSeats = getOfficeSeats(room.objects, room.overrides).filter((seat) => seat.objectId === `object:${payload.id}`);
+          const removedSeats = room.kit.getOfficeSeats(room.objects, room.overrides).filter((seat) => seat.objectId === `object:${payload.id}`);
           room.objects.splice(index, 1);
           let stoodUp = false;
           for (const removedSeat of removedSeats) for (const member of room.members.values()) {

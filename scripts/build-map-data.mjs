@@ -1,4 +1,4 @@
-// Generates shared/vivo-map.js from the measured reference specification.
+// Generates shared/maps/vivo.js from the measured reference specification.
 // Run: node scripts/build-map-data.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -60,7 +60,7 @@ export const OBJECTS = ${JSON.stringify(objects.map(({ footprint, ...object }) =
 /** Objects added for this office on top of the measured reference (see the generator). */
 export const EXTRA_OBJECTS = ${JSON.stringify(extras)};
 `;
-writeFileSync(join(root, 'shared/vivo-map.js'), header + body);
+writeFileSync(join(root, 'shared/maps/vivo.js'), header + body);
 console.log(`areas ${areas.length}, objects ${objects.length}`);
 
 // The placeable catalog (shared/vivo-catalog.js) is generated separately from docs/references/vivo/catalog-variants.json.

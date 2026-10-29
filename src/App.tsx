@@ -9,6 +9,7 @@ import { activityItems, type ActivityItem } from './activity';
 import { MEETING_ROOMS } from '../shared/office-meetings.js';
 import { areaOf } from '../shared/vivo-geometry.js';
 import { SPAWN } from '../shared/office-world.js';
+import { AREAS } from '../shared/vivo-map.js';
 import { useOffice } from './useOffice';
 import { canHearEachOther, useMedia } from './useMedia';
 import type { EditItem, OfficeObject, Participant, Status } from './types';
@@ -38,6 +39,8 @@ const COLORS = ['#7869df', '#e89e57', '#4d9e8b', '#d97797', '#609bd2', '#9d805e'
 const STATUS_SOURCE: Record<Status, string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'No molestar' };
 /** Status labels, translated each time they are read so a language change applies at once. */
 const STATUS = Object.defineProperties({} as Record<Status, string>, Object.fromEntries(Object.entries(STATUS_SOURCE).map(([key, value]) => [key, { enumerable: true, get: () => t(value) }])));
+/** Places listed under "Explore the office": team areas and the larger meeting rooms of the map in use. */
+const EXPLORE_AREAS = AREAS.filter(area => area.type === 'Team' || (area.type === 'MeetingRoom' && (area.capacity ?? 0) >= 6));
 const room = new URLSearchParams(location.search).get('room')?.replace(/[^a-z0-9_-]/g, '').slice(0, 64) || 'mi-oficina';
 const initialWorkspaceName = knownWorkspaces().find(item => item.slug === room)?.name ?? (room === 'mi-oficina' ? 'Vivo' : room);
 rememberKeysFromUrl(room);
@@ -510,8 +513,7 @@ export default function App() {
           <div className="section-label"><ChevronDown size={13} />{t('En línea')} <span>({office.participants.length})</span></div>
           <div className="people-list">{visiblePeople.map(p => <button className={`person-row ${selected === p.id ? 'selected' : ''}`} key={p.id} onClick={() => setSelected(p.id)}><span className="avatar-wrap"><Avatar person={p} /><i className={`status-dot ${p.status}`} /></span><div><strong>{p.name}{p.id === office.selfId && <span className="you"> {t('(tú)')}</span>}</strong><span>{p.statusText || STATUS[p.status]}</span></div>{p.mic && <Mic size={14} />}</button>)}{!office.participants.length && <p className="empty-small">{t('Entra para ver quién está en la oficina.')}</p>}{office.participants.length > 0 && !visiblePeople.length && <p className="empty-small">{t('No hay personas con ese nombre.')}</p>}</div>
           <details className="office-places"><summary><Layers size={15} />{t('Explorar la oficina')}<ChevronDown size={13} /></summary>
-            <button className="area-row" disabled={!online} onClick={() => move(1008, 848)}><Monitor size={16} /><span>{t('Team')}</span><ArrowRight size={14} /></button>
-            <button className="area-row" disabled={!online} onClick={() => move(1104, 1200)}><Users size={16} /><span>{t('Media room')}</span><ArrowRight size={14} /></button>
+            {EXPLORE_AREAS.map(area => <button key={area.id} className="area-row" disabled={!online} onClick={() => move((area.x + area.w / 2) * 32, (area.y + area.h / 2) * 32)}>{area.type === 'Team' ? <Monitor size={16} /> : area.type === 'MeetingRoom' ? <Users size={16} /> : <Coffee size={16} />}<span>{area.type === 'MeetingRoom' ? roomLabel(area.id) : t(area.name)}</span><ArrowRight size={14} /></button>)}
             <button className="area-row" disabled={!online} onClick={() => move(SPAWN.x, SPAWN.y)}><Coffee size={16} /><span>{t('Lobby')}</span><ArrowRight size={14} /></button>
           </details>
           <details className="office-places desk-list"><summary><Monitor size={15} />{t('Escritorios')}<ChevronDown size={13} /></summary>
