@@ -325,4 +325,8 @@ export const EN: Record<string, string> = {
   "Comparte este enlace con tu equipo para que entre a la oficina.": "Share this link with your team so they can join the office.",
   "El enlace incluye la clave de invitación: compártelo solo con tu equipo.": "The link includes the invite key: share it only with your team.",
   "Only office admins can change this.": "Only office admins can change this.",
+  "Arte del mapa": "Map art",
+  "Referencia (idéntico a Gather)": "Reference (identical to Gather)",
+  "Original (libre para redistribuir)": "Original (free to redistribute)",
+  "Organiza {name}": "Organized by {name}",
 };

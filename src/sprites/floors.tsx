@@ -1,6 +1,7 @@
 import { px, type PixelSprite } from './pixel';
 import { spritePaths } from './pixel';
 import { REFERENCE_FLOORS } from './referenceFloors';
+import { artPack } from './artPack';
 
 /** Floor textures of the reference office, 32 × 32 tiles. Keys follow the area data (`floor` + `floorColor`). */
 /** Lawn with texture: a mid green base, darker tufts and light blade tips, tileable at 32 px. */
@@ -84,9 +85,9 @@ function diamond(base: string, line: string): PixelSprite {
 }
 const carpetDiamondWhite = diamond('#9c949f', '#8e8d9b');
 
-export const FLOOR_TILES: Record<string, PixelSprite> = {
+/** The project's own floor drawings, used by the original art pack. */
+export const ORIGINAL_FLOOR_TILES: Record<string, PixelSprite> = {
   'NewStyleGrass/Green': grass,
-  // Fallbacks drawn in code, overridden below by the patterns measured from the reference.
   'WoodSlatsLt/LightWood': woodLight,
   'WoodSlats/Wood': wood,
   'CarpetWave/Blue': carpetWavyBlue,
@@ -94,15 +95,15 @@ export const FLOOR_TILES: Record<string, PixelSprite> = {
   'CarpetStripeGray/LightGray': carpetStripeGray,
   'CarpetCouture/White': carpetCoutureWhite,
   'CarpetDiamond/LightWhite': carpetDiamondWhite,
-  ...REFERENCE_FLOORS,
 };
+export const FLOOR_TILES: Record<string, PixelSprite> = { ...ORIGINAL_FLOOR_TILES, ...REFERENCE_FLOORS };
 export const floorKey = (texture: string, color: string) => `${texture}/${color}`;
 export const floorPatternId = (key: string) => `floor-${key.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
 
 /** SVG pattern definitions for every floor tile. */
 export function FloorPatterns() {
   return <defs>
-    {Object.entries(FLOOR_TILES).map(([key, sprite]) => <pattern key={key} id={floorPatternId(key)} width="32" height="32" patternUnits="userSpaceOnUse">
+    {Object.entries(artPack() === 'reference' ? FLOOR_TILES : ORIGINAL_FLOOR_TILES).map(([key, sprite]) => <pattern key={key} id={floorPatternId(key)} width="32" height="32" patternUnits="userSpaceOnUse">
       {spritePaths(sprite).map(path => <path key={path.color} d={path.d} fill={path.color} />)}
     </pattern>)}
   </defs>;

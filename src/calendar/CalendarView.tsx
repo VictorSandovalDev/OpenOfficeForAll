@@ -71,7 +71,7 @@ export default function CalendarView({ events, roomName, selfUserId, selected, o
       <p className="calendar-detail-time">{new Date(event.start).toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' })} · {timeRange(event)}</p>
       {event.areaId && <p className="calendar-detail-room"><Video size={14} />{roomName(event.areaId)}</p>}
       {event.description && <p className="calendar-detail-description">{event.description}</p>}
-      <p className="calendar-detail-organizer">Organiza {event.organizer}</p>
+      <p className="calendar-detail-organizer">{t('Organiza {name}', { name: event.organizer })}</p>
       <div className="calendar-detail-actions">
         {event.areaId && <button type="button" className="primary" disabled={!online} onClick={() => onJoin(event.areaId!)}><Video size={15} />{t('Unirse')}</button>}
         {event.organizerId === selfUserId && <button type="button" className="meeting-secondary" onClick={() => onDelete(event.id)}><Trash2 size={15} />{t('Cancelar reunión')}</button>}

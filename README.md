@@ -60,7 +60,7 @@ A 52 × 50 tile world with a lobby, team desks, five meeting rooms, huddles, a r
 
 ### 🚶 Move like you're there
 
-Arrow keys or WASD, Shift to hurry, click to walk with path-finding that respects walls and furniture. Click a chair or press **E** to sit; the chair's arm draws in front of you, as it should.
+Arrow keys or WASD, Shift to hurry, click to walk with path-finding that respects walls and furniture. Click a chair or press **E** to sit; the chair's arm draws in front of you, and walls hide you when you walk behind them.
 
 </td>
 </tr>
@@ -69,40 +69,64 @@ Arrow keys or WASD, Shift to hurry, click to walk with path-finding that respect
 
 ### 🔒 Meeting rooms that behave
 
-Hover a room to see its name and click it to open its card. **Start meeting** walks you to the chair nearest the table and the doors close. Lock the room and a red padlock appears on every door: nobody else gets in until it empties. Share a link (`?meeting=<room>`) that seats guests on arrival, and rename rooms in place.
+Hover a room to see its name and click it to open its card. **Start meeting** walks you to the chair nearest the table and the doors close. Lock the room and a red padlock appears on every door. Share a link (`?meeting=<room>`) that seats guests on arrival, and rename rooms in place.
 
 <img src="docs/screenshots/meeting-locked.png" alt="A locked meeting room with closed doors and red padlocks" width="100%">
 
 </td>
 <td valign="top">
 
-### 🛋️ Decorate everything
+### 🎬 A full meeting view
 
-A catalogue of **81 objects in 251 orientations**: desks, chairs, sofas, plants, shelves, lamps and tech. Place, drag, rotate (**R**) and delete, including the original furniture. Items dropped on a desk sit on the desk. Edit mode dims the office and shows the grid, and the server validates every placement so nobody gets trapped.
+Switch between the office and a full-screen meeting view: participant tiles with cameras or initials, and side panels for the meeting chat, the people in the room and the meeting details.
 
-<img src="docs/screenshots/decorator.png" alt="The decorator with its catalogue, grid and edit banner" width="100%">
+<img src="docs/screenshots/meeting-view-en.png" alt="The meeting view with two participant tiles and the meeting chat" width="100%">
 
 </td>
 </tr>
 <tr>
 <td valign="top">
 
-### 💬 Talk in context
+### 💬 Channels and direct messages
 
-Office-wide chat, nearby chat that only reaches people around you, and a private meeting chat with system notices for joining, locking and unlocking. Meeting rooms are acoustically closed; outside them, proximity rules.
+Slack-style chat: `#general`, `#social` and any channel you create, private direct messages, @mentions, formatting (bold, italic, lists, code, links), drafts and unread badges. History is kept on your server. Nearby chat still reaches only the people around you.
+
+<img src="docs/screenshots/chat-channels-en.png" alt="The general channel with formatted messages, the channel list and the office in a corner" width="100%">
 
 </td>
 <td valign="top">
 
-### 🎥 Audio, video and screen share
+### 📅 Calendar and activity
 
-Peer-to-peer WebRTC for microphone, camera and screen sharing, all off when you enter. Connections open only between people who can hear each other.
+A week calendar shared by the whole office. Schedule a meeting in a room and everyone sees it; **Join** seats you in that room. The activity feed collects mentions, direct messages and meetings that are about to start.
+
+<img src="docs/screenshots/calendar-en.png" alt="The week calendar with a scheduled meeting and its details" width="100%">
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🛋️ Decorate everything
+
+A catalogue of **81 objects in 251 orientations**: desks, chairs, sofas, plants, shelves, lamps and tech. Place, drag, rotate (**R**) and delete, including the original furniture. Items dropped on a desk sit on the desk, and the server validates every placement so nobody gets trapped.
+
+<img src="docs/screenshots/decorator.png" alt="The decorator with its catalogue, grid and edit banner" width="100%">
+
+</td>
+<td valign="top">
+
+### 🧑‍🎨 Make the avatar yours
+
+Choose skin, hair, top, bottom and shoe colours, glasses and hats. The pixel art keeps its own shading in every pose and walking frame, and everyone sees your look. Set your status (Active, Busy, Away) and a short status message.
+
+<img src="docs/screenshots/avatar-editor-en.png" alt="The avatar editor with categories, options and a live preview" width="100%">
 
 </td>
 </tr>
 </table>
 
-Also included: profiles with name and colour, light, dark and system themes, zoom from 36 % to 400 %, a minimap, and keyboard shortcuts (⌘ / Ctrl K to search people, ⌘ / Ctrl D to return to your desk).
+Also included: audio, video and screen sharing over peer-to-peer WebRTC (all off when you enter), profiles, light, dark and system themes, English and Spanish, zoom from 36 % to 400 %, a minimap, and keyboard shortcuts (⌘ / Ctrl K to search people, ⌘ / Ctrl D to return to your desk).
 
 ---
 
@@ -151,7 +175,7 @@ flowchart LR
 ## ✅ Verification
 
 ```sh
-npm test      # 29 tests: collisions, seats, placement, meetings, navigation
+npm test      # 35 tests: collisions, seats, placement, meetings, navigation
 npm run build # type-check and production bundle
 ```
 
@@ -182,7 +206,7 @@ Offices are protected by a shared invite key and an admin key; there are no pers
 
 ## 🎨 Art and credits
 
-The avatar, trees, plants and pond are original pixel art generated with [PixelLab](https://pixellab.ai) and served from local files. Icons are [Lucide](https://lucide.dev) (ISC). The floors and furniture were transcribed pixel by pixel from the reference office to match its look, and they are being replaced with original artwork; read the [comparison notes](docs/COMPARACION-GATHER-2.md) before redistributing them. No code, sprites or credentials from any third-party product are included.
+The avatar, trees, plants and pond are original pixel art generated with [PixelLab](https://pixellab.ai) and served from local files. Icons are [Lucide](https://lucide.dev) (ISC). By default the floors and furniture are a pixel-by-pixel transcription of the reference office, so the look matches it exactly; do not redistribute that art. **Settings → Map art → Original** switches to the project's own art (PixelLab-generated furniture and code-drawn floors), which is free to redistribute; see the [comparison notes](docs/COMPARACION-GATHER-2.md). No code, sprites or credentials from any third-party product are included.
 
 ## 📄 License
 

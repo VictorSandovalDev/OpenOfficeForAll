@@ -8,6 +8,7 @@ import { objectAssetUrl } from './assets';
 import { asMapObject } from '../../shared/office-objects.js';
 import { REFERENCE_OBJECTS } from './referenceObjects';
 import { REFERENCE_FOREGROUNDS } from './referenceForegrounds';
+import { artPack } from './artPack';
 
 export type MapObjectData = { id: string; parent?: string | null; kind: string; family: string; color: string; facing: 'Up' | 'Down' | 'Left' | 'Right'; x: number; y: number; w: number; h: number; originX: number; originY: number; desk?: boolean; seat?: number[][]; blocks?: number[][]; wall?: boolean };
 
@@ -47,7 +48,7 @@ function Placeholder({ object }: { object: MapObjectData }) {
 
 /** Draws an object with its sprite origin at (0, 0): the image's top-left is at (-originX, -originY). */
 export function ObjectArt({ object }: { object: MapObjectData }) {
-  const reference = REFERENCE_OBJECTS[`${object.kind}/${object.color}/${object.facing}`];
+  const reference = artPack() === 'reference' ? REFERENCE_OBJECTS[`${object.kind}/${object.color}/${object.facing}`] : undefined;
   const asset = reference ? null : objectAssetUrl(object.kind, object.color, object.facing);
   const sprite = reference ?? (asset ? null : furnitureSprite(object.kind, object.color, object.facing));
   const art = sprite ? <Pixel sprite={sprite} x={Math.round((object.w - sprite.w) / 2)} y={object.h - sprite.h} />
@@ -70,8 +71,8 @@ function asMapObjectForThumb(item: { kind: string; color: string; facing: string
 
 /** Part of a seat drawn above its occupant, or null when the object has none. */
 export function ObjectForeground({ object }: { object: MapObjectData }) {
-  const sprite = REFERENCE_FOREGROUNDS[`${object.kind}/${object.color}/${object.facing}`];
+  const sprite = artPack() === 'reference' ? REFERENCE_FOREGROUNDS[`${object.kind}/${object.color}/${object.facing}`] : undefined;
   if (!sprite) return null;
   return <g transform={`translate(${-object.originX} ${-object.originY})`}><Pixel sprite={sprite} x={Math.round((object.w - sprite.w) / 2)} y={object.h - sprite.h} /></g>;
 }
-export const hasForeground = (object: { kind: string; color: string; facing: string }) => `${object.kind}/${object.color}/${object.facing}` in REFERENCE_FOREGROUNDS;
+export const hasForeground = (object: { kind: string; color: string; facing: string }) => artPack() === 'reference' && `${object.kind}/${object.color}/${object.facing}` in REFERENCE_FOREGROUNDS;

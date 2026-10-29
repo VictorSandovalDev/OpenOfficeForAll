@@ -6,6 +6,30 @@ Referencia inspeccionada: aplicación instalada `/Applications/GatherV2.app`, es
 
 ## Resultado
 
+### Vista de reunión, chat, calendario, actividad, avatar y despliegue, 29 de octubre
+
+Cada pantalla se midió en la referencia antes de construirla (tamaños, radios, colores y textos):
+
+- **Vista de reunión**: escenario oscuro con mosaico, panel lateral de 320 px (#171717, borde #ffffff0d, radio 8) con
+  «Meeting Chat», «People» (botones «Add people» y «Meeting link», «Here now» con contador) y «Meeting Details»;
+  botones de 36 px abajo a la derecha; selector «Office view / Meeting view» de 70 × 28 px.
+- **Chat**: barra lateral con «Drafts», secciones «Channels» (#general, #social) y «Direct messages»; página del canal con
+  encabezado de 16/700, presentación del canal, mensajes agrupados (avatar de 36 px, nombre 14/700, hora 12 px) y
+  compositor de 84 px con botones de formato de 32 px. La oficina pasa a una tarjeta de 280 × 204 px en la esquina.
+- **Calendario**: semana con 56 px por hora, columna de horas de 72 px, día actual en círculo #eb5252, línea roja de la
+  hora, eventos con fondo azul grisáceo y texto 11/600 + 12/500, «Today», «New Meeting» y la lista «Scheduled / Meeting
+  Notes». Los eventos de la referencia vienen del calendario de Google del usuario; aquí son reuniones de la oficina.
+- **Actividad**: «Unreads» con interruptor, marcar todo como leído, elementos con icono de 36 px y punto azul.
+- **Estado y perfil**: menú de 318 px con Active/Busy/Away y «Update your status»; «Edit Profile» con foto de perfil y
+  avatar de 88 px y lápiz; «Edit Avatar» con categorías, cuadrícula de opciones, muestras de color, vista previa,
+  descarga y aleatorio. El avatar se recolorea por zonas conservando el sombreado; los peinados y prendas distintos de la
+  referencia no se replican todavía (solo colores, gafas y sombreros).
+- **Despliegue**: clave de invitación, rol de administrador, TURN en tiempo de ejecución, cliente servido por el mismo
+  proceso, Docker con Caddy y coturn (`docs/DEPLOY.md`).
+- **Arte**: «Ajustes → Arte del mapa» alterna entre la transcripción de la referencia (por defecto) y el arte original
+  del proyecto. En el modo original faltan las capas que dibujan la silla por delante del avatar y algunas orientaciones
+  usan el dibujo en código.
+
 ### Salas de reunión y muros, 29 de octubre
 
 - Muros: en la referencia el borde superior de una sala oculta a quien está en la fila justo encima y muestra a quien

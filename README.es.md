@@ -60,7 +60,7 @@ Un mundo de 52 × 50 baldosas con recepción, escritorios de equipo, cinco salas
 
 ### 🚶 Muévete como si estuvieras allí
 
-Flechas o WASD, Shift para ir más rápido y clic para caminar con rutas que respetan paredes y muebles. Haz clic en una silla o pulsa **E** para sentarte; el brazo de la silla queda delante de ti, como debe ser.
+Flechas o WASD, Shift para ir más rápido y clic para caminar con rutas que respetan paredes y muebles. Haz clic en una silla o pulsa **E** para sentarte; el brazo de la silla queda delante de ti y los muros te ocultan cuando pasas detrás.
 
 </td>
 </tr>
@@ -69,40 +69,64 @@ Flechas o WASD, Shift para ir más rápido y clic para caminar con rutas que res
 
 ### 🔒 Salas de reunión que funcionan como tales
 
-Pasa el ratón sobre una sala para ver su nombre y haz clic para abrir su tarjeta. **Iniciar reunión** te lleva a la silla más cercana a la mesa y las puertas se cierran. Si bloqueas la sala aparece un candado rojo en cada puerta y nadie más entra hasta que se vacía. Comparte un enlace (`?meeting=<sala>`) que sienta a los invitados al llegar y cambia el nombre de la sala desde la misma tarjeta.
+Pasa el ratón sobre una sala para ver su nombre y haz clic para abrir su tarjeta. **Iniciar reunión** te lleva a la silla más cercana a la mesa y las puertas se cierran. Si bloqueas la sala aparece un candado rojo en cada puerta. Comparte un enlace (`?meeting=<sala>`) que sienta a los invitados al llegar y cambia el nombre de la sala desde la tarjeta.
 
 <img src="docs/screenshots/meeting-locked.png" alt="Una sala de reunión bloqueada con las puertas cerradas y candados rojos" width="100%">
 
 </td>
 <td valign="top">
 
-### 🛋️ Decora todo
+### 🎬 Vista de reunión completa
 
-Un catálogo de **81 objetos en 251 orientaciones**: escritorios, sillas, sofás, plantas, estanterías, lámparas y tecnología. Coloca, arrastra, gira (**R**) y elimina, también los muebles originales. Lo que dejas sobre un escritorio queda encima del escritorio. El modo edición oscurece la oficina y muestra la cuadrícula, y el servidor valida cada colocación para que nadie quede atrapado.
+Cambia entre la oficina y una vista de reunión a pantalla completa: los participantes en mosaico con su cámara o su inicial, y paneles laterales con el chat de la reunión, las personas de la sala y los detalles.
 
-<img src="docs/screenshots/decorator.png" alt="El decorador con su catálogo, la cuadrícula y el aviso de modo edición" width="100%">
+<img src="docs/screenshots/meeting-view.png" alt="La vista de reunión con tres participantes y los detalles de la reunión" width="100%">
 
 </td>
 </tr>
 <tr>
 <td valign="top">
 
-### 💬 Conversa en contexto
+### 💬 Canales y mensajes directos
 
-Chat para toda la oficina, chat cercano que solo llega a quienes están a tu alrededor y un chat privado de reunión con avisos de entrada, bloqueo y desbloqueo. Las salas de reunión están aisladas; fuera de ellas manda la cercanía.
+Chat al estilo de Slack: `#general`, `#social` y los canales que crees, mensajes directos privados, @menciones, formato (negrita, cursiva, listas, código, enlaces), borradores y avisos de no leídos. El historial se guarda en tu servidor. El chat cercano sigue llegando solo a quienes están a tu alrededor.
+
+<img src="docs/screenshots/chat-channels.png" alt="El canal general con mensajes con formato, la lista de canales y la oficina en una esquina" width="100%">
 
 </td>
 <td valign="top">
 
-### 🎥 Audio, vídeo y pantalla compartida
+### 📅 Calendario y actividad
 
-WebRTC entre pares para micrófono, cámara y pantalla compartida, todo apagado al entrar. Las conexiones solo se abren entre personas que pueden escucharse.
+Un calendario semanal compartido por toda la oficina. Programa una reunión en una sala y todos la ven; **Unirse** te sienta en esa sala. La actividad reúne menciones, mensajes directos y reuniones que están por empezar.
+
+<img src="docs/screenshots/calendar.png" alt="El calendario semanal con una reunión programada y sus detalles" width="100%">
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🛋️ Decora todo
+
+Un catálogo de **81 objetos en 251 orientaciones**: escritorios, sillas, sofás, plantas, estanterías, lámparas y tecnología. Coloca, arrastra, gira (**R**) y elimina, también los muebles originales. Lo que dejas sobre un escritorio queda encima, y el servidor valida cada colocación para que nadie quede atrapado.
+
+<img src="docs/screenshots/decorator.png" alt="El decorador con su catálogo, la cuadrícula y el aviso de modo edición" width="100%">
+
+</td>
+<td valign="top">
+
+### 🧑‍🎨 Un avatar a tu medida
+
+Elige el color de piel, pelo, ropa y zapatos, gafas y sombreros. El pixel art conserva su sombreado en todas las poses y al caminar, y todos ven tu aspecto. Indica tu estado (Activo, Ocupado, Ausente) y un mensaje corto.
+
+<img src="docs/screenshots/avatar-editor.png" alt="El editor de avatar con categorías, opciones y vista previa" width="100%">
 
 </td>
 </tr>
 </table>
 
-Además: perfil con nombre y color, temas claro, oscuro y del sistema, zoom del 36 % al 400 %, minimapa y atajos de teclado (⌘ / Ctrl K para buscar personas, ⌘ / Ctrl D para volver a tu escritorio).
+Además: audio, vídeo y pantalla compartida con WebRTC entre pares (todo apagado al entrar), perfiles, temas claro, oscuro y del sistema, inglés y español, zoom del 36 % al 400 %, minimapa y atajos de teclado (⌘ / Ctrl K para buscar personas, ⌘ / Ctrl D para volver a tu escritorio).
 
 ---
 
@@ -151,7 +175,7 @@ flowchart LR
 ## ✅ Verificación
 
 ```sh
-npm test      # 29 pruebas: colisiones, asientos, colocación, reuniones, navegación
+npm test      # 35 pruebas: colisiones, asientos, colocación, reuniones, navegación
 npm run build # comprobación de tipos y paquete de producción
 ```
 
@@ -182,7 +206,7 @@ Las oficinas se protegen con una clave de invitación compartida y una clave de 
 
 ## 🎨 Arte y créditos
 
-El avatar, los árboles, las plantas y el estanque son arte de píxeles original generado con [PixelLab](https://pixellab.ai) y se sirven desde archivos locales. Los iconos son de [Lucide](https://lucide.dev) (ISC). Los suelos y muebles se transcribieron píxel a píxel de la oficina de referencia para igualar su aspecto y se están sustituyendo por arte original; lee las [notas de comparación](docs/COMPARACION-GATHER-2.md) antes de redistribuirlos. No se incluye código, sprites ni credenciales de ningún producto de terceros.
+El avatar, los árboles, las plantas y el estanque son arte de píxeles original generado con [PixelLab](https://pixellab.ai) y se sirven desde archivos locales. Los iconos son de [Lucide](https://lucide.dev) (ISC). Por defecto, los suelos y muebles son una transcripción píxel a píxel de la oficina de referencia, para que el aspecto sea idéntico; no redistribuyas ese arte. **Ajustes → Arte del mapa → Original** cambia al arte propio del proyecto (muebles generados con PixelLab y suelos dibujados en código), libre para redistribuir; consulta las [notas de comparación](docs/COMPARACION-GATHER-2.md). No se incluye código, sprites ni credenciales de ningún producto de terceros.
 
 ## 📄 Licencia
 
