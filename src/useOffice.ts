@@ -1,5 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ChatMessage, Meetings, OfficeObject, Participant, Signal } from './types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Channel, ChatMessage, DirectoryUser, Meetings, OfficeObject, Participant, Signal } from './types';
+
+/** A stable identity per browser and name, so direct messages and unread markers survive reconnections
+    while two people sharing one browser (two tabs, two names) stay distinct. */
+function browserUserId(name: string) {
+  const key = name.trim().toLowerCase() || 'invitado';
+  try {
+    const ids: Record<string, string> = JSON.parse(localStorage.getItem('office-user-ids') || '{}');
+    if (ids[key] && /^[A-Za-z0-9_-]{8,64}$/.test(ids[key])) return ids[key];
+    ids[key] = crypto.randomUUID();
+    localStorage.setItem('office-user-ids', JSON.stringify(ids));
+    return ids[key];
+  } catch { return crypto.randomUUID(); }
+}
 export function useOffice(room: string, profile: {name: string;color: string} | null) {
   const socket = useRef<WebSocket | null>(null);
   const listeners = useRef(new Set<(signal: Signal) => void>());
@@ -7,12 +20,18 @@ export function useOffice(room: string, profile: {name: string;color: string} | 
   const [participants,setParticipants] = useState<Participant[]>([]);
   const [meetings,setMeetings] = useState<Meetings>({});
   const [areaNames,setAreaNames] = useState<Record<string,string>>({});
+  const [channels,setChannels] = useState<Channel[]>([]);
+  const [users,setUsers] = useState<DirectoryUser[]>([]);
+  const userId = useMemo(() => browserUserId(profile?.name ?? ''), [profile?.name]);
+  const [createdChannel,setCreatedChannel] = useState<{id:string;nonce:number}|null>(null);
   const [messages,setMessages] = useState<ChatMessage[]>([]);
   const [objects,setObjects] = useState<OfficeObject[]>([]);
   const [overrides,setOverrides] = useState<Record<string, { facing?: string; x?: number; y?: number; removed?: boolean }>>({});
   const [connection,setConnection] = useState<'idle'|'connecting'|'online'|'offline'>('idle');
   const [error,setError] = useState('');
   const profileRef = useRef(profile); profileRef.current=profile;
+  const selfRef = useRef<string|null>(null);
+  const userIdRef = useRef(userId); userIdRef.current = userId;
   const enabled=!!profile;
   useEffect(()=>{
     if(!enabled) {setConnection('idle');setSelfId(null);setParticipants([]); return;}
@@ -22,14 +41,16 @@ export function useOffice(room: string, profile: {name: string;color: string} | 
       setConnection('connecting');
       const ws=new WebSocket(`${location.protocol==='https:'?'wss':'ws'}://${location.host}/ws?room=${encodeURIComponent(room)}`);
       socket.current=ws;
-      ws.onopen=()=>{retries=0;ws.send(JSON.stringify({type:'join',...profileRef.current}));};
+      ws.onopen=()=>{retries=0;ws.send(JSON.stringify({type:'join',...profileRef.current,userId:userIdRef.current}));};
       ws.onmessage=(event)=>{
         let data;try {data=JSON.parse(event.data);}catch{return;}
-        if(data.type==='welcome'){setSelfId(data.id);setParticipants(data.participants);setMeetings(data.meetings??{});setAreaNames(data.areaNames??{});setMessages(data.messages);setObjects(data.objects);setOverrides(data.overrides??{});setConnection('online');setError('');}
+        if(data.type==='welcome'){selfRef.current=data.id;setSelfId(data.id);setParticipants(data.participants);setMeetings(data.meetings??{});setAreaNames(data.areaNames??{});setChannels(data.channels??[]);setUsers(data.users??[]);setMessages(data.messages);setObjects(data.objects);setOverrides(data.overrides??{});setConnection('online');setError('');}
         if(data.type==='participants'){setParticipants(data.participants);if(data.meetings)setMeetings(data.meetings);}
         if(data.type==='areas')setAreaNames(data.areaNames??{});
+        if(data.type==='users')setUsers(data.users??[]);
+        if(data.type==='channels'){setChannels(data.channels??[]);if(data.created&&data.by===selfRef.current)setCreatedChannel({id:data.created,nonce:Date.now()});}
         if(data.type==='objects'){setObjects(data.objects);setOverrides(data.overrides??{});}
-        if(data.type==='chat')setMessages(old=>[...old,data.message].slice(-200));
+        if(data.type==='chat')setMessages(old=>[...old,data.message].slice(-2000));
         if(data.type==='signal')listeners.current.forEach(fn=>fn(data));
         if(data.type==='error')setError(data.message);
       };
@@ -41,5 +62,5 @@ export function useOffice(room: string, profile: {name: string;color: string} | 
   },[enabled,room]);
   const send=useCallback((data:Record<string,unknown>)=>{if(socket.current?.readyState===WebSocket.OPEN)socket.current.send(JSON.stringify(data));},[]);
   const subscribeSignal=useCallback((listener:(signal:Signal)=>void)=>{listeners.current.add(listener);return()=>{listeners.current.delete(listener);};},[]);
-  return {selfId,participants,meetings,areaNames,messages,objects,overrides,connection,error,setError,send,subscribeSignal};
+  return {selfId,userId,participants,meetings,areaNames,channels,users,createdChannel,messages,objects,overrides,connection,error,setError,send,subscribeSignal};
 }

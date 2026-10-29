@@ -57,7 +57,7 @@ test('health, server IDs, bounded movement, profiles, and clean disconnect', asy
   a.send({ type: 'join', id: 'forged-id', name: 'Ana', color: '#112233', x: 1, mic: true });
   const welcomeA = await a.next('welcome');
   assert.notEqual(welcomeA.id, 'forged-id');
-  assert.deepEqual(welcomeA.participants, [{ id: welcomeA.id, name: 'Ana', color: '#112233', x: 656, y: 1264, facing: 'south', status: 'available', mic: false, camera: false, screen: false }]);
+  assert.deepEqual(welcomeA.participants, [{ id: welcomeA.id, userId: welcomeA.id, name: 'Ana', color: '#112233', x: 656, y: 1264, facing: 'south', status: 'available', mic: false, camera: false, screen: false }]);
   const b = await client(server.port);
   const welcomeB = await b.join('Bruno');
   assert.equal(welcomeB.participants.length, 2);

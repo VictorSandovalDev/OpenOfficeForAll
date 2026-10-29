@@ -18,7 +18,19 @@ const FACINGS = new Set(['north', 'east', 'south', 'west']);
 const ROOM_SLUG = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const COLOR = /^#[0-9a-f]{6}$/i;
 const MAX_OBJECTS = 250;
-const MAX_HISTORY = 100;
+const MAX_HISTORY = 200;
+const MAX_CHANNELS = 40;
+const USER_ID = /^[A-Za-z0-9_-]{8,64}$/;
+/** Company channels every office starts with, as in the reference. */
+const DEFAULT_CHANNELS = [
+  { id: 'general', name: 'general', topic: '📣 Comparte novedades, logros y anuncios de toda la empresa' },
+  { id: 'social', name: 'social', topic: '🎉 Conversaciones informales, celebraciones y lo que no es de trabajo' },
+];
+const channelSlug = (value) => typeof value === 'string' ? value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) : '';
+/** The visible channel name keeps accents and ñ (lowercase, spaces as dashes); the id is its ASCII slug. */
+const channelName = (value) => typeof value === 'string' ? value.toLowerCase().trim().replace(/[^\p{L}\p{N}_-]+/gu, '-').replace(/^-+|-+$/g, '').slice(0, 40) : '';
+const dmKey = (a, b) => `dm:${[a, b].sort().join(':')}`;
+const cleanText = (value, max) => typeof value === 'string' ? value.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').trim().slice(0, max) : '';
 
 function position(x, y) {
   if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return null;
@@ -120,7 +132,7 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), messages: [], objects: [], overrides: {}, areaNames: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
@@ -144,6 +156,27 @@ export async function startServer({
       } catch (cause) {
         if (cause.code !== 'ENOENT') console.warn(`Could not load objects for room ${slug}: ${cause.message}`);
       }
+      try {
+        const raw = await readFile(join(dataDir, `${slug}.chat.json`), 'utf8');
+        if (raw.length > 4_000_000) return;
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved.channels)) for (const channel of saved.channels.slice(0, MAX_CHANNELS)) {
+          const id = channelSlug(channel?.id);
+          if (id && !room.channels.some((existing) => existing.id === id)) room.channels.push({ id, name: channelName(channel.name) || id, topic: cleanText(channel.topic, 160) });
+        }
+        if (saved.users && typeof saved.users === 'object') for (const [userId, user] of Object.entries(saved.users).slice(0, 500)) {
+          if (USER_ID.test(userId) && displayName(user?.name)) room.users[userId] = { name: displayName(user.name), color: COLOR.test(user.color) ? user.color : '#7968e6' };
+        }
+        if (saved.history && typeof saved.history === 'object') for (const [key, messages] of Object.entries(saved.history).slice(0, 1000)) {
+          if (!Array.isArray(messages) || !(room.channels.some((channel) => channel.id === key) || /^dm:[A-Za-z0-9_-]{8,64}:[A-Za-z0-9_-]{8,64}$/.test(key))) continue;
+          room.history[key] = messages.slice(-MAX_HISTORY).filter((message) => message && typeof message.text === 'string' && typeof message.id === 'string').map((message) => ({
+            id: message.id, participantId: String(message.participantId ?? ''), userId: String(message.userId ?? ''), name: displayName(message.name) || 'Invitado', text: cleanText(message.text, 4000),
+            channel: key.startsWith('dm:') ? 'dm' : 'channel', ...(key.startsWith('dm:') ? { dmKey: key } : { channelId: key }), createdAt: String(message.createdAt ?? new Date().toISOString()),
+          }));
+        }
+      } catch (cause) {
+        if (cause.code !== 'ENOENT') console.warn(`Could not load chat for room ${slug}: ${cause.message}`);
+      }
     })();
     rooms.set(slug, room);
     await room.loaded;
@@ -163,6 +196,20 @@ export async function startServer({
       error(socket, 'persistence_failed', 'The change is visible, but could not be saved to disk.');
     });
   }
+
+  function persistChat(room) {
+    const snapshot = JSON.stringify({ version: 1, channels: room.channels, users: room.users, history: room.history });
+    room.chatWrite = room.chatWrite.then(async () => {
+      await mkdir(dataDir, { recursive: true });
+      const destination = join(dataDir, `${room.slug}.chat.json`);
+      const temporary = `${destination}.${randomUUID()}.tmp`;
+      await writeFile(temporary, snapshot, { mode: 0o600 });
+      await rename(temporary, destination);
+    }).catch((cause) => console.error(`Could not save chat for room ${room.slug}: ${cause.message}`));
+  }
+  /** The history a member may read: every channel, plus direct messages that include them. */
+  const visibleHistory = (room, userId) => Object.entries(room.history).filter(([key]) => !key.startsWith('dm:') || key.split(':').slice(1).includes(userId)).flatMap(([, messages]) => messages).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const directory = (room) => Object.entries(room.users).map(([userId, user]) => ({ userId, ...user }));
 
   const server = http.createServer((request, response) => {
     if (request.method === 'GET' && request.url === '/health') {
@@ -211,9 +258,13 @@ export async function startServer({
         if (room.members.size >= maxParticipants) return error(socket, 'room_full', 'This room is full.');
         clearTimeout(joinTimeout);
         client.room = room;
-        client.participant = { id: randomUUID(), name: displayName(payload.name) || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
+        const participantId = randomUUID();
+        client.participant = { id: participantId, userId: typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
+        room.users[client.participant.userId] = { name: client.participant.name, color: client.participant.color };
         room.members.set(client.participant.id, client);
-        send(socket, { type: 'welcome', id: client.participant.id, participants: participants(room), meetings: meetings(room), messages: room.messages, objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
+        broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
+        persistChat(room);
+        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
         broadcastParticipants(room);
         return;
       }
@@ -258,22 +309,63 @@ export async function startServer({
           if (typeof payload.color === 'string' && COLOR.test(payload.color)) { participant.color = payload.color; changed = true; }
           if (STATUSES.has(payload.status)) { participant.status = payload.status; changed = true; }
           for (const key of ['mic', 'camera', 'screen']) if (typeof payload[key] === 'boolean') { participant[key] = payload[key]; changed = true; }
-          if (changed) broadcastParticipants(room);
+          if (changed) {
+            room.users[participant.userId] = { name: participant.name, color: participant.color };
+            broadcastParticipants(room);
+            broadcast(room, { type: 'users', users: directory(room) });
+          }
           break;
         }
         case 'chat': {
           if (!takeToken(client.chatRate, 8, 0.8)) return error(socket, 'chat_rate_limit', 'Wait a moment before sending another message.');
-          if (typeof payload.text !== 'string' || !['office', 'nearby', 'meeting'].includes(payload.channel)) return error(socket, 'invalid_chat', 'Choose office, nearby or meeting and provide text.');
-          const meetingArea = payload.channel === 'meeting' ? meetingRoomOf(participant) : null;
-          if (payload.channel === 'meeting' && !meetingArea) return error(socket, 'invalid_chat', 'Join a meeting room to use its chat.');
-          const messageText = payload.text.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').trim();
-          if (!messageText || messageText.length > 1000) return error(socket, 'invalid_chat', 'Messages must contain 1 to 1000 characters.');
-          const message = { id: randomUUID(), participantId: participant.id, name: participant.name, text: messageText, channel: payload.channel, ...(meetingArea ? { areaId: meetingArea.id } : {}), createdAt: new Date().toISOString() };
-          if (message.channel === 'office') {
-            room.messages.push(message);
-            if (room.messages.length > MAX_HISTORY) room.messages.shift();
+          const kind = payload.channel === 'office' ? 'channel' : payload.channel;
+          if (typeof payload.text !== 'string' || !['channel', 'dm', 'nearby', 'meeting'].includes(kind)) return error(socket, 'invalid_chat', 'Choose a channel, a direct message, nearby or meeting and provide text.');
+          const messageText = cleanText(payload.text, 4001);
+          if (!messageText || messageText.length > 4000) return error(socket, 'invalid_chat', 'Messages must contain 1 to 4000 characters.');
+          const base = { id: randomUUID(), participantId: participant.id, userId: participant.userId, name: participant.name, text: messageText, createdAt: new Date().toISOString() };
+          if (kind === 'channel') {
+            const channelId = payload.channel === 'office' ? 'general' : channelSlug(payload.channelId);
+            if (!room.channels.some((channel) => channel.id === channelId)) return error(socket, 'invalid_chat', 'Unknown channel.');
+            const message = { ...base, channel: 'channel', channelId };
+            (room.history[channelId] ??= []).push(message);
+            if (room.history[channelId].length > MAX_HISTORY) room.history[channelId].shift();
+            persistChat(room);
+            broadcast(room, { type: 'chat', message });
+            break;
           }
-          broadcast(room, { type: 'chat', message }, (other) => message.channel === 'office' || (meetingArea ? meetingRoomOf(other)?.id === meetingArea.id : sharesConversationArea(participant, other, CHAT_RADIUS)));
+          if (kind === 'dm') {
+            if (typeof payload.to !== 'string' || !room.users[payload.to]) return error(socket, 'invalid_chat', 'Choose someone from this office.');
+            const key = dmKey(participant.userId, payload.to);
+            const message = { ...base, channel: 'dm', dmKey: key, to: payload.to };
+            (room.history[key] ??= []).push(message);
+            if (room.history[key].length > MAX_HISTORY) room.history[key].shift();
+            persistChat(room);
+            broadcast(room, { type: 'chat', message }, (other) => other.userId === participant.userId || other.userId === payload.to);
+            break;
+          }
+          const meetingArea = kind === 'meeting' ? meetingRoomOf(participant) : null;
+          if (kind === 'meeting' && !meetingArea) return error(socket, 'invalid_chat', 'Join a meeting room to use its chat.');
+          const message = { ...base, channel: kind, ...(meetingArea ? { areaId: meetingArea.id } : {}) };
+          broadcast(room, { type: 'chat', message }, (other) => meetingArea ? meetingRoomOf(other)?.id === meetingArea.id : sharesConversationArea(participant, other, CHAT_RADIUS));
+          break;
+        }
+        case 'channel:create': {
+          if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
+          const id = channelSlug(payload.name);
+          if (!id) return error(socket, 'invalid_channel', 'Channel names need letters or numbers.');
+          if (room.channels.some((channel) => channel.id === id)) return error(socket, 'invalid_channel', 'A channel with this name already exists.');
+          if (room.channels.length >= MAX_CHANNELS) return error(socket, 'invalid_channel', 'This office has reached its channel limit.');
+          room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
+          persistChat(room);
+          broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'channel:update': {
+          const channel = room.channels.find((candidate) => candidate.id === channelSlug(payload.channelId));
+          if (!channel) return error(socket, 'invalid_channel', 'Unknown channel.');
+          channel.topic = cleanText(payload.topic, 160);
+          persistChat(room);
+          broadcast(room, { type: 'channels', channels: room.channels });
           break;
         }
         case 'area:rename': {
@@ -443,7 +535,7 @@ export async function startServer({
       await Promise.all([
         new Promise((done) => wss.close(done)),
         new Promise((done) => server.close(done)),
-        ...[...rooms.values()].map((room) => room.writeQueue),
+        ...[...rooms.values()].flatMap((room) => [room.writeQueue, room.chatWrite]),
       ]);
     },
   };

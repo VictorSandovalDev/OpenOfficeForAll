@@ -37,12 +37,17 @@ Supported messages:
   a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
   Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants } }`).
 - `area:rename`: `areaId` of a meeting room and `name` (1–40 characters); persisted and broadcast as `areas`.
-- `chat`: `text` (1–1000 characters) and `channel` (`office`, `nearby` or `meeting`). Meeting messages carry
-  `areaId` and only reach people inside that room; the server also emits `system` lines (joined, locked, unlocked). Nearby
-  messages reach participants within 200 map units at the time of sending when
-  both are outside the meeting area; inside, they reach everyone in that area.
-  Nearby messages never cross the meeting area's boundary.
-  Only office messages enter the in-memory history (last 100).
+- `join` may include `userId` (8–64 characters `[A-Za-z0-9_-]`), a stable identity per browser and name used for
+  direct messages and the people directory; without it the session id is used. `welcome` returns `userId`,
+  `channels`, `users` (directory) and `messages` (every channel's history plus the direct messages that include you).
+- `chat`: `text` (1–4000 characters) and `channel`:
+  - `channel` with `channelId` (`office` is accepted as an alias of `#general`): reaches everyone and is persisted
+    in `server/data/<room>.chat.json` (last 200 per channel).
+  - `dm` with `to` (a `userId` from the directory): reaches only both people and is persisted under `dmKey`.
+  - `nearby`: proximity only, never stored. `meeting`: only people inside the same meeting room, never stored.
+- `channel:create`: `name` and optional `topic` (160 characters). The visible name keeps accents (`diseño`) and the
+  id is its ASCII slug (`diseno`); every office starts with `#general` and `#social`. Broadcast as `channels`.
+- `channel:update`: `channelId` and `topic`.
 - `object:add`: `kind` (a catalog kind from `shared/vivo-catalog.js`, or the aliases
   `plant`, `chair`, `table`, `lamp`), optional `color` and `facing` (`Up`, `Right`, `Down`,
   `Left`), `x`, `y` (snapped to the tile that contains the point). Placements

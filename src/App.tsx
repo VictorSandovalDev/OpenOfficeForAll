@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, Hand, LayoutGrid, Layers, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
+import { Armchair, ArrowDownLeft, RotateCw, Trash2, ArrowRight, Bell, Calendar, Check, ChevronDown, ChevronsLeft, CircleHelp, Coffee, Copy, DoorOpen, Gift, Hand, Hash, Info, LayoutGrid, Layers, Radio, SquarePen, Leaf, Link2, Lock, LocateFixed, LockOpen, LogOut, Map, MessageCircle, Mic, MicOff, Minus, Monitor, MoreHorizontal, Pencil, Plus, Search, Send, Settings2, Sparkles, Sun, Users, Video, VideoOff, X } from 'lucide-react';
 import VivoScene from './VivoScene';
 import MeetingView, { type MeetingPanel } from './MeetingView';
+import ChatView, { conversationKey, messageKey, type Conversation } from './chat/ChatView';
+import MiniOffice from './MiniOffice';
+import { areaOf } from '../shared/vivo-geometry.js';
 import { SPAWN } from '../shared/office-world.js';
 import { useOffice } from './useOffice';
 import { canHearEachOther, useMedia } from './useMedia';
@@ -67,6 +70,11 @@ export default function App() {
   const [handRaised, setHandRaised] = useState(false);
   const [meetingView, setMeetingView] = useState(false);
   const [meetingPanel, setMeetingPanel] = useState<MeetingPanel>('chat');
+  const [conversation, setConversation] = useState<Conversation>({ kind: 'channel', id: 'general' });
+  const [chatQuery, setChatQuery] = useState('');
+  const [sections, setSections] = useState({ channels: true, dms: true });
+  const [newChannel, setNewChannel] = useState<{ name: string; topic: string } | null>(null);
+  const [newDm, setNewDm] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => {
@@ -79,6 +87,12 @@ export default function App() {
   const dialogRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const office = useOffice(room, profile);
+  const store = (key: string) => `office-${key}-${office.userId}`;
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [lastRead, setLastRead] = useState<Record<string, string>>({});
+  useEffect(() => { try { setDrafts(JSON.parse(localStorage.getItem(store('drafts')) || '{}')); setLastRead(JSON.parse(localStorage.getItem(store('read')) || '{}')); } catch { /* fresh browser */ } }, [office.userId]);
+  useEffect(() => { try { localStorage.setItem(store('drafts'), JSON.stringify(drafts)); } catch { /* storage unavailable */ } }, [drafts]);
+  useEffect(() => { try { localStorage.setItem(store('read'), JSON.stringify(lastRead)); } catch { /* storage unavailable */ } }, [lastRead]);
   const showError = useCallback((message: string) => setNotice(message), []);
   const media = useMedia({ selfId: office.selfId, participants: office.participants, send: office.send, subscribeSignal: office.subscribeSignal, onError: showError });
   const self = office.participants.find(p => p.id === office.selfId);
@@ -118,6 +132,20 @@ export default function App() {
   const meetingPeople = meetingArea ? office.participants.filter(person => meetingRoomOf(person)?.id === meetingArea.id) : [];
   const meetingMessages = meetingArea ? office.messages.filter(message => message.channel === 'meeting' && message.areaId === meetingArea.id) : [];
   const showMeetingView = meetingView && !!meetingArea;
+  const showChatView = panel === 'chat' && !showMeetingView;
+  const onlineUsers = new Set(office.participants.map(person => person.userId));
+  const activeKey = conversationKey(conversation, office.userId);
+  const conversationMessages = office.messages.filter(message => messageKey(message) === activeKey);
+  const unread = (key: string) => office.messages.filter(message => messageKey(message) === key && message.userId !== office.userId && message.createdAt > (lastRead[key] ?? '')).length;
+  const mentionsMe = (message: { text: string }) => !!self && new RegExp(`@${self.name.split(/\s+/)[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(message.text);
+  useEffect(() => {
+    if (!showChatView) return;
+    const latest = conversationMessages.at(-1)?.createdAt;
+    if (latest && latest > (lastRead[activeKey] ?? '')) setLastRead(read => ({ ...read, [activeKey]: latest }));
+  }, [showChatView, activeKey, conversationMessages.length]);
+  useEffect(() => { if (office.createdChannel) { setConversation({ kind: 'channel', id: office.createdChannel.id }); setPanel('chat'); } }, [office.createdChannel?.nonce]);
+  const totalUnread = office.channels.reduce((sum, channel) => sum + unread(`channel:${channel.id}`), 0) + office.users.reduce((sum, user) => sum + unread(`dm:${[office.userId, user.userId].sort().join(':')}`), 0);
+  const whereAmI = self ? (meetingArea ? roomLabel(meetingArea.id) : areaOf(self)?.name ?? 'Oficina') : 'Oficina';
   // A meeting link (?meeting=<area>) seats you in that room on arrival, as the reference does.
   const linkHandled = useRef(false);
   useEffect(() => {
@@ -138,7 +166,6 @@ export default function App() {
     return () => system.removeEventListener('change', applyTheme);
   }, [theme]);
   useEffect(() => { if (notice) { const timer = setTimeout(() => setNotice(''), 6000); return () => clearTimeout(timer); } }, [notice]);
-  useEffect(() => { messageEnd.current?.scrollIntoView({ behavior: 'smooth' }); }, [office.messages, panel, channel]);
   useEffect(() => {
     function key(e: KeyboardEvent) {
       if (e.key === 'Escape') { setDialog(null); setSelected(null); setEditItem(null); setSelectedObject(null); setMoreOpen(false); setAreaCard(null); setRenaming(null); }
@@ -204,7 +231,11 @@ export default function App() {
     setProfile({ name: name.trim(), color }); office.send({ type: 'profile', name: name.trim(), color });
     localStorage.setItem('office-name', name.trim()); localStorage.setItem('office-color', color); setDialog(null);
   }
-  function sendChat(e: React.FormEvent) { e.preventDefault(); if (!text.trim() || !online) return; office.send({ type: 'chat', text: text.trim(), channel }); setText(''); }
+  function sendConversation(value: string) {
+    if (conversation.kind === 'channel') office.send({ type: 'chat', channel: 'channel', channelId: conversation.id, text: value });
+    else if (conversation.kind === 'dm') office.send({ type: 'chat', channel: 'dm', to: conversation.userId, text: value });
+    else office.send({ type: 'chat', channel: 'nearby', text: value });
+  }
   function showInvite() { setCopied(false); setDialog('invite'); }
   function searchPeople() { setPanel('people'); setEditItem(null); requestAnimationFrame(() => searchRef.current?.focus()); }
   async function copyLink() {
@@ -213,13 +244,34 @@ export default function App() {
   }
   function leave() { media.stop(); setProfile(null); setSelected(null); setMoreOpen(false); }
 
+  const controlBar = (
+        <div className="controlbar" aria-label="Controles de presencia, audio y vídeo">
+          <button className="self-button" disabled={!profile} title="Tu perfil y disponibilidad" aria-label="Tu perfil y disponibilidad" onClick={() => setDialog('profile')}><span className="avatar-wrap"><Avatar person={self || { name: name || 'T', color }} size={32} /><i className={`status-dot ${self?.status || 'away'}`} /></span><ChevronDown size={12} /></button>
+          <span className="control-separator" />
+          <button className={`media-control ${media.mic ? 'enabled' : 'muted'}`} disabled={!online} onClick={() => void media.toggleMic()} title={media.mic ? 'Silenciar micrófono' : 'Activar micrófono'} aria-label={media.mic ? 'Silenciar micrófono' : 'Activar micrófono'} aria-pressed={media.mic}>{media.mic ? <Mic size={21} /> : <MicOff size={21} />}</button>
+          <button className={`media-control ${media.camera ? 'enabled' : 'muted'}`} disabled={!online || media.screen} onClick={() => void media.toggleCamera()} title={media.camera ? 'Apagar cámara' : 'Activar cámara'} aria-label={media.camera ? 'Apagar cámara' : 'Activar cámara'} aria-pressed={media.camera}>{media.camera ? <Video size={22} /> : <VideoOff size={22} />}</button>
+          <IconButton label={media.screen ? 'Dejar de compartir' : 'Compartir pantalla'} active={media.screen} disabled={!online} onClick={() => void media.toggleScreen()}><Monitor size={21} /></IconButton>
+          {meetingArea && <IconButton label={handRaised ? 'Bajar la mano' : 'Levantar la mano'} active={handRaised} onClick={() => setHandRaised(raised => !raised)}><Hand size={21} /></IconButton>}
+          {meetingArea && <IconButton label="Volver a mi escritorio · ⌘ D" className="leave-meeting" onClick={leaveMeeting}><LogOut size={20} /></IconButton>}
+          <div className="control-more" ref={moreRef}><button className={`icon-button ${moreOpen ? 'is-active' : ''}`} type="button" title="Más opciones" aria-label="Más opciones" aria-expanded={moreOpen} aria-controls="call-options" onClick={() => setMoreOpen(open => !open)}><MoreHorizontal size={22} /></button>
+            {moreOpen && <div className="control-menu" id="call-options">
+              <div className="nearby-status"><i />{nearby.length ? `${nearby.length} ${nearby.length === 1 ? 'persona cerca' : 'personas cerca'}` : 'No hay personas cerca'}</div>
+              <button disabled={!online} onClick={() => { setPanel('chat'); setConversation({ kind: 'nearby' }); setEditItem(null); setMoreOpen(false); }}><MessageCircle size={17} />Chat cercano</button>
+              <button disabled={!online} onClick={() => { move(SPAWN.x, SPAWN.y); setMoreOpen(false); }}><ArrowDownLeft size={17} />Volver al lobby</button>
+              <button onClick={() => { setDialog('help'); setMoreOpen(false); }}><CircleHelp size={17} />Controles y atajos</button>
+              <button className="leave" disabled={!profile} onClick={leave}><DoorOpen size={17} />Salir de la oficina</button>
+            </div>}
+          </div>
+        </div>
+  );
+
   return <div className="app-shell">
     <nav className="rail" aria-label="Navegación principal">
       <button className="brand" aria-label="Open Office — abrir oficina" title="Open Office" onClick={() => { setPanel('people'); setDialog(null); setEditItem(null); }}><span /><span /><span /><span /></button>
       <button className="rail-search" aria-label="Buscar personas" title="Buscar personas · ⌘ / Ctrl K" onClick={searchPeople}><Search size={20} /><span>⌘ K</span></button>
       <div className="rail-main">
         <button className={`nav-item ${!showMeetingView && (panel === 'people' || panel === null) ? 'current' : ''}`} aria-label="Oficina" aria-pressed={!showMeetingView && panel === 'people'} title="Oficina" onClick={() => { setPanel('people'); setEditItem(null); setMeetingView(false); }}><Map size={22} /></button>
-        <button className={`nav-item ${panel === 'chat' ? 'current' : ''}`} aria-label="Chat" aria-pressed={panel === 'chat'} title="Chat" onClick={() => openPanel('chat')}><MessageCircle size={22} /></button>
+        <button className={`nav-item ${showChatView ? 'current' : ''}`} aria-label={totalUnread ? `Chat, ${totalUnread} sin leer` : 'Chat'} aria-pressed={showChatView} title="Chat" onClick={() => { setMeetingView(false); setPanel(old => old === 'chat' ? 'people' : 'chat'); setEditItem(null); setSelectedObject(null); }}><MessageCircle size={22} />{totalUnread > 0 && <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>}</button>
         <button className={`nav-item ${panel === 'calendar' ? 'current' : ''}`} aria-label="Calendario" aria-pressed={panel === 'calendar'} title="Calendario" onClick={() => openPanel('calendar')}><Calendar size={22} /></button>
         <button className={`nav-item ${panel === 'activity' ? 'current' : ''}`} aria-label="Actividad" aria-pressed={panel === 'activity'} title="Actividad" onClick={() => openPanel('activity')}><Bell size={22} /></button>
         <button className={`nav-item ${panel === 'build' ? 'current' : ''}`} aria-label="Decorar" aria-pressed={panel === 'build'} title="Decorar" onClick={() => openPanel('build')}><Armchair size={22} /></button>
@@ -233,7 +285,7 @@ export default function App() {
     </nav>
     <div className="workspace">
       {panel && !showMeetingView && <aside className={`side-panel panel-${panel}`} aria-label={panel === 'people' ? 'Personas de la oficina' : panel === 'chat' ? 'Chat' : panel === 'calendar' ? 'Calendario' : panel === 'activity' ? 'Actividad' : panel === 'meeting' ? 'Reunión' : 'Decorador'}>
-        <div className="panel-heading"><h1>{panel === 'people' ? 'Vivo' : panel === 'chat' ? 'Chat' : panel === 'calendar' ? 'Calendario' : panel === 'activity' ? 'Actividad' : panel === 'meeting' ? 'Chat de la reunión' : 'Decorador'}</h1><IconButton label="Contraer panel" onClick={() => { setPanel(null); setEditItem(null); }}><ChevronsLeft size={18} /></IconButton></div>
+        <div className="panel-heading"><h1>{panel === 'people' ? 'Vivo' : panel === 'chat' ? 'Chat' : panel === 'calendar' ? 'Calendario' : panel === 'activity' ? 'Actividad' : panel === 'meeting' ? 'Chat de la reunión' : 'Decorador'}</h1>{panel === 'chat' ? <div className="panel-heading-tools"><IconButton label="Nuevo mensaje" onClick={() => setNewDm(true)}><SquarePen size={17} /></IconButton><IconButton label="Acerca del chat" onClick={() => setNotice('Los canales y mensajes directos se guardan en esta oficina. «Cerca de ti» no se guarda.')}><Info size={17} /></IconButton></div> : <IconButton label="Contraer panel" onClick={() => { setPanel(null); setEditItem(null); }}><ChevronsLeft size={18} /></IconButton>}</div>
         {panel === 'people' && <>
           <div className="floor-selector"><Layers size={15} /><span>Piso 1</span><ChevronDown size={14} /></div>
           <div className="invite-card"><strong>Comparte tu oficina</strong><p>Invita a tus compañeros a trabajar juntos.</p><InvitePortraits /><button onClick={showInvite}><Users size={13} />Invitar colaboradores</button></div>
@@ -247,12 +299,21 @@ export default function App() {
           </details>
           <div className="sidebar-foot"><span className={`connection ${online ? 'connected' : ''}`}><i />{online ? 'Conectado' : profile ? 'Conectando…' : 'Sin conexión'}</span><span>Open Office</span></div>
         </>}
-        {(panel === 'chat' || panel === 'meeting') && <>
-          {panel === 'chat' && <div className="segmented"><button className={channel === 'office' ? 'active' : ''} onClick={() => setChannel('office')}>Oficina</button><button className={channel === 'nearby' ? 'active' : ''} onClick={() => setChannel('nearby')}>Cerca de ti</button>{meetingArea && <button className={channel === 'meeting' ? 'active' : ''} onClick={() => setChannel('meeting')}>Reunión</button>}</div>}
-          {panel === 'meeting' && meetingArea && <div className="meeting-summary"><span className="meeting-pill"><Users size={14} />{roomLabel(meetingArea.id)}</span><span className="muted">{meeting?.locked ? <><Lock size={12} /> Privada</> : <><LockOpen size={12} /> Abierta: otras personas pueden unirse</>}</span></div>}
-          <div className="chat-history">{chatMessages.length === 0 && <div className="chat-empty"><MessageCircle size={30} /><h2>Empieza una conversación</h2><p>{channel === 'office' ? 'Tus mensajes llegan a toda la oficina.' : channel === 'nearby' ? 'Solo las personas cercanas reciben estos mensajes.' : 'Solo quienes están en esta sala reciben estos mensajes.'}</p></div>}{chatMessages.map(message => message.system ? <div className="message-system" key={message.id}><strong>{message.name}</strong> {message.text}</div> : <div className={`message ${message.participantId === office.selfId ? 'own' : ''}`} key={message.id}><div><strong>{message.name}</strong><time>{new Date(message.createdAt).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}</time></div><p>{message.text}</p></div>)}<div ref={messageEnd} /></div>
-          <form className="chat-compose" onSubmit={sendChat}><input aria-label="Escribir mensaje" value={text} onChange={e => setText(e.target.value)} placeholder={channel === 'meeting' && meetingArea ? `Mensaje a ${roomLabel(meetingArea.id)}` : 'Escribe un mensaje…'} maxLength={1000} disabled={!online} /><button className="icon-button" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje" disabled={!online || !text.trim()}><Send size={18} /></button></form>
+        {panel === 'meeting' && meetingArea && <>
+          <div className="meeting-summary"><span className="meeting-pill"><Users size={14} />{roomLabel(meetingArea.id)}</span><span className="muted">{meeting?.locked ? <><Lock size={12} /> Privada</> : <><LockOpen size={12} /> Abierta: otras personas pueden unirse</>}</span></div>
+          <div className="chat-history">{meetingMessages.map(message => message.system ? <div className="message-system" key={message.id}><strong>{message.name}</strong> {message.text}</div> : <div className={`message ${message.participantId === office.selfId ? 'own' : ''}`} key={message.id}><div><strong>{message.name}</strong><time>{new Date(message.createdAt).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}</time></div><p>{message.text}</p></div>)}<div ref={messageEnd} /></div>
+          <form className="chat-compose" onSubmit={e => { e.preventDefault(); if (!text.trim()) return; office.send({ type: 'chat', channel: 'meeting', text: text.trim() }); setText(''); }}><input aria-label={`Mensaje a ${roomLabel(meetingArea.id)}`} value={text} onChange={e => setText(e.target.value)} placeholder={`Mensaje a ${roomLabel(meetingArea.id)}`} maxLength={1000} disabled={!online} /><button className="icon-button" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje" disabled={!online || !text.trim()}><Send size={18} /></button></form>
         </>}
+        {panel === 'chat' && <div className="chat-sidebar">
+          <div className="invite-card"><strong>Comparte tu oficina</strong><p>Invita a tus compañeros a trabajar juntos.</p><InvitePortraits /><button onClick={showInvite}><Users size={13} />Invitar colaboradores</button></div>
+          <div className="panel-search"><Search size={16} /><input value={chatQuery} onChange={e => setChatQuery(e.target.value)} placeholder="Buscar o navegar…" aria-label="Buscar canales y personas" /><kbd>⌘ F</kbd></div>
+          <button type="button" className={`chat-nav-row${conversation.kind === 'nearby' ? ' is-active' : ''}`} onClick={() => setConversation({ kind: 'nearby' })}><Radio size={16} /><span>Cerca de ti</span>{unread('nearby') > 0 && <b className="chat-unread">{unread('nearby')}</b>}</button>
+          <button type="button" className="chat-nav-row" onClick={() => { const key = Object.keys(drafts).find(candidate => drafts[candidate]?.trim()); if (!key) { setNotice('No tienes borradores.'); return; } if (key.startsWith('channel:')) setConversation({ kind: 'channel', id: key.slice(8) }); else if (key.startsWith('dm:')) setConversation({ kind: 'dm', userId: key.split(':').slice(1).find(id => id !== office.userId) ?? office.userId }); else setConversation({ kind: 'nearby' }); }}><Send size={16} /><span>Borradores</span>{Object.values(drafts).filter(value => value.trim()).length > 0 && <em>{Object.values(drafts).filter(value => value.trim()).length}</em>}</button>
+          <div className="chat-section"><button type="button" className="chat-section-toggle" aria-expanded={sections.channels} onClick={() => setSections(value => ({ ...value, channels: !value.channels }))}>Canales<ChevronDown size={13} /></button><button type="button" className="chat-section-add" aria-label="Crear canal" title="Crear canal" onClick={() => setNewChannel({ name: '', topic: '' })}><Plus size={14} /></button></div>
+          {sections.channels && office.channels.filter(channel => !chatQuery || channel.name.includes(chatQuery.toLowerCase())).map(channel => { const key = `channel:${channel.id}`; const count = unread(key); const mention = office.messages.some(message => messageKey(message) === key && message.userId !== office.userId && message.createdAt > (lastRead[key] ?? '') && mentionsMe(message)); return <button type="button" key={channel.id} className={`chat-nav-row${activeKey === key ? ' is-active' : ''}${count ? ' is-unread' : ''}`} onClick={() => setConversation({ kind: 'channel', id: channel.id })}><Hash size={16} /><span>{channel.name}</span>{drafts[key]?.trim() && activeKey !== key && <Send size={12} className="chat-draft-mark" />}{count > 0 && <b className={`chat-unread${mention ? ' is-mention' : ''}`}>{mention ? '@' : count}</b>}</button>; })}
+          <div className="chat-section"><button type="button" className="chat-section-toggle" aria-expanded={sections.dms} onClick={() => setSections(value => ({ ...value, dms: !value.dms }))}>Mensajes directos<ChevronDown size={13} /></button><button type="button" className="chat-section-add" aria-label="Nuevo mensaje directo" title="Nuevo mensaje directo" onClick={() => setNewDm(true)}><Plus size={14} /></button></div>
+          {sections.dms && [...office.users].sort((a, b) => (a.userId === office.userId ? -1 : b.userId === office.userId ? 1 : a.name.localeCompare(b.name))).filter(user => !chatQuery || user.name.toLowerCase().includes(chatQuery.toLowerCase())).map(user => { const key = `dm:${[office.userId, user.userId].sort().join(':')}`; const count = unread(key); return <button type="button" key={user.userId} className={`chat-nav-row dm${activeKey === key ? ' is-active' : ''}${count ? ' is-unread' : ''}`} onClick={() => setConversation({ kind: 'dm', userId: user.userId })}><span className="chat-avatar small" style={{ background: user.color }}>{user.name.charAt(0).toUpperCase()}<i className={`status-dot ${onlineUsers.has(user.userId) ? 'available' : 'away'}`} /></span><span>{user.name}{user.userId === office.userId && <span className="you"> (tú)</span>}</span>{count > 0 && <b className="chat-unread">{count}</b>}</button>; })}
+        </div>}
         {panel === 'calendar' && <div className="chat-empty"><Calendar size={30} /><h2>Sin reuniones programadas</h2><p>Conecta un calendario para ver aquí tus reuniones de la semana.</p></div>}
         {panel === 'activity' && <div className="chat-empty"><Bell size={30} /><h2>Sin actividad nueva</h2><p>Aquí aparecerán menciones, mensajes y avisos de la oficina.</p></div>}
         {panel === 'build' && <>
@@ -265,15 +326,17 @@ export default function App() {
           <p className="save-hint"><Check size={14} /> Los cambios se guardan en esta oficina.</p>
           <button className="primary exit-edit-button" type="button" onClick={() => { setEditItem(null); setSelectedObject(null); setPanel('people'); }}><DoorOpen size={16} />Salir del modo edición</button>
         </>}
+        {showChatView && <MiniOffice label={whereAmI} participants={office.participants} selfId={office.selfId} onOpen={() => setPanel('people')}>{controlBar}</MiniOffice>}
       </aside>}
-      <main className={`map-area${showMeetingView ? ' is-meeting-view' : ''}`} aria-label={showMeetingView ? 'Vista de reunión' : 'Oficina Vivo'}>
+      <main className={`map-area${showMeetingView ? ' is-meeting-view' : ''}${showChatView ? ' is-chat-view' : ''}`} aria-label={showMeetingView ? 'Vista de reunión' : 'Oficina Vivo'}>
         <VivoScene participants={office.participants} selfId={office.selfId} objects={office.objects} overrides={office.overrides} editorOpen={panel === 'build'} zoom={zoom} simplified={simplified} editItem={editItem} selectedObject={selectedObject} navigationTarget={navigationTarget} resetViewKey={resetViewKey} onMove={publishMove} onPlace={place} onSelect={setSelected} onSelectObject={setSelectedObject} onMoveObject={moveObject} onRemove={remove} onSit={id => office.send({ type: 'seat:sit', seatId: id })} onStand={() => office.send({ type: 'seat:stand' })} meetings={office.meetings} areaNames={office.areaNames} seatTarget={seatTarget} onAreaClick={id => { setAreaCard(id); setRenaming(null); setSelected(null); }} />
         {meetingArea && <div className="meeting-bar" aria-label="Reunión en curso">
           <div className="meeting-bar-left"><span className="meeting-pill"><Users size={15} />{roomLabel(meetingArea.id)}</span><button type="button" className={`meeting-lock ${meeting?.locked ? 'is-locked' : ''}`} title={meeting?.locked ? 'Desbloquear reunión' : 'Bloquear reunión'} aria-label={meeting?.locked ? 'Desbloquear reunión' : 'Bloquear reunión'} aria-pressed={!!meeting?.locked} onClick={() => office.send({ type: 'meeting:lock', areaId: meetingArea.id, locked: !meeting?.locked })}>{meeting?.locked ? <Lock size={14} /> : <LockOpen size={14} />}</button></div>
           <div className="meeting-bar-right"><button type="button" className="meeting-tool" title="Copiar enlace de la reunión" aria-label="Copiar enlace de la reunión" onClick={() => void copyMeetingLink(meetingArea.id)}><Link2 size={15} /></button><div className="meeting-view-toggle" role="group" aria-label="Vista"><button type="button" className={!showMeetingView ? 'is-active' : ''} aria-pressed={!showMeetingView} title="Vista de oficina" aria-label="Vista de oficina" onClick={() => setMeetingView(false)}><Map size={14} /></button><button type="button" className={showMeetingView ? 'is-active' : ''} aria-pressed={showMeetingView} title="Vista de reunión" aria-label="Vista de reunión" onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><LayoutGrid size={14} /></button></div></div>
         </div>}
         {showMeetingView && meetingArea && <MeetingView roomName={roomLabel(meetingArea.id)} meeting={meeting} people={meetingPeople} selfId={office.selfId} localStream={media.localStream} remoteStreams={media.remoteStreams} messages={meetingMessages} panel={meetingPanel} online={online} onPanel={setMeetingPanel} onSend={value => office.send({ type: 'chat', text: value, channel: 'meeting' })} onCopyLink={() => void copyMeetingLink(meetingArea.id)} />}
-        {cardArea && !showMeetingView && <div className="area-card" role="dialog" aria-label={`Sala ${roomLabel(cardArea.id)}`}>
+        {showChatView && <ChatView conversation={conversation} channels={office.channels} users={office.users} participants={office.participants} selfUserId={office.userId} messages={conversationMessages} online={online} draft={drafts[activeKey] ?? ''} onDraft={value => setDrafts(old => ({ ...old, [activeKey]: value }))} onSend={sendConversation} onTopic={(channelId, topic) => office.send({ type: 'channel:update', channelId, topic })} />}
+        {cardArea && !showMeetingView && !showChatView && <div className="area-card" role="dialog" aria-label={`Sala ${roomLabel(cardArea.id)}`}>
           <div className="area-card-head"><span className="area-card-icon"><Users size={14} /></span><div>{renaming === cardArea.id ? <form className="area-rename" onSubmit={e => { e.preventDefault(); if (roomName.trim()) office.send({ type: 'area:rename', areaId: cardArea.id, name: roomName.trim() }); setRenaming(null); }}><input autoFocus value={roomName} maxLength={40} aria-label="Nombre de la sala" onChange={e => setRoomName(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { e.stopPropagation(); setRenaming(null); } }} /><button className="primary" type="submit">Guardar</button></form> : <><strong>{roomLabel(cardArea.id)}</strong><span>Sala de reunión{cardMeeting?.active ? ` · ${cardMeeting.participants} en reunión` : ''}{cardMeeting?.locked ? ' · privada' : ''}</span></>}</div><IconButton label="Cerrar" className="area-card-close" onClick={() => { setAreaCard(null); setRenaming(null); }}><X size={15} /></IconButton></div>
           <div className="area-card-actions"><button className="primary area-card-go" disabled={!online || !!cardMeeting?.locked} onClick={() => joinMeeting(cardArea.id)}><Video size={15} />{cardMeeting?.locked ? 'Reunión privada' : cardMeeting?.active ? 'Unirse a la reunión' : 'Iniciar reunión'}</button><button type="button" className="area-card-tool" title="Copiar enlace de la reunión" aria-label="Copiar enlace de la reunión" onClick={() => void copyMeetingLink(cardArea.id)}><Link2 size={15} /></button><button type="button" className="area-card-tool" title="Cambiar el nombre de la sala" aria-label="Cambiar el nombre de la sala" onClick={() => { setRoomName(roomLabel(cardArea.id)); setRenaming(cardArea.id); }}><Pencil size={15} /></button></div>
         </div>}
@@ -281,33 +344,18 @@ export default function App() {
         {panel === 'build' && <div className="edit-banner"><Sparkles size={16} /><span>{editItem ? 'Clic para colocar · R gira · Esc termina' : 'Modo edición · arrastra para mover · R gira · Suprimir elimina'}</span><button type="button" className="edit-exit" onClick={() => { setEditItem(null); setSelectedObject(null); setPanel('people'); }}><DoorOpen size={14} />Salir de edición</button></div>}
         {selectedPerson && <div className="person-popover"><IconButton label="Cerrar perfil" className="close-profile" onClick={() => setSelected(null)}><X size={15} /></IconButton><Avatar person={selectedPerson} size={54} /><h2>{selectedPerson.name}</h2><span className="muted">{STATUS[selectedPerson.status]}</span><div>{selectedPerson.id === office.selfId ? <button className="secondary" onClick={() => { setDialog('profile'); setSelected(null); }}>Editar perfil</button> : <button className="primary" onClick={() => { move(selectedPerson.x - 32, selectedPerson.y); setSelected(null); }}>Acercarme <ArrowRight size={15} /></button>}</div></div>}
         {!showMeetingView && (media.localStream || Object.keys(media.remoteStreams).length > 0) && <div className="video-strip">{media.localStream && <div className="video-tile"><StreamVideo stream={media.localStream} muted /><span>{self?.name} · Tú</span></div>}{Object.entries(media.remoteStreams).map(([id, stream]) => <div className="video-tile" key={id}><StreamVideo stream={stream} /><span>{office.participants.find(p => p.id === id)?.name || 'Participante'}</span></div>)}</div>}
-        {!showMeetingView && <div className="zoom-controls" aria-label="Controles del mapa">
+        {!showMeetingView && !showChatView && <div className="zoom-controls" aria-label="Controles del mapa">
           <IconButton label="Acercar" disabled={zoom >= 4} onClick={() => setZoom(v => Math.min(4, Math.round(v * 1.25 * 100) / 100))}><Plus size={19} /></IconButton>
           <IconButton label="Alejar" disabled={zoom <= .36} onClick={() => setZoom(v => Math.max(.36, Math.round(v / 1.25 * 100) / 100))}><Minus size={19} /></IconButton>
           <span className="zoom-readout" aria-live="polite">{Math.round(zoom * 100)}%</span><span className="divider" />
           <IconButton label="Centrar vista" onClick={() => { setZoom(1.35); setResetViewKey(key => key + 1); }}><LocateFixed size={18} /></IconButton>
           <IconButton label={simplified ? 'Ver oficina completa' : 'Simplificar el mapa'} active={simplified} onClick={() => setSimplified(!simplified)}><Layers size={18} /></IconButton>
         </div>}
-        <div className="controlbar" aria-label="Controles de presencia, audio y vídeo">
-          <button className="self-button" disabled={!profile} title="Tu perfil y disponibilidad" aria-label="Tu perfil y disponibilidad" onClick={() => setDialog('profile')}><span className="avatar-wrap"><Avatar person={self || { name: name || 'T', color }} size={32} /><i className={`status-dot ${self?.status || 'away'}`} /></span><ChevronDown size={12} /></button>
-          <span className="control-separator" />
-          <button className={`media-control ${media.mic ? 'enabled' : 'muted'}`} disabled={!online} onClick={() => void media.toggleMic()} title={media.mic ? 'Silenciar micrófono' : 'Activar micrófono'} aria-label={media.mic ? 'Silenciar micrófono' : 'Activar micrófono'} aria-pressed={media.mic}>{media.mic ? <Mic size={21} /> : <MicOff size={21} />}</button>
-          <button className={`media-control ${media.camera ? 'enabled' : 'muted'}`} disabled={!online || media.screen} onClick={() => void media.toggleCamera()} title={media.camera ? 'Apagar cámara' : 'Activar cámara'} aria-label={media.camera ? 'Apagar cámara' : 'Activar cámara'} aria-pressed={media.camera}>{media.camera ? <Video size={22} /> : <VideoOff size={22} />}</button>
-          <IconButton label={media.screen ? 'Dejar de compartir' : 'Compartir pantalla'} active={media.screen} disabled={!online} onClick={() => void media.toggleScreen()}><Monitor size={21} /></IconButton>
-          {meetingArea && <IconButton label={handRaised ? 'Bajar la mano' : 'Levantar la mano'} active={handRaised} onClick={() => setHandRaised(raised => !raised)}><Hand size={21} /></IconButton>}
-          {meetingArea && <IconButton label="Volver a mi escritorio · ⌘ D" className="leave-meeting" onClick={leaveMeeting}><LogOut size={20} /></IconButton>}
-          <div className="control-more" ref={moreRef}><button className={`icon-button ${moreOpen ? 'is-active' : ''}`} type="button" title="Más opciones" aria-label="Más opciones" aria-expanded={moreOpen} aria-controls="call-options" onClick={() => setMoreOpen(open => !open)}><MoreHorizontal size={22} /></button>
-            {moreOpen && <div className="control-menu" id="call-options">
-              <div className="nearby-status"><i />{nearby.length ? `${nearby.length} ${nearby.length === 1 ? 'persona cerca' : 'personas cerca'}` : 'No hay personas cerca'}</div>
-              <button disabled={!online} onClick={() => { setPanel('chat'); setChannel('nearby'); setEditItem(null); setMoreOpen(false); }}><MessageCircle size={17} />Chat cercano</button>
-              <button disabled={!online} onClick={() => { move(SPAWN.x, SPAWN.y); setMoreOpen(false); }}><ArrowDownLeft size={17} />Volver al lobby</button>
-              <button onClick={() => { setDialog('help'); setMoreOpen(false); }}><CircleHelp size={17} />Controles y atajos</button>
-              <button className="leave" disabled={!profile} onClick={leave}><DoorOpen size={17} />Salir de la oficina</button>
-            </div>}
-          </div>
-        </div>
+        {!showChatView && controlBar}
       </main>
     </div>
+    {newChannel && <div className="modal-backdrop" onClick={() => setNewChannel(null)}><form className="modal" role="dialog" aria-modal="true" aria-labelledby="channel-title" onClick={e => e.stopPropagation()} onSubmit={e => { e.preventDefault(); if (!newChannel.name.trim()) return; office.send({ type: 'channel:create', name: newChannel.name, topic: newChannel.topic }); setNewChannel(null); }}><IconButton label="Cerrar ventana" className="modal-close" onClick={() => setNewChannel(null)}><X size={19} /></IconButton><span className="dialog-icon"><Hash size={27} /></span><h2 id="channel-title">Crear un canal</h2><p>Los canales reúnen las conversaciones de un tema o equipo. Todos en la oficina pueden verlos.</p><label>Nombre<input autoFocus value={newChannel.name} maxLength={40} placeholder="p. ej. diseño" onChange={e => setNewChannel({ ...newChannel, name: e.target.value })} required /></label><label>Descripción (opcional)<input value={newChannel.topic} maxLength={160} placeholder="¿De qué trata este canal?" onChange={e => setNewChannel({ ...newChannel, topic: e.target.value })} /></label><button className="primary enter-button" type="submit" disabled={!online}>Crear canal</button></form></div>}
+    {newDm && <div className="modal-backdrop" onClick={() => setNewDm(false)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="dm-title" onClick={e => e.stopPropagation()}><IconButton label="Cerrar ventana" className="modal-close" onClick={() => setNewDm(false)}><X size={19} /></IconButton><span className="dialog-icon"><SquarePen size={27} /></span><h2 id="dm-title">Nuevo mensaje</h2><p>Elige con quién quieres hablar.</p><div className="dm-picker">{office.users.map(user => <button type="button" key={user.userId} onClick={() => { setConversation({ kind: 'dm', userId: user.userId }); setPanel('chat'); setNewDm(false); }}><span className="chat-avatar small" style={{ background: user.color }}>{user.name.charAt(0).toUpperCase()}<i className={`status-dot ${onlineUsers.has(user.userId) ? 'available' : 'away'}`} /></span><span>{user.name}{user.userId === office.userId ? ' (tú)' : ''}</span></button>)}</div></div></div>}
     {(notice || office.error) && <div className="toast" role="status"><span>{notice || office.error}</span><IconButton label="Cerrar aviso" onClick={() => { setNotice(''); office.setError(''); }}><X size={15} /></IconButton></div>}
     {!profile && <div className="modal-backdrop welcome-backdrop"><form className="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onSubmit={join}><div className="welcome-art"><InvitePortraits /></div><span className="eyebrow">OPEN OFFICE</span><h1 id="welcome-title">Entrar a Vivo</h1><p>Tu equipo y tus conversaciones, en un mismo lugar.</p><label>Tu nombre<input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="¿Cómo te llamas?" maxLength={40} required /></label><div className="color-picker" aria-label="Color del avatar">{COLORS.map(c => <button type="button" key={c} style={{ background: c }} aria-label={`Color ${c}`} aria-pressed={color === c} className={color === c ? 'selected' : ''} onClick={() => setColor(c)}>{color === c && <Check size={17} />}</button>)}</div><button className="primary enter-button" type="submit">Entrar a la oficina <ArrowRight size={18} /></button><span className="privacy-note"><MicOff size={13} /><VideoOff size={14} />Micrófono y cámara apagados al entrar</span></form></div>}
     {dialog && profile && <div className="modal-backdrop" onClick={() => setDialog(null)}><div ref={dialogRef} className="modal" role="dialog" aria-modal="true" aria-labelledby="dialog-title" onClick={e => e.stopPropagation()}><IconButton label="Cerrar ventana" className="modal-close" onClick={() => setDialog(null)}><X size={19} /></IconButton>
