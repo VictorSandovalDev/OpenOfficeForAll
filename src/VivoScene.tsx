@@ -24,9 +24,13 @@ type Props = {
   onMove: (x: number, y: number) => void; onPlace: (x: number, y: number) => void;
   onSelect: (id: string) => void; onSelectObject: (id: string | null) => void; onMoveObject: (id: string, x: number, y: number) => void; onRemove: (id: string) => void;
   meetings: Meetings; areaNames: Record<string, string>; interactions?: Record<string, Interaction>; onNearInteractive?: (id: string | null) => void; onInteract?: (id: string) => void; reactions?: { participantId: string; emoji: string }[]; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
+  /** Wheel zoom: the scene asks for a new zoom level and keeps the point under the cursor in place. */
+  onZoom?: (zoom: number) => void;
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
+export const MIN_ZOOM = .15;
+export const OVERVIEW_BELOW = .36;
 type Motion = { facing: Facing; moving: boolean; frame: number };
 type Remote = { from: Point; to: Point; startedAt: number; facing: Facing; lastMoved: number };
 
@@ -127,7 +131,7 @@ function Ghost({ item, tile }: { item: EditItem; tile: Tile }) {
   </g>;
 }
 
-export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
+export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
   const [hoverTile, setHoverTile] = useState<Tile | null>(null);
   const editingMode = editorOpen || editItem !== null || selectedObject !== null;
@@ -206,7 +210,9 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   const following = useRef(!pinned);
   const drag = useRef<{ client: Point; camera: Point; moved: boolean } | null>(null);
   const [dragging, setDragging] = useState(false);
-  const scale = clamp(pinned?.zoom ?? zoom, .36, 4);
+  const scale = clamp(pinned?.zoom ?? zoom, MIN_ZOOM, 4);
+  // Far out, the office turns into an overview like the minimap: rooms in flat greys and everyone as a dot.
+  const overview = scale < OVERVIEW_BELOW;
   const viewWidth = viewport.width / scale, viewHeight = viewport.height / scale;
   const viewX = camera.x - viewWidth / 2, viewY = camera.y - viewHeight / 2;
 
@@ -218,6 +224,27 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     return () => observer.disconnect();
   }, []);
   useEffect(() => { if (pinned) return; following.current = true; setCamera(tileCenter(tile.current)); }, [resetViewKey]);
+  const view = useRef({ scale, camera, viewport, onZoom }); view.current = { scale, camera, viewport, onZoom };
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg || pinned) return;
+    const wheel = (event: WheelEvent) => {
+      const { scale: current, camera: cam, viewport: port, onZoom: zoomTo } = view.current;
+      if (!zoomTo) return;
+      event.preventDefault();
+      const next = clamp(Math.round(current * Math.exp(-event.deltaY * (event.ctrlKey ? .01 : .0015)) * 100) / 100, MIN_ZOOM, 4);
+      if (next === current) return;
+      // Keep the world point under the cursor where it is.
+      const box = svg.getBoundingClientRect();
+      const cx = event.clientX - box.left - port.width / 2, cy = event.clientY - box.top - port.height / 2;
+      const worldX = cam.x + cx / current, worldY = cam.y + cy / current;
+      following.current = false;
+      setCamera({ x: clamp(worldX - cx / next, 0, WORLD.width), y: clamp(worldY - cy / next, 0, WORLD.height) });
+      zoomTo(next);
+    };
+    svg.addEventListener('wheel', wheel, { passive: false });
+    return () => svg.removeEventListener('wheel', wheel);
+  }, [pinned]);
 
   useEffect(() => {
     const now = performance.now();
@@ -384,7 +411,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       return;
     }
     if (editItem) { const point = worldPoint(event.clientX, event.clientY); if (point) setHoverTile(previous => { const next = tileOf(point); return previous && sameTile(previous, next) ? previous : next; }); }
-    if (!editingMode && !drag.current) {
+    if (!editingMode && !drag.current && !overview) {
       const point = worldPoint(event.clientX, event.clientY);
       const { tx, ty } = point ? tileOf(point) : { tx: -1, ty: -1 };
       const area = meetingRoomAt(tx, ty);
@@ -407,7 +434,8 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     }
     if (drag.current && !drag.current.moved) {
       const point = worldPoint(event.clientX, event.clientY);
-      if (point && editKind) { const tile = tileOf(point); onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
+      if (point && overview && !editKind) { following.current = false; setCamera(point); onZoom?.(1); }
+      else if (point && editKind) { const tile = tileOf(point); onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
       else if (editingMode) { if (selectedObject) onSelectObject(null); }
       else if (point && self && self.status !== 'away' && !(event.target as Element).closest('.scene-avatar, .scene-added-object, .scene-seat')) {
         const target = tileOf(point);
@@ -476,7 +504,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   ].sort((a, b) => a.y - b.y || a.order - b.order || a.key.localeCompare(b.key));
 
   const minimapScale = 108 / WORLD.width;
-  return <div className={`office-scene${simplified ? ' simplified' : ''}${dragging ? ' is-dragging' : ''}${editingMode ? ' is-editing' : ''}${dragTile ? ' is-moving' : ''}`}>
+  return <div className={`office-scene${overview ? ' is-overview' : ''}${simplified ? ' simplified' : ''}${dragging ? ' is-dragging' : ''}${editingMode ? ' is-editing' : ''}${dragTile ? ' is-moving' : ''}`}>
     <svg ref={svgRef} className="office-map" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="group" aria-label={t('Oficina Vivo. Muévete con las flechas o WASD; clic para caminar, clic en una silla o E para sentarte; flechas o E para levantarte; arrastra el fondo para desplazar el mapa.')} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => { drag.current = null; setDragging(false); }} onPointerLeave={() => setHoverRoom(null)}>
       <FloorPatterns />
       <defs><pattern id="edit-grid" width={TILE} height={TILE} patternUnits="userSpaceOnUse"><path d={`M${TILE} 0V${TILE}H0`} fill="none" stroke="#ffffff" strokeOpacity=".12" strokeWidth="1" /></pattern></defs>
@@ -491,6 +519,21 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       {editItem && hoverTile && <Ghost item={editItem} tile={hoverTile} />}
       {dragTile && <Ghost item={dragTile.item} tile={dragTile.tile} />}
       {!editingMode && <g>{seats.map(seat => { const occupant = occupiedSeats.get(seat.id); return <SeatTarget key={seat.id} seat={seat} occupiedBy={occupant?.name} own={occupant?.id === selfId} enabled={!!self && self.status !== 'away'} onSit={() => requestSeat(seat)} />; })}</g>}
+      {overview && <g className="scene-overview" shapeRendering="crispEdges">
+        <rect x={-WORLD.width * 5} y={-WORLD.height * 5} width={WORLD.width * 11} height={WORLD.height * 11} fill="#2b2b2b" />
+        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? '#343434' : '#474c55'} />)}
+        <g shapeRendering="auto">{participants.map(person => {
+          const own = person.id === selfId;
+          const at = own ? local : remoteRender[person.id] && !person.seatId ? remoteRender[person.id] : { x: person.x, y: person.y };
+          const r = (own ? 8 : 7) / scale;
+          return <g key={person.id} transform={`translate(${at.x} ${at.y})`}>
+            <circle r={r + 2 / scale} fill="#1b1b1f" />
+            <circle r={r} fill={own ? '#39d98a' : '#d0c7ef'} />
+            <circle cx={r * .7} cy={r * .7} r={3 / scale} fill={STATUS_COLOR[person.status]} stroke="#1b1b1f" strokeWidth={1.2 / scale} />
+            <text y={r + 14 / scale} textAnchor="middle" fontSize={12 / scale} fontWeight="600" fill="#fff" stroke="#1b1b1f" strokeWidth={3 / scale} paintOrder="stroke">{own ? t('Tú') : person.name}</text>
+          </g>;
+        })}</g>
+      </g>}
     </svg>
     {hoverRoom && <div className="scene-tooltip" style={hoverRoom.x > viewport.width - 200 ? { right: viewport.width - hoverRoom.x + 14, top: hoverRoom.y + 16 } : { left: hoverRoom.x + 14, top: hoverRoom.y + 16 }}>{t('Sala de reunión: {name}', { name: areaNames[hoverRoom.area.id] ?? hoverRoom.area.name })}</div>}
     <div className="scene-minimap" aria-label={t('Minimapa de la oficina')}>

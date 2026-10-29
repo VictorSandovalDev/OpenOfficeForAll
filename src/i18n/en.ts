@@ -380,4 +380,5 @@ export const EN: Record<string, string> = {
   "Barba corta": "Short beard",
   "Barba completa": "Full beard",
   "Vello facial": "Facial hair",
+  "Tú": "You",
 };
