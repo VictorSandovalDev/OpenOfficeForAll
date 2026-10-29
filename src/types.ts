@@ -1,6 +1,7 @@
 export type Status = 'available' | 'busy' | 'away' | 'focus';
 export type Facing = 'north' | 'east' | 'south' | 'west';
-export type Participant = { id: string; userId?: string; name: string; color: string; x: number; y: number; facing?: Facing; seatId?: string; status: Status; mic: boolean; camera: boolean; screen: boolean };
+export type AvatarLookData = { skin: number; hair: number; top: number; bottom: number; shoes: number; glasses: number; hat: number };
+export type Participant = { id: string; userId?: string; avatar?: AvatarLookData; statusText?: string; name: string; color: string; x: number; y: number; facing?: Facing; seatId?: string; status: Status; mic: boolean; camera: boolean; screen: boolean };
 export type OfficeObject = { id: string; kind: string; color?: string; facing?: string; x: number; y: number };
 export type EditItem = { kind: string; color: string; facing: string };
 export type ChatMessage = { id: string; participantId: string; userId?: string; name: string; text: string; channel: 'channel' | 'dm' | 'nearby' | 'meeting'; channelId?: string; dmKey?: string; to?: string; areaId?: string; system?: boolean; createdAt: string };

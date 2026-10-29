@@ -162,7 +162,8 @@ The collision model is compared tile by tile with the reference map, the tests w
 - [x] Full-screen meeting view with participant tiles
 - [x] Slack-style chat channels and direct messages
 - [x] Calendar and activity feed
-- [ ] Avatar wardrobe with clothing and hair
+- [x] Avatar editor: skin, hair, clothes and shoes colours, glasses and hats
+- [ ] More hairstyles and outfits
 - [x] Interface in English and Spanish
 - [ ] More interface languages
 - [ ] Accounts, permissions and a hardened public deployment guide (HTTPS, TURN/SFU)

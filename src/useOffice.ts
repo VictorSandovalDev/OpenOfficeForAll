@@ -13,7 +13,7 @@ function browserUserId(name: string) {
     return ids[key];
   } catch { return crypto.randomUUID(); }
 }
-export function useOffice(room: string, profile: {name: string;color: string} | null) {
+export function useOffice(room: string, profile: {name: string;color: string;avatar?: unknown} | null) {
   const socket = useRef<WebSocket | null>(null);
   const listeners = useRef(new Set<(signal: Signal) => void>());
   const [selfId,setSelfId] = useState<string|null>(null);

@@ -40,6 +40,8 @@ Supported messages:
 - `join` may include `userId` (8–64 characters `[A-Za-z0-9_-]`), a stable identity per browser and name used for
   direct messages and the people directory; without it the session id is used. `welcome` returns `userId`,
   `channels`, `users` (directory) and `messages` (every channel's history plus the direct messages that include you).
+- `profile` also accepts `avatar` (`{ skin, hair, top, bottom, shoes, glasses, hat }`, palette indices validated
+  against `src/avatarLook.ts`) and `statusText` (up to 60 characters; empty clears it). `join` accepts `avatar` too.
 - `chat`: `text` (1–4000 characters) and `channel`:
   - `channel` with `channelId` (`office` is accepted as an alias of `#general`): reaches everyone and is persisted
     in `server/data/<room>.chat.json` (last 200 per channel).

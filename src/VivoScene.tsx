@@ -14,6 +14,7 @@ import { DoorwayPiece, WallPiece, WALL_HEIGHT } from './sprites/walls';
 import { ObjectArt, ObjectForeground, hasForeground, type MapObjectData } from './sprites/objects';
 import { AVATAR_FRAME_URLS, AVATAR_SPRITE, avatarFrame, walkFrameAt } from './avatarSprite';
 import { locale, t } from './i18n';
+import { lookFrames, lookKey, sanitizeLook } from './avatarLook';
 
 type Seat = ReturnType<typeof getOfficeSeats>[number];
 type Props = {
@@ -80,19 +81,20 @@ const STATIC: Layer[] = [
 
 ];
 
-function Avatar({ person, self, facing, moving, frame, onSelect }: { person: Participant; self: boolean; facing: Facing; moving: boolean; frame: number; onSelect: () => void }) {
+function Avatar({ person, self, facing, moving, frame, frames, onSelect }: { person: Participant; self: boolean; facing: Facing; moving: boolean; frame: number; frames?: Record<string, string>; onSelect: () => void }) {
+  const url = avatarFrame(facing, moving, frame, !!person.seatId);
   const name = person.name.length > 22 ? `${person.name.slice(0, 21)}…` : person.name;
   const width = Math.max(56, name.length * 7 + 30);
   return <g className={`scene-avatar${self ? ' is-self' : ''}${person.status === 'away' ? ' is-away' : ''}${moving ? ' is-walking' : ''}${person.seatId ? ' is-seated' : ''}`} tabIndex={0} role="button" aria-label={`${person.name}${self ? t(', tú') : ''}${person.seatId ? t(', sentado') : ''}. ${STATUS_LABEL[person.status]}`} onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); onSelect(); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }}>
     <title>{person.name} · {STATUS_LABEL[person.status]}</title>
-    <image className="pixel-resource character-resource" href={avatarFrame(facing, moving, frame, !!person.seatId)} x={-AVATAR_SPRITE.foot.x * AVATAR_SPRITE.renderScale} y={-AVATAR_SPRITE.foot.y * AVATAR_SPRITE.renderScale} width={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} height={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} />
+    <image className="pixel-resource character-resource" href={frames?.[url] ?? url} x={-AVATAR_SPRITE.foot.x * AVATAR_SPRITE.renderScale} y={-AVATAR_SPRITE.foot.y * AVATAR_SPRITE.renderScale} width={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} height={AVATAR_SPRITE.canvasSize * AVATAR_SPRITE.renderScale} />
     <g className="scene-nameplate" transform={`translate(0 ${AVATAR_SPRITE.nameplateY})`} shapeRendering="auto"><rect x={-width / 2} y="-20" width={width} height="20" rx="6" fill={self ? '#6f3fd6' : '#2b2b33'} /><circle cx={-width / 2 + 10} cy="-10" r="3" fill={STATUS_COLOR[person.status]} /><text x="5" y="-6" textAnchor="middle" fontSize="12" fontWeight="500" fill="#fff">{name}</text></g>
   </g>;
 }
 
 function SeatTarget({ seat, occupiedBy, own, enabled, onSit }: { seat: Seat; occupiedBy?: string; own: boolean; enabled: boolean; onSit: () => void }) {
   const disabled = !enabled || (!!occupiedBy && !own);
-  const label = own ? `Levantarse: ${seat.label}` : occupiedBy ? `${seat.label}, ocupada por ${occupiedBy}` : `Sentarse: ${seat.label}`;
+  const label = own ? t('Levantarse: {seat}', { seat: seat.label }) : occupiedBy ? t('{seat}, ocupada por {name}', { seat: seat.label, name: occupiedBy }) : t('Sentarse: {seat}', { seat: seat.label });
   return <g className={`scene-seat${disabled ? ' is-occupied' : ''}`} data-seat-id={seat.id} data-facing={seat.facing} role="button" tabIndex={disabled ? -1 : 0} aria-label={label} aria-disabled={disabled}
     onPointerDown={event => event.stopPropagation()} onDoubleClick={event => event.stopPropagation()}
     onClick={event => { event.stopPropagation(); if (!disabled) onSit(); }}
@@ -156,6 +158,18 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     return tiles;
   }, [objects, overrides, lockedRooms]);
   const [hoverRoom, setHoverRoom] = useState<{ area: MeetingArea; x: number; y: number } | null>(null);
+  // Each participant's look, recoloured once per distinct look and shared by everyone wearing it.
+  const [lookMaps, setLookMaps] = useState<Record<string, Record<string, string>>>({});
+  const looksKey = participants.map(person => lookKey(sanitizeLook(person.avatar))).sort().join('|');
+  useEffect(() => {
+    let live = true;
+    for (const person of participants) {
+      const look = sanitizeLook(person.avatar), key = lookKey(look);
+      if (lookMaps[key]) continue;
+      void lookFrames(look).then(map => { if (live) setLookMaps(old => old[key] ? old : { ...old, [key]: map }); });
+    }
+    return () => { live = false; };
+  }, [looksKey]);
   const baseObjects = useMemo(() => effectiveBaseObjects(overrides) as MapObjectData[], [overrides]);
   const baseById = useMemo(() => new Map(baseObjects.map(object => [object.id, object])), [baseObjects]);
   const currentBlocked = useRef(blocked); currentBlocked.current = blocked;
@@ -414,7 +428,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   };
   const avatarLayer = (person: Participant, position: Point, facing: Facing, moving: boolean, frame: number): Layer => ({
     key: `person-${person.id}`, y: seatObjectY(person) ?? position.y + TILE / 2 - 1, order: 3,
-    node: <g transform={`translate(${Math.round(position.x)} ${Math.round(footOf(position).y) + (person.seatId ? -2 : 0)})`}><Avatar person={person} self={person.id === selfId} facing={facing} moving={moving} frame={frame} onSelect={() => person.id === selfId && person.seatId ? requestStand() : onSelect(person.id)} /></g>,
+    node: <g transform={`translate(${Math.round(position.x)} ${Math.round(footOf(position).y) + (person.seatId ? -2 : 0)})`}><Avatar person={person} self={person.id === selfId} facing={facing} moving={moving} frame={frame} frames={lookMaps[lookKey(sanitizeLook(person.avatar))]} onSelect={() => person.id === selfId && person.seatId ? requestStand() : onSelect(person.id)} /></g>,
   });
   // Door artwork follows the reference: wooden doors only on the large meeting room, a light marker on huddle doorways, bare gaps elsewhere.
   const doorLayers: Layer[] = DOORWAYS.flatMap(door => {

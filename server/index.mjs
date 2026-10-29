@@ -21,6 +21,14 @@ const MAX_OBJECTS = 250;
 const MAX_HISTORY = 200;
 const MAX_CHANNELS = 40;
 const MAX_EVENTS = 300;
+/** Avatar looks: one palette index per zone plus accessories (sizes match src/avatarLook.ts). */
+const LOOK_SIZES = { skin: 5, hair: 9, top: 11, bottom: 8, shoes: 6, glasses: 4, hat: 3 };
+const sanitizeLook = (value) => {
+  if (!value || typeof value !== 'object') return undefined;
+  const look = {};
+  for (const [key, size] of Object.entries(LOOK_SIZES)) { const n = Number(value[key]); look[key] = Number.isInteger(n) && n >= 0 && n < size ? n : (key === 'skin' || key === 'hair' ? 1 : 0); }
+  return look;
+};
 const isoTime = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : null;
 const USER_ID = /^[A-Za-z0-9_-]{8,64}$/;
 /** Company channels every office starts with, as in the reference. */
@@ -282,6 +290,7 @@ export async function startServer({
         client.room = room;
         const participantId = randomUUID();
         client.participant = { id: participantId, userId: typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
+        const look = sanitizeLook(payload.avatar); if (look) client.participant.avatar = look;
         room.users[client.participant.userId] = { name: client.participant.name, color: client.participant.color };
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
@@ -330,6 +339,8 @@ export async function startServer({
           if (name) { participant.name = name; changed = true; }
           if (typeof payload.color === 'string' && COLOR.test(payload.color)) { participant.color = payload.color; changed = true; }
           if (STATUSES.has(payload.status)) { participant.status = payload.status; changed = true; }
+          if (payload.avatar !== undefined) { const look = sanitizeLook(payload.avatar); if (look) { participant.avatar = look; changed = true; } }
+          if (typeof payload.statusText === 'string') { const text = cleanText(payload.statusText, 60); if (text) participant.statusText = text; else delete participant.statusText; changed = true; }
           for (const key of ['mic', 'camera', 'screen']) if (typeof payload[key] === 'boolean') { participant[key] = payload[key]; changed = true; }
           if (changed) {
             room.users[participant.userId] = { name: participant.name, color: participant.color };

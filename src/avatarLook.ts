@@ -1,0 +1,224 @@
+import { AVATAR_FRAME_URLS } from './avatarSprite';
+
+/** An avatar look: a colour per body zone plus accessories. Zones are found in the base sprite by colour and
+    position, and recoloured keeping the pixel art's own shading, so every pose and walk frame stays consistent. */
+export type AvatarLook = { skin: number; hair: number; top: number; bottom: number; shoes: number; glasses: number; hat: number };
+export const DEFAULT_LOOK: AvatarLook = { skin: 1, hair: 1, top: 0, bottom: 0, shoes: 0, glasses: 0, hat: 0 };
+type Zone = 'skin' | 'hair' | 'top' | 'bottom' | 'shoes';
+
+/** Palettes; index 0 of each is the base sprite's own colour, except skin which follows the reference's five tones. */
+export const PALETTES: Record<Zone, string[]> = {
+  skin: ['#ffe0c4', '#fac08a', '#e39a62', '#b8703f', '#7a452a'],
+  hair: ['#1b1b1f', '#361c10', '#6b3f22', '#a8441c', '#d8a74f', '#9a9a9a', '#e6e6e6', '#2d4f9e', '#d77aa8'],
+  top: ['#458791', '#c0392b', '#3d6fd1', '#4f9a52', '#e0b53a', '#7d55c7', '#e07aa0', '#e2793a', '#2b2b30', '#e8e8e8', '#8a8f96'],
+  bottom: ['#192436', '#1d1d22', '#5b616b', '#a68b5b', '#6b4a2f', '#6f8fbf', '#5d6b3a', '#d9d9d9'],
+  shoes: ['#737a7b', '#222226', '#eeeeee', '#6b4228', '#b8322a', '#3459a8'],
+};
+export const GLASSES = ['Sin gafas', 'Redondas', 'Cuadradas', 'De sol'];
+export const HATS = ['Sin sombrero', 'Gorra', 'Gorro de lana'];
+const HAT_COLORS = ['#d14b3d', '#3d6fd1', '#2b2b30'];
+const REF: Record<Zone, string> = { skin: '#fac08a', hair: '#361c10', top: '#458791', bottom: '#192436', shoes: '#737a7b' };
+
+export const lookKey = (look: AvatarLook) => [look.skin, look.hair, look.top, look.bottom, look.shoes, look.glasses, look.hat].join('.');
+export const isDefaultLook = (look: AvatarLook) => lookKey(look) === lookKey(DEFAULT_LOOK);
+export function sanitizeLook(value: unknown): AvatarLook {
+  const source = value && typeof value === 'object' ? value as Record<string, unknown> : {};
+  const pick = (key: keyof AvatarLook, size: number) => { const n = Number(source[key]); return Number.isInteger(n) && n >= 0 && n < size ? n : DEFAULT_LOOK[key]; };
+  return { skin: pick('skin', PALETTES.skin.length), hair: pick('hair', PALETTES.hair.length), top: pick('top', PALETTES.top.length), bottom: pick('bottom', PALETTES.bottom.length), shoes: pick('shoes', PALETTES.shoes.length), glasses: pick('glasses', GLASSES.length), hat: pick('hat', HATS.length) };
+}
+export const randomLook = (): AvatarLook => ({
+  skin: Math.floor(Math.random() * PALETTES.skin.length), hair: Math.floor(Math.random() * PALETTES.hair.length), top: Math.floor(Math.random() * PALETTES.top.length),
+  bottom: Math.floor(Math.random() * PALETTES.bottom.length), shoes: Math.floor(Math.random() * PALETTES.shoes.length), glasses: Math.random() < .35 ? 1 + Math.floor(Math.random() * 3) : 0, hat: Math.random() < .25 ? 1 + Math.floor(Math.random() * 2) : 0,
+});
+
+// --- colour maths -------------------------------------------------------------------------------------------
+type HSL = [number, number, number];
+const hex = (value: string): [number, number, number] => [parseInt(value.slice(1, 3), 16), parseInt(value.slice(3, 5), 16), parseInt(value.slice(5, 7), 16)];
+function toHsl(r: number, g: number, b: number): HSL {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
+  if (max === min) return [0, 0, l];
+  const d = max - min, s = l > .5 ? d / (2 - max - min) : d / (max + min);
+  const h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h / 6, s, l];
+}
+function toRgb(h: number, s: number, l: number): [number, number, number] {
+  h = ((h % 1) + 1) % 1; s = Math.max(0, Math.min(1, s)); l = Math.max(0, Math.min(1, l));
+  if (s === 0) { const v = Math.round(l * 255); return [v, v, v]; }
+  const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  const channel = (t: number) => { t = ((t % 1) + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < 1 / 2 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
+  return [Math.round(channel(h + 1 / 3) * 255), Math.round(channel(h) * 255), Math.round(channel(h - 1 / 3) * 255)];
+}
+function toHsv(r: number, g: number, b: number): HSL {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+  const h = d === 0 ? 0 : max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h * 60, max === 0 ? 0 : d / max, max];
+}
+/** Moves a pixel from the zone's reference colour to the target colour, keeping its relative light and shade. */
+function shift(r: number, g: number, b: number, zone: Zone, target: string): [number, number, number] {
+  const [h0, s0, l0] = toHsl(...hex(REF[zone])), [h, s, l] = toHsl(r, g, b), [th, ts, tl] = toHsl(...hex(target));
+  const nl = l <= l0 ? tl * (l / l0) : tl + (1 - tl) * ((l - l0) / (1 - l0)) * .85;
+  const ns = s0 > .05 ? ts * Math.min(1.25, s / s0) : ts;
+  return toRgb(th + (h - h0) * .5, ns, nl);
+}
+
+// --- zones --------------------------------------------------------------------------------------------------
+type Frame = { url: string; width: number; height: number; data: Uint8ClampedArray; zones: (Zone | 'hairdark' | 'outline' | null)[]; facing: string; hairTop: number; hairBottom: number; hairLeft: number; hairRight: number; eyes: number[][] };
+function classify(r: number, g: number, b: number, y: number, foot: number): Zone | 'outline' | null {
+  const [h, s, v] = toHsv(r, g, b);
+  if (v < .09) return 'outline';
+  if (s < .18) return y >= foot - 6 && v > .15 ? 'shoes' : null;
+  if (h >= 165 && h <= 205 && s > .35) return 'top';
+  if (h > 205 && h <= 250) return 'bottom';
+  if (h <= 45 || h >= 340) return (v >= .62 && s < .75) || (v >= .6 && s >= .75 && h > 12) ? 'skin' : 'hair';
+  return null;
+}
+let base: Promise<Frame[]> | null = null;
+function loadBase(): Promise<Frame[]> {
+  base ??= Promise.all(AVATAR_FRAME_URLS.map(url => new Promise<Frame>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas'); canvas.width = image.width; canvas.height = image.height;
+      const context = canvas.getContext('2d', { willReadFrequently: true })!; context.drawImage(image, 0, 0);
+      const { data } = context.getImageData(0, 0, image.width, image.height);
+      const width = image.width, height = image.height, at = (x: number, y: number) => y * width + x;
+      let foot = 0; for (let i = 3; i < data.length; i += 4) if (data[i] > 128) foot = Math.max(foot, Math.floor((i >> 2) / width));
+      const zones: Frame['zones'] = new Array(width * height).fill(null);
+      for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) { const i = at(x, y) * 4; if (data[i + 3] > 128) zones[at(x, y)] = classify(data[i], data[i + 1], data[i + 2], y, foot); }
+      // Eyes and brows share the hair's dark browns; they sit inside the face (skin above, left and right).
+      const eyeMarks: number[][] = [];
+      const skinAt = (x: number, y: number) => x >= 0 && y >= 0 && x < width && y < height && zones[at(x, y)] === 'skin';
+      for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+        if (zones[at(x, y)] !== 'hair') continue;
+        const left = [1, 2, 3].some(d => skinAt(x - d, y)), right = [1, 2, 3].some(d => skinAt(x + d, y)), above = [1, 2].some(d => skinAt(x, y - d) || skinAt(x - 1, y - d) || skinAt(x + 1, y - d));
+        if (left && right && above) { zones[at(x, y)] = null; eyeMarks.push([x, y]); }
+      }
+      // The head: hair starts at the top; hair-coloured pixels far below it are shaded skin (hands, neck).
+      let hairTop = height;
+      for (let i = 0; i < zones.length; i++) if (zones[i] === 'hair') { hairTop = Math.floor(i / width); break; }
+      let hairBottom = -1, hairLeft = width, hairRight = -1;
+      for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+        if (zones[at(x, y)] !== 'hair') continue;
+        if (y > hairTop + 11) { zones[at(x, y)] = 'skin'; continue; }
+        hairBottom = Math.max(hairBottom, y); hairLeft = Math.min(hairLeft, x); hairRight = Math.max(hairRight, x);
+      }
+      const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < width && y < height && data[at(x, y) * 4 + 3] > 128;
+      // Dark shading inside the hair mass belongs to the hair, not to the outline.
+      for (let pass = 0; pass < 3; pass++) for (let y = 0; y <= hairBottom; y++) for (let x = 0; x < width; x++) {
+        if (zones[at(x, y)] !== 'outline') continue;
+        const near = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        if (near.every(([dx, dy]) => inside(x + dx, y + dy)) && near.some(([dx, dy]) => ['hair', 'hairdark'].includes(zones[at(x + dx, y + dy)] ?? ''))) zones[at(x, y)] = 'hairdark';
+      }
+      // Eyes: dark pixels on the face, just below the hair, with skin on both sides within 3 px.
+      const eyes: number[][] = eyeMarks.filter(([, y]) => y >= hairTop + 10 && y <= hairTop + 16);
+      for (let y = hairTop + 10; y <= Math.min(height - 1, hairTop + 16); y++) for (let x = hairLeft; x <= hairRight; x++) {
+        if (zones[at(x, y)] !== 'outline') continue;
+        if ([1, 2, 3].some(d => zones[at(x - d, y)] === 'skin') && [1, 2, 3].some(d => zones[at(x + d, y)] === 'skin')) eyes.push([x, y]);
+      }
+      const name = url.split('/').pop() ?? '';
+      const facing = name.includes('north') ? 'north' : name.includes('east') ? 'east' : name.includes('west') ? 'west' : 'south';
+      resolve({ url, width, height, data, zones, facing, hairTop, hairBottom, hairLeft, hairRight, eyes });
+    };
+    image.onerror = reject; image.src = url;
+  })));
+  return base;
+}
+
+// --- accessories --------------------------------------------------------------------------------------------
+type Paint = (x: number, y: number, color: string) => void;
+function drawGlasses(frame: Frame, style: number, paint: Paint) {
+  if (!style || frame.facing === 'north' || !frame.eyes.length) return;
+  const xs = [...new Set(frame.eyes.map(([x]) => x))].sort((a, b) => a - b);
+  const clusters: number[][] = [];
+  for (const x of xs) { const last = clusters.at(-1); if (last && x - last[last.length - 1] <= 1) last.push(x); else clusters.push([x]); }
+  const eyeRows = frame.eyes.map(([, y]) => y), eyeY = Math.round(eyeRows.reduce((a, b) => a + b, 0) / eyeRows.length);
+  const frameColor = style === 3 ? '#151518' : style === 2 ? '#2a2a33' : '#1f1a1d';
+  const lens = style === 3 ? '#1d2230' : null;
+  const lenses = clusters.filter(cluster => cluster.length >= 2).sort((a, b) => b.length - a.length).slice(0, 2).sort((a, b) => a[0] - b[0]).map(cluster => ({ left: cluster[0] - 1, right: cluster[cluster.length - 1] + 1 }));
+  for (const { left, right } of lenses) {
+    const top = eyeY - 2, bottom = eyeY + 2;
+    for (let x = left; x <= right; x++) for (let y = top; y <= bottom; y++) {
+      const edge = x === left || x === right || y === top || y === bottom;
+      const corner = style === 1 && (x === left || x === right) && (y === top || y === bottom);
+      if (corner) continue;
+      if (edge) paint(x, y, frameColor); else if (lens) paint(x, y, lens);
+    }
+  }
+  if (lenses.length === 2) for (let x = lenses[0].right + 1; x < lenses[1].left; x++) paint(x, eyeY, frameColor);
+  else if (lenses.length === 1) { // profile: an arm towards the ear
+    const { left, right } = lenses[0], back = frame.facing === 'east' ? -1 : 1;
+    for (let d = 1; d <= 4; d++) paint(back < 0 ? left - d : right + d, eyeY, frameColor);
+  }
+}
+function drawHat(frame: Frame, style: number, paint: Paint, color: string) {
+  if (!style || frame.hairBottom < 0) return;
+  const [r, g, b] = hex(color), [h, s, l] = toHsl(r, g, b);
+  const dark = `rgb(${toRgb(h, s, l * .62).join(',')})`, light = `rgb(${toRgb(h, s, Math.min(.92, l * 1.25)).join(',')})`, outline = '#0b0b0e';
+  const left = frame.hairLeft, right = frame.hairRight, top = frame.hairTop - (style === 2 ? 2 : 1);
+  const crownBottom = frame.hairTop + (style === 2 ? 6 : 4);
+  for (let y = top; y <= crownBottom; y++) {
+    const inset = y === top ? 3 : y === top + 1 ? 1 : 0;
+    for (let x = left + inset; x <= right - inset; x++) {
+      const edge = x === left + inset || x === right - inset || y === top;
+      paint(x, y, edge ? outline : style === 2 && y >= crownBottom - 1 ? dark : x < left + (right - left) / 3 && y < top + 3 ? light : color);
+    }
+  }
+  if (style === 2) { for (let x = left; x <= right; x++) paint(x, crownBottom + 1, outline); return; }
+  // Cap brim, on the side the avatar faces.
+  const brimY = crownBottom + 1;
+  if (frame.facing === 'south') for (let x = left - 1; x <= right + 1; x++) { paint(x, brimY, x === left - 1 || x === right + 1 ? outline : dark); paint(x, brimY + 1, outline); }
+  else if (frame.facing === 'east') for (let x = right - 2; x <= right + 4; x++) { paint(x, brimY, dark); paint(x, brimY + 1, outline); }
+  else if (frame.facing === 'west') for (let x = left - 4; x <= left + 2; x++) { paint(x, brimY, dark); paint(x, brimY + 1, outline); }
+  else for (let x = left; x <= right; x++) paint(x, brimY, outline);
+}
+
+// --- rendering ----------------------------------------------------------------------------------------------
+/** Paints one base frame with a look (zone colours, then hat and glasses). */
+function paintFrame(frame: Frame, look: AvatarLook): HTMLCanvasElement {
+    const out = new Uint8ClampedArray(frame.data);
+    const targets: Record<Zone, string> = { skin: PALETTES.skin[look.skin], hair: PALETTES.hair[look.hair], top: PALETTES.top[look.top], bottom: PALETTES.bottom[look.bottom], shoes: PALETTES.shoes[look.shoes] };
+    for (let i = 0; i < frame.zones.length; i++) {
+      const zone = frame.zones[i]; if (!zone || zone === 'outline') continue;
+      const p = i * 4;
+      const [r, g, b] = zone === 'hairdark' ? (() => { const [h, s, l] = toHsl(...hex(targets.hair)); return toRgb(h, s, l * .45); })() : targets[zone] === REF[zone] ? [out[p], out[p + 1], out[p + 2]] : shift(out[p], out[p + 1], out[p + 2], zone, targets[zone]);
+      out[p] = r; out[p + 1] = g; out[p + 2] = b;
+    }
+    const canvas = document.createElement('canvas'); canvas.width = frame.width; canvas.height = frame.height;
+    const context = canvas.getContext('2d')!;
+    context.putImageData(new ImageData(out, frame.width, frame.height), 0, 0);
+    const paint: Paint = (x, y, color) => { context.fillStyle = color; context.fillRect(x, y, 1, 1); };
+    drawHat(frame, look.hat, paint, HAT_COLORS[(look.top + look.hat) % HAT_COLORS.length]);
+    drawGlasses(frame, look.glasses, paint);
+    return canvas;
+}
+
+const cache = new Map<string, Promise<Record<string, string>>>();
+/** Frame URL → object URL of the recoloured frame, for a look. The default look maps to the original files. */
+export function lookFrames(look: AvatarLook): Promise<Record<string, string>> {
+  const key = lookKey(look);
+  if (isDefaultLook(look)) return Promise.resolve(Object.fromEntries(AVATAR_FRAME_URLS.map(url => [url, url])));
+  let pending = cache.get(key);
+  if (pending) return pending;
+  pending = loadBase().then(frames => Promise.all(frames.map(frame => new Promise<[string, string]>(resolve => {
+    paintFrame(frame, look).toBlob(blob => resolve([frame.url, blob ? URL.createObjectURL(blob) : frame.url]), 'image/png');
+  })))).then(entries => Object.fromEntries(entries));
+  cache.set(key, pending);
+  if (cache.size > 40) { const oldest = cache.keys().next().value; if (oldest) { const old = cache.get(oldest); cache.delete(oldest); void old?.then(map => Object.values(map).forEach(url => url.startsWith('blob:') && URL.revokeObjectURL(url))); } }
+  return pending;
+}
+/** Development aid: zone anchors of one base frame. */
+export async function frameAnchors(url: string) { const frame = (await loadBase()).find(candidate => candidate.url === url); return frame && { hairTop: frame.hairTop, hairBottom: frame.hairBottom, hairLeft: frame.hairLeft, hairRight: frame.hairRight, eyes: frame.eyes }; }
+
+const single = new Map<string, Promise<string>>();
+/** One frame of a look as a data URL, for previews and thumbnails (cheap: no other frames are painted). */
+export function lookFrame(look: AvatarLook, file = 'south.png'): Promise<string> {
+  const key = `${lookKey(look)}:${file}`;
+  let pending = single.get(key);
+  if (!pending) {
+    pending = loadBase().then(frames => { const frame = frames.find(candidate => candidate.url.endsWith(`/${file}`)) ?? frames[0]; return paintFrame(frame, look).toDataURL('image/png'); });
+    single.set(key, pending);
+    if (single.size > 400) single.delete(single.keys().next().value!);
+  }
+  return pending;
+}

@@ -162,7 +162,8 @@ El modelo de colisiones se compara baldosa por baldosa con el mapa de referencia
 - [x] Vista de reunión a pantalla completa con los participantes en mosaico
 - [x] Canales de chat al estilo de Slack y mensajes directos
 - [x] Calendario y actividad
-- [ ] Vestuario del avatar con ropa y peinados
+- [x] Editor de avatar: colores de piel, pelo, ropa y zapatos, gafas y sombreros
+- [ ] Más peinados y conjuntos
 - [x] Interfaz en inglés y en español
 - [ ] Más idiomas para la interfaz
 - [ ] Cuentas, permisos y una guía de despliegue público segura (HTTPS, TURN/SFU)
