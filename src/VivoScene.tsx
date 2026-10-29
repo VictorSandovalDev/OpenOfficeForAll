@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DoorOpen, Headphones, Sofa } from 'lucide-react';
+import { floorMaterial, playStep } from './footsteps';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import type { EditItem, FocusRoom, OfficeObject, Participant, Facing } from './types';
 import './scene.css';
@@ -414,6 +415,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
           const from = tileCenter(tile.current), to = tileCenter(next);
           tile.current = next;
           step.current = { from, to, startedAt: time, duration: keys.current.has('shift') ? RUN_STEP_MS : STEP_MS };
+          playStep(floorMaterial(to), keys.current.has('shift'));
           setMotion({ facing: facing ?? facingFor(to.x - from.x, to.y - from.y), moving: true, frame: walkFrameAt(time) });
           wasMoving = true;
         } else {

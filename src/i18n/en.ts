@@ -456,4 +456,5 @@ export const EN: Record<string, string> = {
   "Solo los administradores pueden cambiar el nombre.": "Only admins can rename this space.",
   "No se pudo cambiar el nombre.": "The name could not be changed.",
   "Cambiar nombre": "Rename",
+  "Sonido de pasos al caminar": "Footstep sounds when walking",
 };

@@ -18,3 +18,9 @@ reads like the reference office: the same kind of object, the same orientation, 
 reference colours as the palette and the exact footprint. Every pixel is newly
 generated; no reference sprite was used as an input image. Chair side views are drawn
 facing right and mirrored for the left.
+
+## Third pass (2026-10-29)
+
+Trees, the fish tank, the wooden chair, the side views of the chairs and the laptop were drawn again in our own style:
+generic descriptions, our approved pieces as style guides and only the footprint size. Nothing from the reference was used as
+input. Chair side views are flat profiles facing right, mirrored for the left.
