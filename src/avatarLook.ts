@@ -2,8 +2,15 @@ import { AVATAR_FRAME_URLS } from './avatarSprite';
 
 /** An avatar look: a colour per body zone plus accessories. Zones are found in the base sprite by colour and
     position, and recoloured keeping the pixel art's own shading, so every pose and walk frame stays consistent. */
-export type AvatarLook = { skin: number; hair: number; top: number; bottom: number; shoes: number; glasses: number; hat: number };
-export const DEFAULT_LOOK: AvatarLook = { skin: 1, hair: 1, top: 0, bottom: 0, shoes: 0, glasses: 0, hat: 0 };
+export type AvatarLook = { body: number; skin: number; hair: number; top: number; bottom: number; shoes: number; glasses: number; hat: number };
+export const DEFAULT_LOOK: AvatarLook = { body: 0, skin: 1, hair: 1, top: 0, bottom: 0, shoes: 0, glasses: 0, hat: 0 };
+/** Base characters. Frames are always looked up by the first body's file names; other bodies swap the folder. */
+export const BODIES = [
+  { label: 'Cuerpo masculino', root: '/assets/pixel/cliente-avatar', hairRows: 11, ref: { skin: '#fac08a', hair: '#361c10', top: '#458791', bottom: '#192436', shoes: '#737a7b' } },
+  { label: 'Cuerpo femenino', root: '/assets/pixel/cliente-avatar-mujer', hairRows: 27, ref: { skin: '#fcbe82', hair: '#412317', top: '#3f808e', bottom: '#213249', shoes: '#6c6864' } },
+] as const;
+const CANONICAL_ROOT = BODIES[0].root;
+const bodyUrl = (url: string, body: number) => url.replace(CANONICAL_ROOT, BODIES[body]?.root ?? CANONICAL_ROOT);
 type Zone = 'skin' | 'hair' | 'top' | 'bottom' | 'shoes';
 
 /** Palettes; index 0 of each is the base sprite's own colour, except skin which follows the reference's five tones. */
@@ -17,16 +24,18 @@ export const PALETTES: Record<Zone, string[]> = {
 export const GLASSES = ['Sin gafas', 'Redondas', 'Cuadradas', 'De sol'];
 export const HATS = ['Sin sombrero', 'Gorra', 'Gorro de lana'];
 const HAT_COLORS = ['#d14b3d', '#3d6fd1', '#2b2b30'];
-const REF: Record<Zone, string> = { skin: '#fac08a', hair: '#361c10', top: '#458791', bottom: '#192436', shoes: '#737a7b' };
 
-export const lookKey = (look: AvatarLook) => [look.skin, look.hair, look.top, look.bottom, look.shoes, look.glasses, look.hat].join('.');
+export const lookKey = (look: AvatarLook) => [look.body, look.skin, look.hair, look.top, look.bottom, look.shoes, look.glasses, look.hat].join('.');
 export const isDefaultLook = (look: AvatarLook) => lookKey(look) === lookKey(DEFAULT_LOOK);
+/** The body's own colours and no accessories: its original files are used as they are. */
+const isBaseColours = (look: AvatarLook) => look.glasses === 0 && look.hat === 0 && look.skin === DEFAULT_LOOK.skin && look.hair === DEFAULT_LOOK.hair && look.top === 0 && look.bottom === 0 && look.shoes === 0;
 export function sanitizeLook(value: unknown): AvatarLook {
   const source = value && typeof value === 'object' ? value as Record<string, unknown> : {};
-  const pick = (key: keyof AvatarLook, size: number) => { const n = Number(source[key]); return Number.isInteger(n) && n >= 0 && n < size ? n : DEFAULT_LOOK[key]; };
-  return { skin: pick('skin', PALETTES.skin.length), hair: pick('hair', PALETTES.hair.length), top: pick('top', PALETTES.top.length), bottom: pick('bottom', PALETTES.bottom.length), shoes: pick('shoes', PALETTES.shoes.length), glasses: pick('glasses', GLASSES.length), hat: pick('hat', HATS.length) };
+  const pick = (key: keyof AvatarLook, size: number): number => { const n = Number(source[key]); return Number.isInteger(n) && n >= 0 && n < size ? n : DEFAULT_LOOK[key]; };
+  return { body: pick('body', BODIES.length), skin: pick('skin', PALETTES.skin.length), hair: pick('hair', PALETTES.hair.length), top: pick('top', PALETTES.top.length), bottom: pick('bottom', PALETTES.bottom.length), shoes: pick('shoes', PALETTES.shoes.length), glasses: pick('glasses', GLASSES.length), hat: pick('hat', HATS.length) };
 }
-export const randomLook = (): AvatarLook => ({
+export const randomLook = (body = 0): AvatarLook => ({
+  body,
   skin: Math.floor(Math.random() * PALETTES.skin.length), hair: Math.floor(Math.random() * PALETTES.hair.length), top: Math.floor(Math.random() * PALETTES.top.length),
   bottom: Math.floor(Math.random() * PALETTES.bottom.length), shoes: Math.floor(Math.random() * PALETTES.shoes.length), glasses: Math.random() < .35 ? 1 + Math.floor(Math.random() * 3) : 0, hat: Math.random() < .25 ? 1 + Math.floor(Math.random() * 2) : 0,
 });
@@ -56,15 +65,15 @@ function toHsv(r: number, g: number, b: number): HSL {
   return [h * 60, max === 0 ? 0 : d / max, max];
 }
 /** Moves a pixel from the zone's reference colour to the target colour, keeping its relative light and shade. */
-function shift(r: number, g: number, b: number, zone: Zone, target: string): [number, number, number] {
-  const [h0, s0, l0] = toHsl(...hex(REF[zone])), [h, s, l] = toHsl(r, g, b), [th, ts, tl] = toHsl(...hex(target));
+function shift(r: number, g: number, b: number, zone: Zone, target: string, ref: string): [number, number, number] {
+  const [h0, s0, l0] = toHsl(...hex(ref)), [h, s, l] = toHsl(r, g, b), [th, ts, tl] = toHsl(...hex(target));
   const nl = l <= l0 ? tl * (l / l0) : tl + (1 - tl) * ((l - l0) / (1 - l0)) * .85;
   const ns = s0 > .05 ? ts * Math.min(1.25, s / s0) : ts;
   return toRgb(th + (h - h0) * .5, ns, nl);
 }
 
 // --- zones --------------------------------------------------------------------------------------------------
-type Frame = { url: string; width: number; height: number; data: Uint8ClampedArray; zones: (Zone | 'hairdark' | 'outline' | null)[]; facing: string; hairTop: number; hairBottom: number; hairLeft: number; hairRight: number; eyes: number[][] };
+type Frame = { body: number; url: string; width: number; height: number; data: Uint8ClampedArray; zones: (Zone | 'hairdark' | 'outline' | null)[]; facing: string; hairTop: number; hairBottom: number; hairLeft: number; hairRight: number; eyes: number[][] };
 function classify(r: number, g: number, b: number, y: number, foot: number): Zone | 'outline' | null {
   const [h, s, v] = toHsv(r, g, b);
   if (v < .09) return 'outline';
@@ -74,9 +83,10 @@ function classify(r: number, g: number, b: number, y: number, foot: number): Zon
   if (h <= 45 || h >= 340) return (v >= .62 && s < .75) || (v >= .6 && s >= .75 && h > 12) ? 'skin' : 'hair';
   return null;
 }
-let base: Promise<Frame[]> | null = null;
-function loadBase(): Promise<Frame[]> {
-  base ??= Promise.all(AVATAR_FRAME_URLS.map(url => new Promise<Frame>((resolve, reject) => {
+const bases = new Map<number, Promise<Frame[]>>();
+function loadBase(body = 0): Promise<Frame[]> {
+  if (bases.has(body)) return bases.get(body)!;
+  const base = Promise.all(AVATAR_FRAME_URLS.map(url => new Promise<Frame>((resolve, reject) => {
     const image = new Image();
     image.onload = () => {
       const canvas = document.createElement('canvas'); canvas.width = image.width; canvas.height = image.height;
@@ -100,7 +110,8 @@ function loadBase(): Promise<Frame[]> {
       let hairBottom = -1, hairLeft = width, hairRight = -1;
       for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
         if (zones[at(x, y)] !== 'hair') continue;
-        if (y > hairTop + 11) { zones[at(x, y)] = 'skin'; continue; }
+        if (y > hairTop + BODIES[body].hairRows) { zones[at(x, y)] = 'skin'; continue; }
+        if (y > hairTop + 11) continue; // long hair below the head is hair, but the head box (hats, glasses) stays the head
         hairBottom = Math.max(hairBottom, y); hairLeft = Math.min(hairLeft, x); hairRight = Math.max(hairRight, x);
       }
       const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < width && y < height && data[at(x, y) * 4 + 3] > 128;
@@ -118,26 +129,35 @@ function loadBase(): Promise<Frame[]> {
       }
       const name = url.split('/').pop() ?? '';
       const facing = name.includes('north') ? 'north' : name.includes('east') ? 'east' : name.includes('west') ? 'west' : 'south';
-      resolve({ url, width, height, data, zones, facing, hairTop, hairBottom, hairLeft, hairRight, eyes });
+      resolve({ body, url, width, height, data, zones, facing, hairTop, hairBottom, hairLeft, hairRight, eyes });
     };
-    image.onerror = reject; image.src = url;
+    image.onerror = reject; image.src = bodyUrl(url, body);
   })));
+  bases.set(body, base);
   return base;
 }
 
 // --- accessories --------------------------------------------------------------------------------------------
 type Paint = (x: number, y: number, color: string) => void;
 function drawGlasses(frame: Frame, style: number, paint: Paint) {
-  if (!style || frame.facing === 'north' || !frame.eyes.length) return;
+  if (!style || frame.facing === 'north' || (!frame.eyes.length && frame.facing !== 'south')) return;
   const xs = [...new Set(frame.eyes.map(([x]) => x))].sort((a, b) => a - b);
   const clusters: number[][] = [];
   for (const x of xs) { const last = clusters.at(-1); if (last && x - last[last.length - 1] <= 1) last.push(x); else clusters.push([x]); }
-  const eyeRows = frame.eyes.map(([, y]) => y), eyeY = Math.round(eyeRows.reduce((a, b) => a + b, 0) / eyeRows.length);
+  const eyeRows = frame.eyes.map(([, y]) => y);
+  let southEyeY: number | null = null;
   const frameColor = style === 3 ? '#151518' : style === 2 ? '#2a2a33' : '#1f1a1d';
   const lens = style === 3 ? '#1d2230' : null;
   const lenses = clusters.filter(cluster => cluster.length >= 2).sort((a, b) => b.length - a.length).slice(0, 2).sort((a, b) => a[0] - b[0]).map(cluster => ({ left: cluster[0] - 1, right: cluster[cluster.length - 1] + 1 }));
+  // Facing the viewer, both bodies have their eyes 4 px either side of the face's centre, 13 rows below the top of the hair.
+  if (frame.facing === 'south') {
+    const mid = Math.round((frame.hairLeft + frame.hairRight) / 2) + 1; // the eyes sit one pixel right of the hair's centre
+    lenses.length = 0; lenses.push({ left: mid - 6, right: mid - 2 }, { left: mid + 2, right: mid + 6 });
+    southEyeY = frame.hairTop + 13;
+  }
+  const eyeY = southEyeY ?? Math.round(eyeRows.reduce((a, b) => a + b, 0) / Math.max(1, eyeRows.length));
   for (const { left, right } of lenses) {
-    const top = eyeY - 2, bottom = eyeY + 2;
+    const top = eyeY - 1, bottom = eyeY + 2;
     for (let x = left; x <= right; x++) for (let y = top; y <= bottom; y++) {
       const edge = x === left || x === right || y === top || y === bottom;
       const corner = style === 1 && (x === left || x === right) && (y === top || y === bottom);
@@ -181,7 +201,7 @@ function paintFrame(frame: Frame, look: AvatarLook): HTMLCanvasElement {
     for (let i = 0; i < frame.zones.length; i++) {
       const zone = frame.zones[i]; if (!zone || zone === 'outline') continue;
       const p = i * 4;
-      const [r, g, b] = zone === 'hairdark' ? (() => { const [h, s, l] = toHsl(...hex(targets.hair)); return toRgb(h, s, l * .45); })() : targets[zone] === REF[zone] ? [out[p], out[p + 1], out[p + 2]] : shift(out[p], out[p + 1], out[p + 2], zone, targets[zone]);
+      const [r, g, b] = zone === 'hairdark' ? (() => { const [h, s, l] = toHsl(...hex(targets.hair)); return toRgb(h, s, l * .45); })() : targets[zone] === BODIES[frame.body].ref[zone] ? [out[p], out[p + 1], out[p + 2]] : shift(out[p], out[p + 1], out[p + 2], zone, targets[zone], BODIES[frame.body].ref[zone]);
       out[p] = r; out[p + 1] = g; out[p + 2] = b;
     }
     const canvas = document.createElement('canvas'); canvas.width = frame.width; canvas.height = frame.height;
@@ -198,9 +218,10 @@ const cache = new Map<string, Promise<Record<string, string>>>();
 export function lookFrames(look: AvatarLook): Promise<Record<string, string>> {
   const key = lookKey(look);
   if (isDefaultLook(look)) return Promise.resolve(Object.fromEntries(AVATAR_FRAME_URLS.map(url => [url, url])));
+  if (isBaseColours(look)) return Promise.resolve(Object.fromEntries(AVATAR_FRAME_URLS.map(url => [url, bodyUrl(url, look.body)])));
   let pending = cache.get(key);
   if (pending) return pending;
-  pending = loadBase().then(frames => Promise.all(frames.map(frame => new Promise<[string, string]>(resolve => {
+  pending = loadBase(look.body).then(frames => Promise.all(frames.map(frame => new Promise<[string, string]>(resolve => {
     paintFrame(frame, look).toBlob(blob => resolve([frame.url, blob ? URL.createObjectURL(blob) : frame.url]), 'image/png');
   })))).then(entries => Object.fromEntries(entries));
   cache.set(key, pending);
@@ -216,7 +237,7 @@ export function lookFrame(look: AvatarLook, file = 'south.png'): Promise<string>
   const key = `${lookKey(look)}:${file}`;
   let pending = single.get(key);
   if (!pending) {
-    pending = loadBase().then(frames => { const frame = frames.find(candidate => candidate.url.endsWith(`/${file}`)) ?? frames[0]; return paintFrame(frame, look).toDataURL('image/png'); });
+    pending = loadBase(look.body).then(frames => { const frame = frames.find(candidate => candidate.url.endsWith(`/${file}`)) ?? frames[0]; return paintFrame(frame, look).toDataURL('image/png'); });
     single.set(key, pending);
     if (single.size > 400) single.delete(single.keys().next().value!);
   }

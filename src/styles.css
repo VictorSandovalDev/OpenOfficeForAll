@@ -630,3 +630,16 @@ button .avatar { pointer-events: none; }
 .link-button { background: transparent; color: var(--accent); padding: 0; font-size: 12px; text-decoration: underline; }
 .status-menu-signout { position: absolute; top: 14px; right: 46px; height: 28px; padding: 0 10px; border-radius: 8px; background: #ffffff08; color: #ffffffcc; font-size: 12px; }
 .welcome-modal label + label { margin-top: 12px; }
+
+/* Interactive objects: hint and window. */
+.interact-hint { position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); z-index: 7; display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; background: #171717e6; color: #fff; font-size: 13px; box-shadow: 0 4px 16px #0005; }
+.interact-hint kbd { min-width: 20px; height: 20px; display: inline-grid; place-items: center; border-radius: 5px; background: #f5c842; color: #1b1b1b; font-size: 11px; font-weight: 700; border: 0; }
+.interaction-window { width: min(1100px, calc(100vw - 48px)); height: min(760px, calc(100vh - 48px)); display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; background: var(--panel); box-shadow: var(--shadow); }
+.interaction-window.note { width: min(560px, calc(100vw - 48px)); height: auto; max-height: calc(100vh - 48px); }
+.interaction-window header { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--border); }
+.interaction-window header strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.interaction-window header a { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 4px 10px; border-radius: 8px; font-size: 12px; text-decoration: none; color: var(--text); }
+.interaction-window iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+.interaction-note { padding: 20px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow: auto; }
+.interaction-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.modal textarea { width: 100%; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 8px 10px; font: inherit; font-size: 13px; resize: vertical; }

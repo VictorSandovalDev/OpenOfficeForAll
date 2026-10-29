@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Dices, Download, RotateCcw, RotateCw, X } from 'lucide-react';
-import { GLASSES, HATS, PALETTES, lookFrame, randomLook, type AvatarLook } from './avatarLook';
+import { BODIES, GLASSES, HATS, PALETTES, lookFrame, randomLook, type AvatarLook } from './avatarLook';
 import { t } from './i18n';
 
-type Category = 'skin' | 'hair' | 'top' | 'bottom' | 'shoes' | 'glasses' | 'hat';
+type Category = 'body' | 'skin' | 'hair' | 'top' | 'bottom' | 'shoes' | 'glasses' | 'hat';
 const CATEGORIES: { id: Category; label: string; crop: [number, number, number, number] }[] = [
+  { id: 'body', label: 'Cuerpo', crop: [30, 20, 32, 50] },
   { id: 'skin', label: 'Piel', crop: [34, 22, 25, 24] },
   { id: 'hair', label: 'Pelo', crop: [34, 20, 25, 24] },
   { id: 'top', label: 'Parte superior', crop: [32, 42, 29, 18] },
@@ -33,12 +34,12 @@ function Option({ look, category, selected, label, onPick }: { look: AvatarLook;
 /** The reference's avatar editor: categories, option grid, colour swatches, live preview, randomise and download. */
 export default function AvatarEditor({ initial, name, onCancel, onDone }: { initial: AvatarLook; name: string; onCancel: () => void; onDone: (look: AvatarLook) => void }) {
   const [look, setLook] = useState(initial);
-  const [category, setCategory] = useState<Category>('skin');
+  const [category, setCategory] = useState<Category>('body');
   const [facing, setFacing] = useState(0);
   const preview = useFrame(look, FACINGS[facing]);
   const active = CATEGORIES.find(item => item.id === category)!;
-  const count = category === 'glasses' ? GLASSES.length : category === 'hat' ? HATS.length : PALETTES[category].length;
-  const optionLabel = (index: number) => category === 'glasses' ? t(GLASSES[index]) : category === 'hat' ? t(HATS[index]) : `${t(active.label)} ${index + 1}`;
+  const count = category === 'body' ? BODIES.length : category === 'glasses' ? GLASSES.length : category === 'hat' ? HATS.length : PALETTES[category].length;
+  const optionLabel = (index: number) => category === 'body' ? t(BODIES[index].label) : category === 'glasses' ? t(GLASSES[index]) : category === 'hat' ? t(HATS[index]) : `${t(active.label)} ${index + 1}`;
   const changed = JSON.stringify(look) !== JSON.stringify(initial);
   const download = () => { if (!preview) return; const link = document.createElement('a'); link.href = preview; link.download = `${name || 'avatar'}.png`; link.click(); };
   useEffect(() => { const key = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.stopPropagation(); onCancel(); } }; window.addEventListener('keydown', key, true); return () => window.removeEventListener('keydown', key, true); }, [onCancel]);
@@ -49,7 +50,7 @@ export default function AvatarEditor({ initial, name, onCancel, onDone }: { init
       <nav className="look-categories" aria-label={t('Partes del avatar')}>{CATEGORIES.map(item => <CategoryButton key={item.id} item={item} look={look} active={item.id === category} onPick={() => setCategory(item.id)} />)}</nav>
       <section className="look-options-panel">
         <div className="look-options">{Array.from({ length: count }, (_, index) => <Option key={index} look={{ ...look, [category]: index }} category={active} selected={look[category] === index} label={optionLabel(index)} onPick={() => setLook(value => ({ ...value, [category]: index }))} />)}</div>
-        {category !== 'glasses' && category !== 'hat' && <div className="look-swatches" role="radiogroup" aria-label={t('Color')}>{PALETTES[category].map((color, index) => <button type="button" key={color} role="radio" aria-checked={look[category] === index} aria-label={`${t('Color')} ${index + 1}`} className={look[category] === index ? 'is-selected' : ''} style={{ background: color }} onClick={() => setLook(value => ({ ...value, [category]: index }))} />)}</div>}
+        {category !== 'glasses' && category !== 'hat' && category !== 'body' && <div className="look-swatches" role="radiogroup" aria-label={t('Color')}>{PALETTES[category].map((color, index) => <button type="button" key={color} role="radio" aria-checked={look[category] === index} aria-label={`${t('Color')} ${index + 1}`} className={look[category] === index ? 'is-selected' : ''} style={{ background: color }} onClick={() => setLook(value => ({ ...value, [category]: index }))} />)}</div>}
       </section>
       <section className="look-preview" aria-label={t('Vista previa')}>
         <button type="button" className="look-tool top" aria-label={t('Descargar imagen')} title={t('Descargar imagen')} onClick={download}><Download size={16} /></button>
@@ -58,7 +59,7 @@ export default function AvatarEditor({ initial, name, onCancel, onDone }: { init
           {preview && <img src={preview} alt={t('Vista previa del avatar')} />}
         </div>
         <div className="look-rotate"><button type="button" className="look-tool" aria-label={t('Girar a la izquierda')} title={t('Girar a la izquierda')} onClick={() => setFacing(value => (value + 3) % 4)}><RotateCcw size={15} /></button><button type="button" className="look-tool" aria-label={t('Girar a la derecha')} title={t('Girar a la derecha')} onClick={() => setFacing(value => (value + 1) % 4)}><RotateCw size={15} /></button></div>
-        <button type="button" className="look-tool bottom" aria-label={t('Aleatorio')} title={t('Aleatorio')} onClick={() => setLook(randomLook())}><Dices size={16} /></button>
+        <button type="button" className="look-tool bottom" aria-label={t('Aleatorio')} title={t('Aleatorio')} onClick={() => setLook(randomLook(look.body))}><Dices size={16} /></button>
       </section>
     </div>
     <footer><button type="button" className="secondary" onClick={onCancel}>{t('Cancelar')}</button><button type="button" className="primary" disabled={!changed} onClick={() => onDone(look)}>{t('Listo')}</button></footer>

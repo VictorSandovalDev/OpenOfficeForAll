@@ -7,7 +7,7 @@ import { DOORWAYS, WALLS } from '../shared/vivo-geometry.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { asMapObject, baseAsEditorObject, catalogEntry, effectiveBaseObjects, type Overrides } from '../shared/office-objects.js';
 import { MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
-import type { Meetings } from './types';
+import type { Interaction, Meetings } from './types';
 import { blockedWith, canStep, findTilePath, nearestFreeTile, RUN_STEP_MS, sameTile, STEP_MS, tileCenter, tileOf, type Blocked, type Point, type Tile } from './navigation';
 import { FloorPatterns, floorKey, floorPatternId } from './sprites/floors';
 import { DoorwayPiece, WallPiece, WALL_HEIGHT } from './sprites/walls';
@@ -23,7 +23,7 @@ type Props = {
   navigationTarget?: Point & { nonce: number }; resetViewKey?: number;
   onMove: (x: number, y: number) => void; onPlace: (x: number, y: number) => void;
   onSelect: (id: string) => void; onSelectObject: (id: string | null) => void; onMoveObject: (id: string, x: number, y: number) => void; onRemove: (id: string) => void;
-  meetings: Meetings; areaNames: Record<string, string>; reactions?: { participantId: string; emoji: string }[]; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
+  meetings: Meetings; areaNames: Record<string, string>; interactions?: Record<string, Interaction>; onNearInteractive?: (id: string | null) => void; onInteract?: (id: string) => void; reactions?: { participantId: string; emoji: string }[]; seatTarget?: { seatId: string; nonce: number }; onAreaClick: (areaId: string) => void;
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
@@ -127,7 +127,7 @@ function Ghost({ item, tile }: { item: EditItem; tile: Tile }) {
   </g>;
 }
 
-export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, areaNames = {}, reactions = [], seatTarget, onAreaClick }: Props) {
+export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
   const [hoverTile, setHoverTile] = useState<Tile | null>(null);
   const editingMode = editorOpen || editItem !== null || selectedObject !== null;
@@ -419,6 +419,20 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
+  // Interactive objects: the one next to you glows and opens with X, as in the reference.
+  const interactive = useMemo(() => {
+    const all = [...baseObjects, ...objects.map(object => asMapObject(object) as MapObjectData)];
+    return all.filter(object => interactions[object.id.replace(/^object:/, '')] || interactions[object.id]).map(object => ({ id: object.id.replace(/^object:/, ''), object, tiles: (object.blocks?.length ? object.blocks : [[Math.floor(object.x / TILE), Math.floor((object.y - 1) / TILE)]]) as number[][] }));
+  }, [baseObjects, objects, interactions]);
+  const selfTile = self ? tileOf(self.seatId ? self : local) : null;
+  const nearInteractive = !editingMode && selfTile ? interactive.find(item => item.tiles.some(([tx, ty]) => Math.max(Math.abs(tx - selfTile.tx), Math.abs(ty - selfTile.ty)) <= 1)) ?? null : null;
+  const nearId = nearInteractive?.id ?? null;
+  useEffect(() => { onNearInteractive?.(nearId); }, [nearId]);
+  const interactRef = useRef<{ id: string | null; open?: (id: string) => void }>({ id: null }); interactRef.current = { id: nearId, open: onInteract };
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => { if (event.key.toLowerCase() === 'x' && !event.repeat && !typing(event.target) && !event.metaKey && !event.ctrlKey && interactRef.current.id) { event.preventDefault(); interactRef.current.open?.(interactRef.current.id); } };
+    window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
+  }, []);
   const occupiedSeats = new Map(participants.filter(person => person.seatId).map(person => [person.seatId!, person]));
   const seatObjectY = (person: Participant) => {
     const seat = person.seatId ? seats.find(candidate => candidate.id === person.seatId) : undefined;
@@ -473,6 +487,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       {editingMode && <g pointerEvents="none"><rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill="#0b1020" fillOpacity=".28" /><rect x="0" y="0" width={WORLD.width} height={WORLD.height} fill="url(#edit-grid)" /></g>}
       {destination && <g pointerEvents="none" transform={`translate(${destination.tx * TILE} ${destination.ty * TILE})`}><rect x="2" y="2" width="28" height="28" rx="3" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" /></g>}
       <g shapeRendering="crispEdges">{layers.map(layer => <g key={layer.key}>{layer.node}</g>)}</g>
+      {nearInteractive && <g pointerEvents="none" className="scene-interactive"><rect x={nearInteractive.object.x - nearInteractive.object.originX - 2} y={nearInteractive.object.y - nearInteractive.object.originY - 2} width={nearInteractive.object.w + 4} height={nearInteractive.object.h + 4} rx="3" fill="#f5c84222" stroke="#f5c842" strokeWidth="2" /></g>}
       {editItem && hoverTile && <Ghost item={editItem} tile={hoverTile} />}
       {dragTile && <Ghost item={dragTile.item} tile={dragTile.tile} />}
       {!editingMode && <g>{seats.map(seat => { const occupant = occupiedSeats.get(seat.id); return <SeatTarget key={seat.id} seat={seat} occupiedBy={occupant?.name} own={occupant?.id === selfId} enabled={!!self && self.status !== 'away'} onSit={() => requestSeat(seat)} />; })}</g>}

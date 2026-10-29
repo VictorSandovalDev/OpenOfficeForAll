@@ -24,12 +24,22 @@ const MAX_CHANNELS = 40;
 const MAX_EVENTS = 300;
 const REACTIONS = new Set(['👍', '❤️', '😂', '🎉', '👏', '😮', '🙌', '🔥']);
 /** Avatar looks: one palette index per zone plus accessories (sizes match src/avatarLook.ts). */
-const LOOK_SIZES = { skin: 5, hair: 9, top: 11, bottom: 8, shoes: 6, glasses: 4, hat: 3 };
+const LOOK_SIZES = { body: 2, skin: 5, hair: 9, top: 11, bottom: 8, shoes: 6, glasses: 4, hat: 3 };
 const sanitizeLook = (value) => {
   if (!value || typeof value !== 'object') return undefined;
   const look = {};
   for (const [key, size] of Object.entries(LOOK_SIZES)) { const n = Number(value[key]); look[key] = Number.isInteger(n) && n >= 0 && n < size ? n : (key === 'skin' || key === 'hair' ? 1 : 0); }
   return look;
+};
+/** What happens when someone presses X next to an object: an embedded website or a note. */
+const cleanInteraction = (value) => {
+  if (!value || typeof value !== 'object') return null;
+  const title = cleanText(value.title, 80);
+  if (value.type === 'link') {
+    try { const url = new URL(String(value.url)); if (!['https:', 'http:'].includes(url.protocol)) return null; return { type: 'link', url: url.href.slice(0, 2000), ...(title ? { title } : {}) }; } catch { return null; }
+  }
+  if (value.type === 'note') { const text = cleanText(value.text, 4000); return text ? { type: 'note', text, ...(title ? { title } : {}) } : null; }
+  return null;
 };
 const isoTime = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : null;
 const USER_ID = /^[A-Za-z0-9_-]{8,64}$/;
@@ -175,13 +185,16 @@ export async function startServer({
       return room;
     }
     if (rooms.size >= maxRooms) return null;
-    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
+    const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
         if (raw.length > 256_000) return;
         const saved = JSON.parse(raw);
         if (!Array.isArray(saved.objects)) return;
+        if (saved.interactions && typeof saved.interactions === 'object') {
+          for (const [id, interaction] of Object.entries(saved.interactions).slice(0, 500)) { const clean = cleanInteraction(interaction); if (clean && typeof id === 'string' && id.length <= 64) room.interactions[id] = clean; }
+        }
         if (saved.areaNames && typeof saved.areaNames === 'object') {
           for (const [id, name] of Object.entries(saved.areaNames).slice(0, 100)) if (meetingRoom(id) && displayName(name)) room.areaNames[id] = displayName(name);
         }
@@ -237,7 +250,7 @@ export async function startServer({
   }
 
   function persistObjects(room, socket) {
-    const snapshot = JSON.stringify({ version: 2, objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
+    const snapshot = JSON.stringify({ version: 2, objects: room.objects, overrides: room.overrides, areaNames: room.areaNames, interactions: room.interactions });
     room.writeQueue = room.writeQueue.then(async () => {
       await mkdir(dataDir, { recursive: true });
       const destination = join(dataDir, `${room.slug}.json`);
@@ -378,7 +391,7 @@ export async function startServer({
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
         persistChat(room);
-        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
+        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames, interactions: room.interactions });
         broadcastParticipants(room);
         return;
       }
@@ -546,7 +559,7 @@ export async function startServer({
           if (problem) return error(socket, 'invalid_object', problem);
           room.objects = [...room.objects, addedObject];
           persistObjects(room, socket);
-          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
           break;
         }
         case 'object:update': {
@@ -561,7 +574,7 @@ export async function startServer({
             if (problem) return error(socket, 'invalid_object', problem);
             room.overrides = nextOverrides;
             persistObjects(room, socket);
-            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
             break;
           }
           if (isBaseObjectId(payload.id)) {
@@ -578,7 +591,7 @@ export async function startServer({
             if (problem) return error(socket, 'invalid_object', problem);
             room.overrides = nextOverrides;
             persistObjects(room, socket);
-            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
             break;
           }
           const index = room.objects.findIndex((object) => object.id === payload.id);
@@ -595,7 +608,16 @@ export async function startServer({
           if (problem) return error(socket, 'invalid_object', problem);
           room.objects = [...others.slice(0, index), updated, ...others.slice(index)];
           persistObjects(room, socket);
-          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
+          break;
+        }
+        case 'object:interaction': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
+          if (typeof payload.id !== 'string' || !(isBaseObjectId(payload.id) || room.objects.some((object) => object.id === payload.id))) return error(socket, 'invalid_object', 'Unknown object.');
+          if (payload.interaction === null) delete room.interactions[payload.id];
+          else { const clean = cleanInteraction(payload.interaction); if (!clean) return error(socket, 'invalid_object', 'Give a valid website address or a note.'); room.interactions[payload.id] = clean; }
+          persistObjects(room, socket);
+          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
           break;
         }
         case 'object:remove': {
@@ -610,7 +632,7 @@ export async function startServer({
             if (problem) return error(socket, 'invalid_object', problem);
             room.overrides = nextOverrides;
             persistObjects(room, socket);
-            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+            broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
             break;
           }
           const index = room.objects.findIndex((object) => object.id === payload.id);
@@ -625,7 +647,7 @@ export async function startServer({
             }
           }
           persistObjects(room, socket);
-          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides });
+          broadcast(room, { type: 'objects', objects: room.objects, overrides: room.overrides, interactions: room.interactions });
           if (stoodUp) broadcastParticipants(room);
           break;
         }

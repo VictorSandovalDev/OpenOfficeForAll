@@ -159,3 +159,18 @@ test('a map object can be reset to its exact original placement, as undo does', 
   const reset = await editor.next('objects');
   assert.equal(reset.overrides.b34830e2, undefined, 'reset removes the override entirely');
 });
+
+test('objects can open a website or a note, and only valid ones are kept', async t => {
+  const server = await fixture(t);
+  const editor = await connect(server.port, 'Editor');
+  editor.send({ type: 'object:interaction', id: '489f12f9', interaction: { type: 'link', url: 'https://example.org/board', title: 'Tablero' } });
+  const linked = await editor.next('objects');
+  assert.deepEqual(linked.interactions['489f12f9'], { type: 'link', url: 'https://example.org/board', title: 'Tablero' });
+  editor.send({ type: 'object:interaction', id: '489f12f9', interaction: { type: 'link', url: 'javascript:alert(1)' } });
+  assert.equal((await editor.next('error')).code, 'invalid_object', 'only http and https links');
+  editor.send({ type: 'object:interaction', id: '489f12f9', interaction: null });
+  assert.equal((await editor.next('objects')).interactions['489f12f9'], undefined);
+  await server.restart();
+  const later = await connect(server.port, 'Later');
+  assert.deepEqual(later.welcome.interactions, {});
+});
