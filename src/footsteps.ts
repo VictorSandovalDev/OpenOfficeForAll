@@ -18,6 +18,9 @@ export const setFootstepsEnabled = (on: boolean) => { try { localStorage.setItem
 let context: AudioContext | null = null;
 let noise: AudioBuffer | null = null;
 let left = false;
+let lastStepAt = 0;
+/** A tile is crossed six times a second, but people take about three steps a second: sound every other tile. */
+const STEP_GAP_MS = { walk: 300, run: 190 };
 function audio() {
   if (typeof AudioContext === 'undefined') return null;
   context ??= new AudioContext();
@@ -33,6 +36,9 @@ function audio() {
 /** One footstep on the given material; running steps are a little louder and shorter. */
 export function playStep(material: Material, running = false) {
   if (!footstepsEnabled()) return;
+  const nowMs = performance.now();
+  if (nowMs - lastStepAt < (running ? STEP_GAP_MS.run : STEP_GAP_MS.walk)) return;
+  lastStepAt = nowMs;
   const ctx = audio(); if (!ctx || !noise || ctx.state !== 'running') return;
   const now = ctx.currentTime, vary = 0.85 + Math.random() * 0.3;
   left = !left; // alternate feet: a touch higher and lower
