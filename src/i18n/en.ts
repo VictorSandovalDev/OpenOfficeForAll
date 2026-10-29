@@ -319,4 +319,10 @@ export const EN: Record<string, string> = {
   "Cambiar el color de la foto de perfil": "Change the profile picture colour",
   "Nombre completo": "Full name",
   "p. ej. Ana Pérez": "e.g. Jane Doe",
+  "Clave de invitación": "Invite key",
+  "La recibiste con el enlace de la oficina": "It came with the office link",
+  "La clave de invitación no es válida.": "That invite key is not valid.",
+  "Comparte este enlace con tu equipo para que entre a la oficina.": "Share this link with your team so they can join the office.",
+  "El enlace incluye la clave de invitación: compártelo solo con tu equipo.": "The link includes the invite key: share it only with your team.",
+  "Only office admins can change this.": "Only office admins can change this.",
 };

@@ -41,6 +41,8 @@ Open **http://127.0.0.1:5173**, type your name and walk in. Open a second tab wi
 
 > Requires Node.js 22.18 or newer (verified with 26.8). The realtime server listens on 127.0.0.1:3001.
 
+**Put it online for your team:** the [deployment guide](docs/DEPLOY.md) sets up HTTPS, an invite key, admin-only decorating and a TURN relay with one `docker compose up`.
+
 ---
 
 ## 🧭 Features
@@ -166,7 +168,9 @@ The collision model is compared tile by tile with the reference map, the tests w
 - [ ] More hairstyles and outfits
 - [x] Interface in English and Spanish
 - [ ] More interface languages
-- [ ] Accounts, permissions and a hardened public deployment guide (HTTPS, TURN/SFU)
+- [x] Public deployment: HTTPS, invite key, admin role, TURN relay, Docker
+- [ ] Personal accounts with passwords or single sign-on
+- [ ] Media server (SFU) for large meetings
 
 Want one of these sooner? Open an issue or send a pull request.
 
@@ -174,7 +178,7 @@ Want one of these sooner? Open an issue or send a pull request.
 
 ## ⚠️ Current limits
 
-This is a local-first project. There is no authentication, no edit permissions and no persistent chat history yet, so everyone in a room can decorate it. The server accepts local origins only. A public deployment still needs identity, authorisation, HTTPS, network configuration and a TURN/SFU service for calls across networks.
+Offices are protected by a shared invite key and an admin key; there are no personal accounts or passwords yet, and identities are the names people choose. Calls are peer to peer, which works well for small groups; a media server for large meetings is on the roadmap.
 
 ## 🎨 Art and credits
 

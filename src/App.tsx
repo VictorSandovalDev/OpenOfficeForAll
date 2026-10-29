@@ -19,6 +19,7 @@ import { getOfficeSeats } from '../shared/office-seats.js';
 import { ObjectThumb } from './sprites/objects';
 import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
 import { sanitizeLook, type AvatarLook } from './avatarLook';
+import { loadConfig, rememberKeysFromUrl, storedKey, storeKey, type OfficeConfig } from './config';
 import { language, LANGUAGES, locale, onLanguageChange, setLanguage, t, type Language } from './i18n';
 
 /** Looks are remembered per browser and name, so two people sharing a browser keep their own avatars. */
@@ -29,6 +30,8 @@ const STATUS_SOURCE: Record<Status, string> = { available: 'Activo', busy: 'Ocup
 /** Status labels, translated each time they are read so a language change applies at once. */
 const STATUS = Object.defineProperties({} as Record<Status, string>, Object.fromEntries(Object.entries(STATUS_SOURCE).map(([key, value]) => [key, { enumerable: true, get: () => t(value) }])));
 const room = new URLSearchParams(location.search).get('room')?.replace(/[^a-z0-9_-]/g, '').slice(0, 64) || 'mi-oficina';
+rememberKeysFromUrl(room);
+const isLocalHost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 type Theme = 'system' | 'light' | 'dark';
 type Panel = 'people' | 'chat' | 'calendar' | 'activity' | 'build' | 'meeting' | null;
 type Dialog = 'profile' | 'invite' | 'help' | 'settings' | null;
@@ -58,7 +61,10 @@ function StreamVideo({ stream, muted = false }: { stream: MediaStream; muted?: b
 }
 
 export default function App() {
-  const [profile, setProfile] = useState<{ name: string; color: string; avatar: AvatarLook } | null>(null);
+  const [profile, setProfile] = useState<{ name: string; color: string; avatar: AvatarLook; accessKey: string; adminKey: string } | null>(null);
+  const [config, setConfig] = useState<OfficeConfig>({ accessRequired: false, editPolicy: 'everyone', iceServers: [] });
+  const [accessKey, setAccessKey] = useState(() => storedKey('key', room));
+  useEffect(() => { void loadConfig().then(setConfig); }, []);
   const [look, setLook] = useState<AvatarLook>(() => readLook(localStorage.getItem('office-name') || ''));
   const [lookEditor, setLookEditor] = useState(false);
   const [statusMenu, setStatusMenu] = useState(false);
@@ -112,6 +118,8 @@ export default function App() {
   const dialogRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const office = useOffice(room, profile);
+  const canEdit = config.editPolicy === 'everyone' || office.role === 'admin';
+  useEffect(() => { if (office.accessDenied) { setProfile(null); storeKey('key', room, ''); setAccessKey(''); } }, [office.accessDenied]);
   const store = (key: string) => `office-${key}-${office.userId}`;
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [lastRead, setLastRead] = useState<Record<string, string>>({});
@@ -276,12 +284,13 @@ export default function App() {
   function join(e: React.FormEvent) {
     e.preventDefault(); if (!name.trim()) return;
     const saved = readLook(name); setLook(saved);
-    localStorage.setItem('office-name', name.trim()); localStorage.setItem('office-color', color); setProfile({ name: name.trim(), color, avatar: saved });
+    localStorage.setItem('office-name', name.trim()); localStorage.setItem('office-color', color); storeKey('key', room, accessKey.trim());
+    setProfile({ name: name.trim(), color, avatar: saved, accessKey: accessKey.trim(), adminKey: storedKey('admin', room) });
   }
   function openPanel(value: Panel) { setPanel(old => old === value ? null : value); if (value !== 'build') { setEditItem(null); setSelectedObject(null); } setMoreOpen(false); }
   function saveProfile(e: React.FormEvent) {
     e.preventDefault(); if (!name.trim()) return;
-    setProfile({ name: name.trim(), color, avatar: look }); office.send({ type: 'profile', name: name.trim(), color, avatar: look });
+    if (profile) setProfile({ ...profile, name: name.trim(), color, avatar: look }); office.send({ type: 'profile', name: name.trim(), color, avatar: look });
     try { localStorage.setItem(lookStorageKey(name), JSON.stringify(look)); } catch { /* storage unavailable */ }
     localStorage.setItem('office-name', name.trim()); localStorage.setItem('office-color', color); setDialog(null);
   }
@@ -290,10 +299,11 @@ export default function App() {
     else if (conversation.kind === 'dm') office.send({ type: 'chat', channel: 'dm', to: conversation.userId, text: value });
     else office.send({ type: 'chat', channel: 'nearby', text: value });
   }
+  const inviteLink = () => `${location.origin}/?room=${encodeURIComponent(room)}${profile?.accessKey ? `&key=${encodeURIComponent(profile.accessKey)}` : ''}`;
   function showInvite() { setCopied(false); setDialog('invite'); }
   function searchPeople() { setPanel('people'); setEditItem(null); requestAnimationFrame(() => searchRef.current?.focus()); }
   async function copyLink() {
-    try { await navigator.clipboard.writeText(`${location.origin}/?room=${encodeURIComponent(room)}`); setCopied(true); }
+    try { await navigator.clipboard.writeText(inviteLink()); setCopied(true); }
     catch { setNotice(t('Selecciona el enlace y cópialo para abrir otra sesión.')); }
   }
   function leave() { media.stop(); setProfile(null); setSelected(null); setMoreOpen(false); }
@@ -333,7 +343,7 @@ export default function App() {
         <button className={`nav-item ${showChatView ? 'current' : ''}`} aria-label={totalUnread ? t('Chat, {n} sin leer', { n: totalUnread }) : t('Chat')} aria-pressed={showChatView} title={t('Chat')} onClick={() => { setMeetingView(false); setPanel(old => old === 'chat' ? 'people' : 'chat'); setEditItem(null); setSelectedObject(null); }}><MessageCircle size={22} />{totalUnread > 0 && <span className="nav-badge">{totalUnread > 99 ? '99+' : totalUnread}</span>}</button>
         <button className={`nav-item ${showCalendarView ? 'current' : ''}`} aria-label={t('Calendario')} aria-pressed={showCalendarView} title={t('Calendario')} onClick={() => { setMeetingView(false); setPanel(old => old === 'calendar' ? 'people' : 'calendar'); setEditItem(null); setSelectedObject(null); }}><Calendar size={22} /></button>
         <button className={`nav-item ${showActivityView ? 'current' : ''}`} aria-label={activityUnread ? t('Actividad, {n} sin leer', { n: activityUnread }) : t('Actividad')} aria-pressed={showActivityView} title={t('Actividad')} onClick={() => { setMeetingView(false); setPanel(old => old === 'activity' ? 'people' : 'activity'); setEditItem(null); setSelectedObject(null); }}><Bell size={22} />{activityUnread > 0 && <span className="nav-badge">{activityUnread > 99 ? '99+' : activityUnread}</span>}</button>
-        <button className={`nav-item ${panel === 'build' ? 'current' : ''}`} aria-label={t('Decorar')} aria-pressed={panel === 'build'} title={t('Decorar')} onClick={() => openPanel('build')}><Armchair size={22} /></button>
+        {canEdit && <button className={`nav-item ${panel === 'build' ? 'current' : ''}`} aria-label={t('Decorar')} aria-pressed={panel === 'build'} title={t('Decorar')} onClick={() => openPanel('build')}><Armchair size={22} /></button>}
         {meetingArea && <button className={`nav-item nav-meeting ${showMeetingView ? 'current' : ''}`} aria-label={t('Reunión')} aria-pressed={showMeetingView} title={t('Vista de reunión')} onClick={() => { setMeetingView(true); setMeetingPanel(panel => panel ?? 'chat'); }}><Video size={22} /><span>{t('Reunión')}</span></button>}
       </div>
       <div className="rail-bottom">
@@ -432,7 +442,7 @@ export default function App() {
     {newDm && <div className="modal-backdrop" onClick={() => setNewDm(false)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="dm-title" onClick={e => e.stopPropagation()}><IconButton label={t('Cerrar ventana')} className="modal-close" onClick={() => setNewDm(false)}><X size={19} /></IconButton><span className="dialog-icon"><SquarePen size={27} /></span><h2 id="dm-title">{t('Nuevo mensaje')}</h2><p>{t('Elige con quién quieres hablar.')}</p><div className="dm-picker">{office.users.map(user => <button type="button" key={user.userId} onClick={() => { setConversation({ kind: 'dm', userId: user.userId }); setPanel('chat'); setNewDm(false); }}><span className="chat-avatar small" style={{ background: user.color }}>{user.name.charAt(0).toUpperCase()}<i className={`status-dot ${onlineUsers.has(user.userId) ? 'available' : 'away'}`} /></span><span>{user.name}{user.userId === office.userId ? t(' (tú)') : ''}</span></button>)}</div></div></div>}
     {lookEditor && <AvatarEditor initial={look} name={name} onCancel={() => setLookEditor(false)} onDone={value => { setLook(value); setLookEditor(false); try { localStorage.setItem(lookStorageKey(name), JSON.stringify(value)); } catch { /* storage unavailable */ } if (profile) { setProfile({ ...profile, avatar: value }); office.send({ type: 'profile', avatar: value }); } }} />}
     {(notice || office.error) && <div className="toast" role="status"><span>{notice || office.error}</span><IconButton label={t('Cerrar aviso')} onClick={() => { setNotice(''); office.setError(''); }}><X size={15} /></IconButton></div>}
-    {!profile && <div className="modal-backdrop welcome-backdrop"><form className="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onSubmit={join}><div className="welcome-art"><InvitePortraits /></div><span className="eyebrow">{t('OPEN OFFICE')}</span><h1 id="welcome-title">{t('Entrar a Vivo')}</h1><p>{t('Tu equipo y tus conversaciones, en un mismo lugar.')}</p><label>{t('Tu nombre')}<input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder={t('¿Cómo te llamas?')} maxLength={40} required /></label><div className="color-picker" aria-label={t('Color del avatar')}>{COLORS.map(c => <button type="button" key={c} style={{ background: c }} aria-label={`Color ${c}`} aria-pressed={color === c} className={color === c ? 'selected' : ''} onClick={() => setColor(c)}>{color === c && <Check size={17} />}</button>)}</div><button className="primary enter-button" type="submit">{t('Entrar a la oficina')} <ArrowRight size={18} /></button><span className="privacy-note"><MicOff size={13} /><VideoOff size={14} />{t('Micrófono y cámara apagados al entrar')}</span></form></div>}
+    {!profile && <div className="modal-backdrop welcome-backdrop"><form className="modal welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title" onSubmit={join}><div className="welcome-art"><InvitePortraits /></div><span className="eyebrow">{t('OPEN OFFICE')}</span><h1 id="welcome-title">{t('Entrar a Vivo')}</h1><p>{t('Tu equipo y tus conversaciones, en un mismo lugar.')}</p><label>{t('Tu nombre')}<input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder={t('¿Cómo te llamas?')} maxLength={40} required /></label>{(config.accessRequired || office.accessDenied) && <label>{t('Clave de invitación')}<input type="password" value={accessKey} onChange={e => setAccessKey(e.target.value)} placeholder={t('La recibiste con el enlace de la oficina')} maxLength={200} required autoComplete="off" /></label>}{office.accessDenied && <p className="form-error" role="alert">{t('La clave de invitación no es válida.')}</p>}<div className="color-picker" aria-label={t('Color del avatar')}>{COLORS.map(c => <button type="button" key={c} style={{ background: c }} aria-label={`Color ${c}`} aria-pressed={color === c} className={color === c ? 'selected' : ''} onClick={() => setColor(c)}>{color === c && <Check size={17} />}</button>)}</div><button className="primary enter-button" type="submit">{t('Entrar a la oficina')} <ArrowRight size={18} /></button><span className="privacy-note"><MicOff size={13} /><VideoOff size={14} />{t('Micrófono y cámara apagados al entrar')}</span></form></div>}
     {dialog && profile && <div className="modal-backdrop" onClick={() => setDialog(null)}><div ref={dialogRef} className="modal" role="dialog" aria-modal="true" aria-labelledby="dialog-title" onClick={e => e.stopPropagation()}><IconButton label={t('Cerrar ventana')} className="modal-close" onClick={() => setDialog(null)}><X size={19} /></IconButton>
       {dialog === 'profile' ? <form onSubmit={saveProfile} className="profile-form"><h2 id="dialog-title">{t('Editar perfil')}</h2>
         <div className="profile-pictures">
@@ -442,7 +452,7 @@ export default function App() {
         {colorPicker && <div className="color-picker">{COLORS.map(c => <button type="button" key={c} style={{ background: c }} aria-label={`Color ${c}`} aria-pressed={color === c} className={color === c ? 'selected' : ''} onClick={() => setColor(c)}>{color === c && <Check size={17} />}</button>)}</div>}
         <label>{t('Nombre completo')}<span className="required">*</span><input value={name} onChange={e => setName(e.target.value)} required maxLength={40} placeholder={t('p. ej. Ana Pérez')} /></label>
         <div className="profile-actions"><button className="primary" type="submit">{t('Guardar')}</button></div></form>
-        : dialog === 'invite' ? <><span className="dialog-icon"><Users size={27} /></span><h2 id="dialog-title">{t('Invitar colaboradores')}</h2><p>{t('Abre este enlace en otra pestaña de este computador para compartir la oficina.')}</p><label>{t('Enlace de la oficina')}<input readOnly value={`${location.origin}/?room=${encodeURIComponent(room)}`} onFocus={e => e.target.select()} /></label><button className="primary enter-button" onClick={() => void copyLink()}>{copied ? <Check size={17} /> : <Copy size={17} />}{copied ? t('Enlace copiado') : t('Copiar enlace')}</button><p className="footnote">{t('Esta oficina se ejecuta en tu computador. El acceso desde otros equipos necesita configurar un servidor.')}</p></>
+        : dialog === 'invite' ? <><span className="dialog-icon"><Users size={27} /></span><h2 id="dialog-title">{t('Invitar colaboradores')}</h2><p>{isLocalHost ? t('Abre este enlace en otra pestaña de este computador para compartir la oficina.') : t('Comparte este enlace con tu equipo para que entre a la oficina.')}</p><label>{t('Enlace de la oficina')}<input readOnly value={inviteLink()} onFocus={e => e.target.select()} /></label><button className="primary enter-button" onClick={() => void copyLink()}>{copied ? <Check size={17} /> : <Copy size={17} />}{copied ? t('Enlace copiado') : t('Copiar enlace')}</button>{isLocalHost ? <p className="footnote">{t('Esta oficina se ejecuta en tu computador. El acceso desde otros equipos necesita configurar un servidor.')}</p> : config.accessRequired ? <p className="footnote">{t('El enlace incluye la clave de invitación: compártelo solo con tu equipo.')}</p> : null}</>
           : dialog === 'settings' ? <><span className="dialog-icon"><Settings2 size={27} /></span><h2 id="dialog-title">{t('Apariencia')}</h2><p>{t('Elige cómo se ve la interfaz de tu oficina.')}</p><label>{t('Tema')}<select value={theme} onChange={e => setTheme(e.target.value as Theme)}><option value="system">{t('Sistema')}</option><option value="light">{t('Claro')}</option><option value="dark">{t('Oscuro')}</option></select></label><label>{t('Idioma')}<select value={lang} onChange={e => setLanguage(e.target.value as Language)}>{LANGUAGES.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label><p className="footnote">{t('La opción Sistema se adapta a la apariencia de tu computador.')}</p><button className="primary enter-button" onClick={() => setDialog(null)}>{t('Listo')}</button></>
             : <><span className="dialog-icon"><CircleHelp size={27} /></span><h2 id="dialog-title">{t('Controles de la oficina')}</h2><p>{t('Acércate a tus compañeros para conversar.')}</p><div className="shortcuts"><div><span>{t('Caminar')}</span><kbd>↑ ↓ ← → / WASD</kbd></div><div><span>{t('Caminar más rápido')}</span><kbd>{t('Shift + flechas')}</kbd></div><div><span>{t('Ir a un lugar')}</span><kbd>{t('Doble clic')}</kbd></div><div><span>{t('Sentarse / levantarse')}</span><kbd>{t('Clic en silla / E')}</kbd></div><div><span>{t('Explorar el mapa')}</span><kbd>Arrastrar</kbd></div><div><span>{t('Buscar personas')}</span><kbd>⌘ / Ctrl + K</kbd></div><div><span>{t('Volver al área de trabajo')}</span><kbd>⌘ / Ctrl + D</kbd></div></div><button className="primary enter-button" onClick={() => setDialog(null)}>{t('Entendido')}</button></>}
     </div></div>}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Participant, Send, Signal } from './types';
 import { MEDIA_RADIUS, sharesConversationArea } from '../shared/office-world.js';
 import { locale, t } from './i18n';
+import { officeConfig } from './config';
 
 type MediaOptions = {
   selfId: string | null;
@@ -27,18 +28,8 @@ export function canHearEachOther(self: Participant, other: Participant): boolean
 }
 
 function rtcConfiguration(): RTCConfiguration {
-  // The empty default supports local testing. Public deployments need correctly
-  // configured STUN/TURN servers; local success does not prove Internet reachability.
-  const configured = (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_ICE_SERVERS;
-  if (!configured) return { iceServers: [] };
-  try {
-    const servers: unknown = JSON.parse(configured);
-    if (Array.isArray(servers) && servers.every(server => server && typeof server === 'object' &&
-      (typeof server.urls === 'string' || (Array.isArray(server.urls) && server.urls.every((url: unknown) => typeof url === 'string'))))) {
-      return { iceServers: servers as RTCIceServer[] };
-    }
-  } catch { /* Fall back to local-only connectivity for invalid development config. */ }
-  return { iceServers: [] };
+  // STUN/TURN servers come from the server's runtime configuration (ICE_SERVERS); an empty list still works on a local network.
+  return { iceServers: officeConfig().iceServers };
 }
 
 function mediaError(error: unknown, kind: string): string {

@@ -41,6 +41,8 @@ Abre **http://127.0.0.1:5173**, escribe tu nombre y entra. Abre una segunda pest
 
 > Necesita Node.js 22.18 o superior (comprobado con la versión 26.8). El servidor de tiempo real escucha en 127.0.0.1:3001.
 
+**Ponla en internet para tu equipo:** la [guía de despliegue](docs/DEPLOY.es.md) configura HTTPS, clave de invitación, decoración solo para administradores y un servidor TURN con un solo `docker compose up`.
+
 ---
 
 ## 🧭 Funciones
@@ -166,7 +168,9 @@ El modelo de colisiones se compara baldosa por baldosa con el mapa de referencia
 - [ ] Más peinados y conjuntos
 - [x] Interfaz en inglés y en español
 - [ ] Más idiomas para la interfaz
-- [ ] Cuentas, permisos y una guía de despliegue público segura (HTTPS, TURN/SFU)
+- [x] Despliegue público: HTTPS, clave de invitación, rol de administrador, TURN, Docker
+- [ ] Cuentas personales con contraseña o inicio de sesión único
+- [ ] Servidor de medios (SFU) para reuniones grandes
 
 ¿Quieres alguna antes? Abre un issue o envía un pull request.
 
@@ -174,7 +178,7 @@ El modelo de colisiones se compara baldosa por baldosa con el mapa de referencia
 
 ## ⚠️ Límites actuales
 
-Es un proyecto pensado para uso local. Todavía no hay autenticación, permisos de edición ni historial de chat persistente, así que cualquiera en una sala puede decorarla. El servidor solo acepta orígenes locales. Para un despliegue público faltan identidad, autorización, HTTPS, configuración de red y un servicio TURN/SFU para llamadas entre redes distintas.
+Las oficinas se protegen con una clave de invitación compartida y una clave de administrador; todavía no hay cuentas personales ni contraseñas, y la identidad es el nombre que elige cada persona. Las llamadas son entre pares, lo que funciona bien en grupos pequeños; un servidor de medios para reuniones grandes está en la hoja de ruta.
 
 ## 🎨 Arte y créditos
 

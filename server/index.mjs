@@ -1,7 +1,7 @@
 import http from 'node:http';
-import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
 import { OFFICE_SIZE as MAP, MEDIA_RADIUS, CHAT_RADIUS, SPAWN, sharesConversationArea } from '../shared/office-world.js';
@@ -64,15 +64,32 @@ function takeToken(bucket, capacity, perSecond) {
   return true;
 }
 
-function validOrigin(origin) {
+/** Browsers must connect from this server's own host, a local development host, or an origin listed in ALLOWED_ORIGINS. */
+function validOrigin(origin, host, allowedOrigins = []) {
   if (!origin) return true; // CLI and test clients have no Origin header.
   try {
     const parsed = new URL(origin);
-    return ['http:', 'https:'].includes(parsed.protocol) && ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+    if (['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname)) return true;
+    if (host && parsed.host === host) return true;
+    return allowedOrigins.includes(parsed.origin);
   } catch {
     return false;
   }
 }
+const sameSecret = (given, expected) => {
+  if (typeof given !== 'string' || !expected) return false;
+  const a = Buffer.from(given), b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+};
+function parseIceServers(value) {
+  if (!value) return [];
+  try {
+    const servers = JSON.parse(value);
+    return Array.isArray(servers) ? servers.filter((server) => server && (typeof server.urls === 'string' || (Array.isArray(server.urls) && server.urls.every((url) => typeof url === 'string')))).slice(0, 8) : [];
+  } catch { console.warn('ICE_SERVERS is not valid JSON; calls will only work on local networks.'); return []; }
+}
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.json': 'application/json', '.ico': 'image/x-icon', '.webp': 'image/webp', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
 
 /** A local development server. Identities are session IDs, not authenticated accounts. */
 export async function startServer({
@@ -81,7 +98,17 @@ export async function startServer({
   dataDir = resolve(dirname(fileURLToPath(import.meta.url)), 'data'),
   maxRooms = 50,
   maxParticipants = 32,
+  // Public deployments: a shared invite key to enter, an admin key to decorate and rename, extra browser origins,
+  // runtime STUN/TURN servers, and the built client served from this same process.
+  accessKey = process.env.OFFICE_ACCESS_KEY || '',
+  adminKey = process.env.OFFICE_ADMIN_KEY || '',
+  editPolicy = process.env.EDIT_POLICY === 'admins' || process.env.EDIT_POLICY === 'everyone' ? process.env.EDIT_POLICY : undefined,
+  allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map((value) => value.trim()).filter(Boolean),
+  iceServers = parseIceServers(process.env.ICE_SERVERS),
+  staticDir = process.env.SERVE_CLIENT === 'false' ? null : resolve(dirname(fileURLToPath(import.meta.url)), '..', 'dist'),
 } = {}) {
+  editPolicy ??= adminKey ? 'admins' : 'everyone'; // with an admin key, decorating defaults to admins
+  const canEdit = (participant) => editPolicy === 'everyone' || participant.role === 'admin';
   const rooms = new Map();
   const clients = new Set();
   let closing = false;
@@ -247,6 +274,33 @@ export async function startServer({
       response.end(JSON.stringify({ ok: true, service: 'open-office', rooms: rooms.size, participants: [...rooms.values()].reduce((sum, room) => sum + room.members.size, 0) }));
       return;
     }
+    const security = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'SAMEORIGIN' };
+    if (request.method === 'GET' && request.url === '/config') {
+      response.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security });
+      response.end(JSON.stringify({ accessRequired: !!accessKey, editPolicy, iceServers }));
+      return;
+    }
+    if ((request.method === 'GET' || request.method === 'HEAD') && staticDir) {
+      void (async () => {
+        let path;
+        try { path = decodeURIComponent(new URL(request.url, 'http://localhost').pathname); } catch { path = '/'; }
+        let file = normalize(join(staticDir, path));
+        if (!file.startsWith(staticDir + sep) && file !== staticDir) file = join(staticDir, 'index.html');
+        try { if ((await stat(file)).isDirectory()) file = join(file, 'index.html'); }
+        catch { file = extname(path) ? '' : join(staticDir, 'index.html'); } // client-side routes fall back to the app
+        try {
+          if (!file) throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+          const body = await readFile(file);
+          const immutable = file.includes(`${sep}assets${sep}`) && /-[A-Za-z0-9_-]{8,}\./.test(file);
+          response.writeHead(200, { 'Content-Type': MIME[extname(file)] ?? 'application/octet-stream', 'Cache-Control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache', ...security });
+          response.end(request.method === 'HEAD' ? undefined : body);
+        } catch {
+          response.writeHead(404, { 'Content-Type': 'application/json', ...security });
+          response.end(JSON.stringify({ error: 'Not found' }));
+        }
+      })();
+      return;
+    }
     response.writeHead(404, { 'Content-Type': 'application/json' });
     response.end(JSON.stringify({ error: 'Not found' }));
   });
@@ -256,7 +310,7 @@ export async function startServer({
     let url;
     try { url = new URL(request.url, 'http://localhost'); } catch { socket.destroy(); return; }
     const slug = url.searchParams.get('room') || 'demo';
-    if (closing || url.pathname !== '/ws' || !ROOM_SLUG.test(slug) || !validOrigin(request.headers.origin)) {
+    if (closing || url.pathname !== '/ws' || !ROOM_SLUG.test(slug) || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) {
       socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
       return;
     }
@@ -282,6 +336,7 @@ export async function startServer({
       if (!payload || typeof payload !== 'object' || Array.isArray(payload) || typeof payload.type !== 'string') return error(socket, 'invalid_message', 'A message type is required.');
       if (payload.type === 'join') {
         if (client.participant) return error(socket, 'already_joined', 'This connection already joined a room.');
+        if (accessKey && !sameSecret(payload.accessKey, accessKey)) { error(socket, 'access_denied', 'This office needs a valid invite key.'); socket.close(1008, 'Access denied'); return; }
         const room = await getRoom(slug);
         if (!room) return error(socket, 'server_full', 'No rooms are currently available.');
         if (socket.readyState !== WebSocket.OPEN) return;
@@ -291,11 +346,12 @@ export async function startServer({
         const participantId = randomUUID();
         client.participant = { id: participantId, userId: typeof payload.userId === 'string' && USER_ID.test(payload.userId) ? payload.userId : participantId, name: displayName(payload.name) || 'Invitado', color: typeof payload.color === 'string' && COLOR.test(payload.color) ? payload.color : '#7968e6', x: SPAWN.x, y: SPAWN.y, facing: 'south', status: 'available', mic: false, camera: false, screen: false };
         const look = sanitizeLook(payload.avatar); if (look) client.participant.avatar = look;
+        client.participant.role = adminKey && sameSecret(payload.adminKey, adminKey) ? 'admin' : 'member';
         room.users[client.participant.userId] = { name: client.participant.name, color: client.participant.color };
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
         persistChat(room);
-        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
+        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames });
         broadcastParticipants(room);
         return;
       }
@@ -383,6 +439,7 @@ export async function startServer({
           break;
         }
         case 'channel:create': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           const id = channelSlug(payload.name);
           if (!id) return error(socket, 'invalid_channel', 'Channel names need letters or numbers.');
@@ -415,6 +472,7 @@ export async function startServer({
           break;
         }
         case 'channel:update': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           const channel = room.channels.find((candidate) => candidate.id === channelSlug(payload.channelId));
           if (!channel) return error(socket, 'invalid_channel', 'Unknown channel.');
           channel.topic = cleanText(payload.topic, 160);
@@ -423,6 +481,7 @@ export async function startServer({
           break;
         }
         case 'area:rename': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           const area = typeof payload.areaId === 'string' ? meetingRoom(payload.areaId) : null;
           const name = displayName(payload.name);
@@ -443,6 +502,7 @@ export async function startServer({
           break;
         }
         case 'object:add': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           const point = position(payload.x, payload.y);
           if (!point || typeof payload.kind !== 'string' || !validObject(payload)) return error(socket, 'invalid_object', 'Choose a supported object and finite position.');
@@ -456,6 +516,7 @@ export async function startServer({
           break;
         }
         case 'object:update': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           if (typeof payload.id !== 'string') return error(socket, 'invalid_object', 'An object ID is required.');
           if (isBaseObjectId(payload.id)) {
@@ -493,6 +554,7 @@ export async function startServer({
           break;
         }
         case 'object:remove': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can change this.');
           if (!takeToken(client.editRate, 12, 1.2)) return error(socket, 'edit_rate_limit', 'Wait a moment before editing again.');
           if (typeof payload.id !== 'string') return error(socket, 'invalid_object', 'An object ID is required.');
           if (isBaseObjectId(payload.id)) {

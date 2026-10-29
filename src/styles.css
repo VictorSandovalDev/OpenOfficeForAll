@@ -608,3 +608,5 @@ button .avatar { pointer-events: none; }
 
 .controlbar > *:not(.status-menu) { position: relative; z-index: 2; }
 .profile-picture .avatar { border-radius: 9999px; }
+
+.form-error { color: #e5484d; font-size: 12px; margin: -4px 0 8px; }
