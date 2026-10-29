@@ -46,7 +46,7 @@ test('workspaces get a name, a unique address and their own map; the name can be
   assert.deepEqual(await created.json(), { slug: 'diseno-web', name: 'Diseño Web' });
   assert.equal((await (await post(server.port, { name: 'Diseño web' })).json()).slug, 'diseno-web-2', 'the same name gets its own address');
   assert.equal((await post(server.port, { name: 'x' })).status, 400);
-  assert.deepEqual(await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces/diseno-web`)).json(), { slug: 'diseno-web', name: 'Diseño Web' });
+  assert.deepEqual(await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces/diseno-web`)).json(), { slug: 'diseno-web', name: 'Diseño Web', template: 'office' });
   assert.equal((await (await fetch(`http://127.0.0.1:${server.port}/api/workspaces/mi-oficina`)).json()).name, 'Vivo', 'the original office keeps its name');
   const ana = await connect(server.port, 'Ana', 'user-ana-0001', 'diseno-web');
   assert.deepEqual(ana.welcome.workspace, { slug: 'diseno-web', name: 'Diseño Web' });

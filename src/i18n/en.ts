@@ -442,4 +442,13 @@ export const EN: Record<string, string> = {
   "Deseleccionar": "Deselect",
   "Colocación libre": "Free placement",
   "Pon los objetos en cualquier punto, sin la cuadrícula. También manteniendo ⌥ (Alt).": "Put objects anywhere, off the grid. Or hold ⌥ (Alt).",
+  "Visitados recientemente": "Last Visited",
+  "Creados por ti": "Created Spaces",
+  "Buscar": "Search",
+  "Buscar espacios": "Search spaces",
+  "Opciones de {name}": "Options for {name}",
+  "Aún no has creado ningún espacio.": "You have not created any space yet.",
+  "No hay espacios con ese nombre.": "No spaces with that name.",
+  "Todavía no has entrado a ningún espacio.": "You have not entered any space yet.",
+  "Elige un mapa": "Choose a map",
 };

@@ -20,7 +20,7 @@ import { ObjectThumb } from './sprites/objects';
 import AvatarEditor, { AvatarPortrait } from './AvatarEditor';
 import { useEditHistory } from './useEditHistory';
 import { useSfu } from './useSfu';
-import { fetchWorkspaceName, knownWorkspaces, rememberWorkspace, workspaceUrl } from './workspaces';
+import { fetchWorkspace, knownWorkspaces, rememberWorkspace, workspaceUrl } from './workspaces';
 import { categoryOf, colorName, facingName, objectDescription, objectName, searchText } from './catalogNames';
 import { MeetingMusic } from './meetingMusic';
 import { MeetingRecorder } from './meetingRecorder';
@@ -147,7 +147,7 @@ export default function App() {
   const [workspaceName, setWorkspaceName] = useState(initialWorkspaceName);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [renamingWorkspace, setRenamingWorkspace] = useState<string | null>(null);
-  useEffect(() => { void fetchWorkspaceName(room).then(name => { if (name) setWorkspaceName(name); }); }, []);
+  useEffect(() => { void fetchWorkspace(room).then(found => { if (found) { setWorkspaceName(found.name); rememberWorkspace(room, found.name, { template: found.template }); } }); }, []);
   useEffect(() => { if (office.workspace?.name) setWorkspaceName(office.workspace.name); }, [office.workspace?.name]);
   useEffect(() => { rememberWorkspace(room, workspaceName); document.title = `${workspaceName} · Open Office`; }, [workspaceName]);
   const canEdit = config.editPolicy === 'everyone' || office.role === 'admin';

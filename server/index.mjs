@@ -418,7 +418,7 @@ export async function startServer({
       if (request.method === 'GET' && request.url.startsWith('/api/workspaces/')) {
         const slug = decodeURIComponent(request.url.slice('/api/workspaces/'.length));
         if (!ROOM_SLUG.test(slug)) return reply(400, { error: 'invalid_workspace' });
-        void workspaceName(slug).then((name) => reply(200, { slug, name }));
+        void loadWorkspaces().then((list) => reply(200, { slug, name: list[slug]?.name ?? defaultWorkspaceName(slug), template: list[slug]?.template ?? 'office' }));
         return;
       }
       if (request.method !== 'POST' || request.url !== '/api/workspaces' || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
