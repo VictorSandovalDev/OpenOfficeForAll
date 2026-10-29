@@ -10,3 +10,11 @@ same footprint and anchor. Furniture, walls and floors are drawn in code in
 Naming: `<kind>.png` for single variants, `<kind>-<color>.png` or
 `<kind>-<color>-<facing>.png` for colour and orientation variants; the map in
 `src/sprites/furnitureAssets.ts` and `src/sprites/assets.ts` resolves them.
+
+## Second pass (2026-10-29)
+
+About thirty map pieces were regenerated with PixelLab Pro Flash so the original art
+reads like the reference office: the same kind of object, the same orientation, the
+reference colours as the palette and the exact footprint. Every pixel is newly
+generated; no reference sprite was used as an input image. Chair side views are drawn
+facing right and mirrored for the left.
