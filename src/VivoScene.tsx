@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { DoorOpen, Sofa } from 'lucide-react';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import type { EditItem, OfficeObject, Participant, Facing } from './types';
 import './scene.css';
@@ -32,7 +33,8 @@ type Props = {
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
 export const MIN_ZOOM = .15;
-export const OVERVIEW_BELOW = .36;
+/** Below this zoom the office switches to the simplified view, as the reference does when you zoom out. */
+export const SIMPLE_BELOW = 1.12;
 type Motion = { facing: Facing; moving: boolean; frame: number };
 type Remote = { from: Point; to: Point; startedAt: number; facing: Facing; lastMoved: number };
 
@@ -133,6 +135,30 @@ function Ghost({ item, tile }: { item: EditItem; tile: Tile }) {
   </g>;
 }
 
+/** A person in the simplified view: a round badge with their initial under the nameplate, constant on screen. */
+function SimpleAvatar({ person, self, x, y, scale }: { person: Participant; self: boolean; x: number; y: number; scale: number }) {
+  const k = 1 / scale, name = self ? `${person.name}` : person.name, width = (name.length * 6.4 + 26) * k;
+  return <g className="scene-avatar scene-simple-avatar" transform={`translate(${x} ${y})`} shapeRendering="auto">
+    <circle r={12 * k} fill={person.color || '#f6c08f'} stroke={self ? '#5a4fcf' : '#ffffff'} strokeWidth={2.5 * k} />
+    <text y={4.5 * k} textAnchor="middle" fontSize={12 * k} fontWeight="700" fill="#2b2b33">{(person.name.trim()[0] ?? '?').toUpperCase()}</text>
+    <g transform={`translate(0 ${-17 * k})`}>
+      <rect x={-width / 2} y={-18 * k} width={width} height={18 * k} rx={6 * k} fill={self ? '#5a4fcf' : '#2b2b33'} />
+      <circle cx={-width / 2 + 9 * k} cy={-9 * k} r={3 * k} fill={STATUS_COLOR[person.status]} />
+      <text x={5 * k} y={-5 * k} textAnchor="middle" fontSize={11.5 * k} fontWeight="500" fill="#fff">{name}</text>
+    </g>
+  </g>;
+}
+/** Area markers of the simplified view: a door on meeting rooms, a sofa on lounges. */
+function SimpleAreaIcons({ scale }: { scale: number }) {
+  const k = 1 / scale;
+  return <g pointerEvents="none" shapeRendering="auto">{AREAS.filter(area => area.type === 'MeetingRoom' || area.type === 'Common').map(area => {
+    const cx = (area.x + area.w / 2) * TILE, cy = (area.y + area.h / 2) * TILE, Icon = area.type === 'MeetingRoom' ? DoorOpen : Sofa;
+    return <g key={area.id} transform={`translate(${cx} ${cy})`}>
+      <rect x={-11 * k} y={-11 * k} width={22 * k} height={22 * k} rx={5 * k} fill="#ffffff" stroke="#00000014" strokeWidth={k} />
+      <Icon x={-7.5 * k} y={-7.5 * k} width={15 * k} height={15 * k} strokeWidth={2} color={area.type === 'MeetingRoom' ? '#3b6fe0' : '#d26be0'} />
+    </g>;
+  })}</g>;
+}
 export default function VivoScene({ participants, selfId, objects, zoom, simplified, editItem, selectedObject, editorOpen, overrides, navigationTarget, resetViewKey, onMove, onPlace, onSelect, onSelectObject, onMoveObject, onRemove, onSit, onStand, meetings = {}, onZoom, deskLabels = {}, areaNames = {}, interactions = {}, onNearInteractive, onInteract, reactions = [], seatTarget, onAreaClick }: Props) {
   const editKind = editItem ? editItem.kind : null;
   const [hoverTile, setHoverTile] = useState<Tile | null>(null);
@@ -214,8 +240,8 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   const drag = useRef<{ client: Point; camera: Point; moved: boolean } | null>(null);
   const [dragging, setDragging] = useState(false);
   const scale = clamp(pinned?.zoom ?? zoom, MIN_ZOOM, 4);
-  // Far out, the office turns into an overview like the minimap: rooms in flat greys and everyone as a dot.
-  const overview = scale < OVERVIEW_BELOW;
+  // Zoomed out (or on request) the office shows only floors, walls and people, as the reference's simplified view.
+  const simpleView = (simplified || scale < SIMPLE_BELOW) && !editKind && !editorOpen;
   const viewWidth = viewport.width / scale, viewHeight = viewport.height / scale;
   const viewX = camera.x - viewWidth / 2, viewY = camera.y - viewHeight / 2;
 
@@ -414,7 +440,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       return;
     }
     if (editItem) { const point = worldPoint(event.clientX, event.clientY); if (point) setHoverTile(previous => { const next = tileOf(point); return previous && sameTile(previous, next) ? previous : next; }); }
-    if (!editingMode && !drag.current && !overview) {
+    if (!editingMode && !drag.current) {
       const point = worldPoint(event.clientX, event.clientY);
       const { tx, ty } = point ? tileOf(point) : { tx: -1, ty: -1 };
       const area = meetingRoomAt(tx, ty);
@@ -439,8 +465,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     }
     if (drag.current && !drag.current.moved) {
       const point = worldPoint(event.clientX, event.clientY);
-      if (point && overview && !editKind) { following.current = false; setCamera(point); onZoom?.(1); }
-      else if (point && editKind) { const tile = tileOf(point); onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
+      if (point && editKind) { const tile = tileOf(point); onPlace(tile.tx * TILE + TILE / 2, tile.ty * TILE + TILE / 2); }
       else if (editingMode) { if (selectedObject) onSelectObject(null); }
       else if (point && self && self.status !== 'away' && !(event.target as Element).closest('.scene-avatar, .scene-added-object, .scene-seat')) {
         const target = tileOf(point);
@@ -474,7 +499,10 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     // The occupant draws over the chair's main sprite; the chair's foreground part draws over the occupant.
     return object.y + 0.5;
   };
-  const avatarLayer = (person: Participant, position: Point, facing: Facing, moving: boolean, frame: number): Layer => ({
+  const avatarLayer = (person: Participant, position: Point, facing: Facing, moving: boolean, frame: number): Layer => simpleView ? {
+    key: `person-${person.id}`, y: position.y + TILE / 2 - 1, order: 3,
+    node: <SimpleAvatar person={person} self={person.id === selfId} x={Math.round(position.x)} y={Math.round(position.y)} scale={scale} />,
+  } : ({
     key: `person-${person.id}`, y: seatObjectY(person) ?? position.y + TILE / 2 - 1, order: 3,
     node: <g transform={`translate(${Math.round(position.x)} ${Math.round(footOf(position).y) + (person.seatId ? -2 : 0)})`}><Avatar person={person} self={person.id === selfId} facing={facing} moving={moving} frame={frame} frames={lookMaps[lookKey(sanitizeLook(person.avatar))]} reaction={reactions.filter(item => item.participantId === person.id).at(-1)?.emoji} onSelect={() => person.id === selfId && person.seatId ? requestStand() : onSelect(person.id)} /></g>,
   });
@@ -497,10 +525,10 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   const layers: Layer[] = [
     ...STATIC,
     ...doorLayers,
-    ...baseObjects.map(object => ({ key: `object-${object.id}`, y: objectDepth(object, baseById), order: 2, node: <BaseObject object={object} selected={selectedObject === object.id} editing={editingMode && !editItem} onSelectObject={onSelectObject} onGrab={onGrab} /> })),
-    ...baseObjects.filter(hasForeground).map(object => ({ key: `object-fg-${object.id}`, y: objectDepth(object, baseById) + 1, order: 4, node: <g transform={`translate(${object.x} ${object.y})`}><ObjectForeground object={object} /></g> })),
-    ...objects.map((object, index) => ({ key: object.id, y: placedDepth(placedData[index]), order: 2, node: <AddedObject object={object} selected={selectedObject === object.id} editing={editingMode && !editItem} onSelectObject={onSelectObject} onGrab={onGrab} /> })),
-    ...placedData.filter(hasForeground).map(data => ({ key: `fg-${data.id}`, y: placedDepth(data) + 1, order: 4, node: <g transform={`translate(${data.x} ${data.y})`}><ObjectForeground object={data} /></g> })),
+    ...(simpleView ? [] : baseObjects).map(object => ({ key: `object-${object.id}`, y: objectDepth(object, baseById), order: 2, node: <BaseObject object={object} selected={selectedObject === object.id} editing={editingMode && !editItem} onSelectObject={onSelectObject} onGrab={onGrab} /> })),
+    ...(simpleView ? [] : baseObjects).filter(hasForeground).map(object => ({ key: `object-fg-${object.id}`, y: objectDepth(object, baseById) + 1, order: 4, node: <g transform={`translate(${object.x} ${object.y})`}><ObjectForeground object={object} /></g> })),
+    ...(simpleView ? [] : objects).map((object, index) => ({ key: object.id, y: placedDepth(placedData[index]), order: 2, node: <AddedObject object={object} selected={selectedObject === object.id} editing={editingMode && !editItem} onSelectObject={onSelectObject} onGrab={onGrab} /> })),
+    ...(simpleView ? [] : placedData).filter(hasForeground).map(data => ({ key: `fg-${data.id}`, y: placedDepth(data) + 1, order: 4, node: <g transform={`translate(${data.x} ${data.y})`}><ObjectForeground object={data} /></g> })),
     ...participants.map(person => {
       if (person.id === selfId) return avatarLayer(person, person.seatId ? tileCenter(tileOf(person)) : local, person.seatId ? person.facing ?? motion.facing : motion.facing, !person.seatId && motion.moving, motion.frame);
       const remote = remoteRender[person.id];
@@ -509,36 +537,22 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   ].sort((a, b) => a.y - b.y || a.order - b.order || a.key.localeCompare(b.key));
 
   const minimapScale = 108 / WORLD.width;
-  return <div className={`office-scene${overview ? ' is-overview' : ''}${simplified ? ' simplified' : ''}${dragging ? ' is-dragging' : ''}${editingMode ? ' is-editing' : ''}${dragTile ? ' is-moving' : ''}`}>
+  return <div className={`office-scene${simpleView ? ' simplified' : ''}${dragging ? ' is-dragging' : ''}${editingMode ? ' is-editing' : ''}${dragTile ? ' is-moving' : ''}`}>
     <svg ref={svgRef} className="office-map" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="group" aria-label={t('Oficina Vivo. Muévete con las flechas o WASD; clic para caminar, clic en una silla o E para sentarte; flechas o E para levantarte; arrastra el fondo para desplazar el mapa.')} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => { drag.current = null; setDragging(false); }} onPointerLeave={() => setHoverRoom(null)}>
       <FloorPatterns />
       <defs><pattern id="edit-grid" width={TILE} height={TILE} patternUnits="userSpaceOnUse"><path d={`M${TILE} 0V${TILE}H0`} fill="none" stroke="#ffffff" strokeOpacity=".12" strokeWidth="1" /></pattern></defs>
       <g pointerEvents="none" shapeRendering="crispEdges">
-        <rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill={simplified ? FLOOR_FLAT['NewStyleGrass/Green'] : `url(#${floorPatternId('NewStyleGrass/Green')})`} />
-        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={simplified ? (FLOOR_FLAT[floorKey(area.floor, area.floorColor)] ?? '#555') : `url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
+        <rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill={`url(#${floorPatternId('NewStyleGrass/Green')})`} />
+        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={`url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
       </g>
       {editingMode && <g pointerEvents="none"><rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill="#0b1020" fillOpacity=".28" /><rect x="0" y="0" width={WORLD.width} height={WORLD.height} fill="url(#edit-grid)" /></g>}
       {destination && <g pointerEvents="none" transform={`translate(${destination.tx * TILE} ${destination.ty * TILE})`}><rect x="2" y="2" width="28" height="28" rx="3" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" /></g>}
       <g shapeRendering="crispEdges">{layers.map(layer => <g key={layer.key}>{layer.node}</g>)}</g>
+      {simpleView && <SimpleAreaIcons scale={scale} />}
       {nearInteractive && <g pointerEvents="none" className="scene-interactive"><rect x={nearInteractive.object.x - nearInteractive.object.originX - 2} y={nearInteractive.object.y - nearInteractive.object.originY - 2} width={nearInteractive.object.w + 4} height={nearInteractive.object.h + 4} rx="3" fill="#f5c84222" stroke="#f5c842" strokeWidth="2" /></g>}
       {editItem && hoverTile && <Ghost item={editItem} tile={hoverTile} />}
       {dragTile && <Ghost item={dragTile.item} tile={dragTile.tile} />}
-      {!editingMode && <g>{seats.map(seat => { const occupant = occupiedSeats.get(seat.id); return <SeatTarget key={seat.id} seat={seat} occupiedBy={occupant?.name} own={occupant?.id === selfId} enabled={!!self && self.status !== 'away'} onSit={() => requestSeat(seat)} />; })}</g>}
-      {overview && <g className="scene-overview" shapeRendering="crispEdges">
-        <rect x={-WORLD.width * 5} y={-WORLD.height * 5} width={WORLD.width * 11} height={WORLD.height * 11} fill="#2b2b2b" />
-        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? '#343434' : '#474c55'} />)}
-        <g shapeRendering="auto">{participants.map(person => {
-          const own = person.id === selfId;
-          const at = own ? local : remoteRender[person.id] && !person.seatId ? remoteRender[person.id] : { x: person.x, y: person.y };
-          const r = (own ? 8 : 7) / scale;
-          return <g key={person.id} transform={`translate(${at.x} ${at.y})`}>
-            <circle r={r + 2 / scale} fill="#1b1b1f" />
-            <circle r={r} fill={own ? '#39d98a' : '#d0c7ef'} />
-            <circle cx={r * .7} cy={r * .7} r={3 / scale} fill={STATUS_COLOR[person.status]} stroke="#1b1b1f" strokeWidth={1.2 / scale} />
-            <text y={r + 14 / scale} textAnchor="middle" fontSize={12 / scale} fontWeight="600" fill="#fff" stroke="#1b1b1f" strokeWidth={3 / scale} paintOrder="stroke">{own ? t('Tú') : person.name}</text>
-          </g>;
-        })}</g>
-      </g>}
+      {!editingMode && !simpleView && <g>{seats.map(seat => { const occupant = occupiedSeats.get(seat.id); return <SeatTarget key={seat.id} seat={seat} occupiedBy={occupant?.name} own={occupant?.id === selfId} enabled={!!self && self.status !== 'away'} onSit={() => requestSeat(seat)} />; })}</g>}
     </svg>
     {hoverDesk && !hoverRoom && <div className="scene-tooltip" style={hoverDesk.x > viewport.width - 200 ? { right: viewport.width - hoverDesk.x + 14, top: hoverDesk.y + 16 } : { left: hoverDesk.x + 14, top: hoverDesk.y + 16 }}>{hoverDesk.label}</div>}
     {hoverRoom && <div className="scene-tooltip" style={hoverRoom.x > viewport.width - 200 ? { right: viewport.width - hoverRoom.x + 14, top: hoverRoom.y + 16 } : { left: hoverRoom.x + 14, top: hoverRoom.y + 16 }}>{t('Sala de reunión: {name}', { name: areaNames[hoverRoom.area.id] ?? hoverRoom.area.name })}</div>}
@@ -553,4 +567,3 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   </div>;
 }
 
-const FLOOR_FLAT: Record<string, string> = { 'NewStyleGrass/Green': '#4e8a48', 'WoodSlatsLt/LightWood': '#a27f6b', 'WoodSlats/Wood': '#98735f', 'CarpetWave/Blue': '#465368', 'CarpetWaveGray/LightGray': '#616670', 'CarpetStripeGray/LightGray': '#616670', 'CarpetCouture/White': '#8b8596', 'CarpetDiamond/LightWhite': '#9c949f' };

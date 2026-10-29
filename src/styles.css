@@ -651,9 +651,6 @@ button .avatar { pointer-events: none; }
 .pip-body { margin: 0; background: #1c1c1c; font-family: Inter, -apple-system, sans-serif; }
 .pip-stage { display: grid; gap: 4px; padding: 4px; height: 100vh; box-sizing: border-box; }
 .pip-stage .meeting-tile { background: #ffffff08; }
-/* Far zoomed out: only the overview (rooms and people as dots) is drawn. */
-.office-scene.is-overview .office-map > :not(.scene-overview):not(defs) { display: none; }
-.office-scene.is-overview .office-map { cursor: zoom-in; }
 /* Desks in the side panel */
 .desk-list .desk-hint { margin: 2px 10px 6px; font-size: 12px; color: var(--muted, #a1a1aa); }
 .desk-row { display: flex; flex-direction: column; gap: 4px; padding-bottom: 6px; }
