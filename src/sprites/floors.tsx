@@ -42,45 +42,55 @@ function slats(base: string, seam: string): PixelSprite {
 const woodLight = slats('#a27f6b', '#98735f');
 const wood = slats('#98735f', '#8f6b59');
 
-function wavy(base: string, wave: string): PixelSprite {
+/** Offset blocks: 16 × 8 bricks that step half a block left and right row by row, with a 1 px saw edge. */
+function steps(base: string, block: string): PixelSprite {
   const rows: string[] = [];
+  const shift = [0, 8, 0, 24];
   for (let y = 0; y < 32; y++) {
+    const start = shift[Math.floor(y / 8)] + (y % 2);
     let row = '';
-    for (let x = 0; x < 32; x++) {
-      const phase = (x + Math.floor(y / 4) * 4) % 16;
-      row += phase < 8 && (y % 8) < 4 ? 'w' : 'b';
-    }
+    for (let x = 0; x < 32; x++) row += ((x - start + 32) % 32) < 16 ? 'w' : 'b';
     rows.push(row);
   }
-  return { w: 32, h: 32, palette: { b: base, w: wave }, rows };
+  return { w: 32, h: 32, palette: { b: base, w: block }, rows };
 }
-const carpetWavyBlue = wavy('#465368', '#536176');
-const carpetWavyGray = wavy('#616670', '#6a6d77');
+const carpetWavyBlue = steps('#465368', '#536176');
+const carpetWavyGray = steps('#616670', '#6a6d77');
 
+/** Wide vertical bands, 16 px each, with a 1 px saw edge. */
 function stripe(base: string, line: string): PixelSprite {
   const rows: string[] = [];
-  for (let y = 0; y < 32; y++) { let row = ''; for (let x = 0; x < 32; x++) row += (x % 4) < 2 ? 'l' : 'b'; rows.push(row); }
+  for (let y = 0; y < 32; y++) { let row = ''; for (let x = 0; x < 32; x++) row += ((x - 8 + (y % 2 ? 1 : 0) + 32) % 32) < 17 ? 'l' : 'b'; rows.push(row); }
   return { w: 32, h: 32, palette: { b: base, l: line }, rows };
 }
 const carpetStripeGray = stripe('#616670', '#6a6d77');
 
+/** A medallion carpet: a ring with a cross and a centre stone in every tile, quarter flowers at the corners. */
 function couture(base: string, motif: string): PixelSprite {
   const rows: string[] = [];
   for (let y = 0; y < 32; y++) {
     let row = '';
     for (let x = 0; x < 32; x++) {
-      const cx = Math.abs((x % 16) - 8), cy = Math.abs((y % 16) - 8);
-      row += (cx + cy === 6 || (cx <= 1 && cy <= 1) || (cx === 0 && cy === 4) || (cy === 0 && cx === 4)) ? 'm' : 'b';
+      const dx = x - 15.5, dy = y - 15.5, r = Math.hypot(dx, dy);
+      const cx = Math.min(x, 31 - x), cy = Math.min(y, 31 - y), corner = Math.hypot(cx, cy);
+      const ring = r > 8.5 && r < 11.5;
+      const cross = (Math.abs(dx) < 1.5 && r < 8) || (Math.abs(dy) < 1.5 && r < 8);
+      const stone = r < 3;
+      const petals = corner < 6.5 && !(corner < 3.5 && corner > 2);
+      const dots = (Math.abs(Math.abs(dx) - Math.abs(dy)) < 1 && r > 12.5 && r < 14.5);
+      row += ring || cross || stone || petals || dots ? 'm' : 'b';
     }
     rows.push(row);
   }
   return { w: 32, h: 32, palette: { b: base, m: motif }, rows };
 }
-const carpetCoutureWhite = couture('#8b8596', '#8e8d9b');
+const carpetCoutureWhite = couture('#8e8d9b', '#8b8596');
 
+/** A diamond lattice drawn with double lines along both diagonals. */
 function diamond(base: string, line: string): PixelSprite {
   const rows: string[] = [];
-  for (let y = 0; y < 32; y++) { let row = ''; for (let x = 0; x < 32; x++) row += ((x + y) % 16 === 0 || (x - y + 32) % 16 === 0) ? 'l' : 'b'; rows.push(row); }
+  const band = (v: number) => [1, 2, 3, 6, 7, 8].includes(v);
+  for (let y = 0; y < 32; y++) { let row = ''; for (let x = 0; x < 32; x++) row += band((x + y + 4) % 32) || band((x - y + 36) % 32) ? 'l' : 'b'; rows.push(row); }
   return { w: 32, h: 32, palette: { b: base, l: line }, rows };
 }
 const carpetDiamondWhite = diamond('#9c949f', '#8e8d9b');
