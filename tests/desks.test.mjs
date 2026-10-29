@@ -68,3 +68,30 @@ test('only editors assign desks to other people or take someone else\'s desk', a
   ana.send({ type: 'desk:assign', areaId: DESK, userId: null });
   assert.deepEqual((await bruno.next('desks')).desks, {}, 'owners can give up their desk');
 });
+
+test('alone in a top office you switch to focus; leaving restores your status; your own choice wins', async t => {
+  const server = await fixture(t);
+  const ana = await connect(server.port, 'Ana', 'user-ana-0001');
+  const bruno = await connect(server.port, 'Bruno', 'user-bruno-001');
+  const anaId = ana.welcome.id;
+  const office = { x: 14.5 * 32, y: 17 * 32 }, hall = { x: 20 * 32, y: 25 * 32 };
+  const statusOf = (event, id) => event.participants.find(person => person.id === id)?.status;
+  ana.send({ type: 'move', ...office });
+  const inside = await bruno.next('participants', event => statusOf(event, anaId) === 'focus');
+  assert.equal(inside.participants.find(person => person.id === anaId).focusZone, 'e6db33b1');
+  assert.equal(inside.participants.find(person => person.id === anaId).statusBeforeFocus, undefined, 'internal state stays on the server');
+  bruno.send({ type: 'move', x: office.x + 32, y: office.y });
+  const both = await ana.next('participants', event => event.participants.some(person => person.id === bruno.welcome.id && person.x === office.x + 32));
+  assert.equal(statusOf(both, bruno.welcome.id), 'available', 'the second person is not alone, so stays available');
+  ana.send({ type: 'move', ...hall });
+  await bruno.next('participants', event => statusOf(event, anaId) === 'available');
+  bruno.send({ type: 'move', x: hall.x + 32, y: hall.y });
+  await ana.next('participants', event => event.participants.some(person => person.id === bruno.welcome.id && person.x === hall.x + 32));
+  ana.send({ type: 'move', ...office });
+  await bruno.next('participants', event => statusOf(event, anaId) === 'focus');
+  ana.send({ type: 'profile', status: 'available' });
+  await bruno.next('participants', event => statusOf(event, anaId) === 'available');
+  ana.send({ type: 'move', x: office.x, y: office.y + 32 });
+  const stays = await bruno.next('participants', event => event.participants.some(person => person.id === anaId && person.y === office.y + 32));
+  assert.equal(statusOf(stays, anaId), 'available', 'a status chosen inside is kept');
+});

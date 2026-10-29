@@ -23,3 +23,7 @@ export function deskSeats(area, seats) {
   const cx = (area.x + area.w / 2) * TILE, cy = (area.y + area.h / 2) * TILE;
   return seats.filter((seat) => Math.hypot(seat.x - cx, seat.y - cy) <= TILE * 2.6).sort((a, b) => Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy));
 }
+
+/** The private offices along the top: entering one alone switches you to focus (do not disturb). */
+export const FOCUS_ROOMS = DESK_AREAS.filter((area) => area.w >= 5 && area.h >= 5);
+export const focusRoomOf = (point) => { const tx = Math.floor(point.x / TILE), ty = Math.floor(point.y / TILE); return FOCUS_ROOMS.find((area) => tx >= area.x && tx < area.x + area.w && ty >= area.y && ty < area.y + area.h) ?? null; };

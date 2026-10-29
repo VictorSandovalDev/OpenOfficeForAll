@@ -10,3 +10,5 @@ export const DEFAULT_MEETING: { locked: boolean };
 export const DESK_AREAS: MeetingArea[];
 export function deskAt(tx: number, ty: number): MeetingArea | null;
 export function deskSeats(area: MeetingArea, seats: Seat[]): Seat[];
+export const FOCUS_ROOMS: MeetingArea[];
+export function focusRoomOf(point: { x: number; y: number }): MeetingArea | null;

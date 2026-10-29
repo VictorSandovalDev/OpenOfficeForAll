@@ -7,7 +7,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { OFFICE_SIZE as MAP, MEDIA_RADIUS, CHAT_RADIUS, SPAWN, sharesConversationArea } from '../shared/office-world.js';
 import { canApproachSeat, canExitSeat, getOfficeSeat, getOfficeSeats, SEAT_INTERACTION_RADIUS } from '../shared/office-seats.js';
 import { baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
-import { meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
+import { focusRoomOf, meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
 import { createAccounts } from './accounts.mjs';
 import { AREAS } from '../shared/vivo-map.js';
 
@@ -149,7 +149,7 @@ export async function startServer({
     }
   };
   const error = (socket, code, message) => send(socket, { type: 'error', code, message });
-  const participants = (room) => [...room.members.values()].map((member) => ({ ...member.participant }));
+  const participants = (room) => [...room.members.values()].map((member) => { const { statusBeforeFocus, focusDeclined, ...shown } = member.participant; return shown; });
   const broadcast = (room, payload, predicate = () => true) => {
     for (const member of room.members.values()) if (predicate(member.participant)) send(member.socket, payload);
   };
@@ -171,7 +171,24 @@ export async function startServer({
     return state;
   };
   const systemMessage = (room, areaId, participant, text) => broadcast(room, { type: 'chat', message: { id: randomUUID(), participantId: participant.id, name: participant.name, text, channel: 'meeting', areaId, system: true, createdAt: new Date().toISOString() } }, (other) => meetingRoomOf(other)?.id === areaId);
+  /** Focus offices: alone in one, an active person switches to focus; leaving restores the previous status.
+      A status chosen by hand inside the office is respected until the person leaves. */
+  const applyFocusZones = (room) => {
+    const people = [...room.members.values()].map((member) => member.participant);
+    for (const person of people) {
+      const zone = focusRoomOf(person);
+      if (person.focusZone && person.focusZone !== zone?.id) {
+        if (person.status === 'focus') person.status = person.statusBeforeFocus ?? 'available';
+        delete person.focusZone; delete person.statusBeforeFocus;
+      }
+      if (person.focusDeclined && person.focusDeclined !== zone?.id) delete person.focusDeclined;
+      if (!zone || person.focusZone || person.focusDeclined === zone.id || person.status !== 'available') continue;
+      const alone = !people.some((other) => other !== person && focusRoomOf(other)?.id === zone.id);
+      if (alone) { person.statusBeforeFocus = person.status; person.status = 'focus'; person.focusZone = zone.id; }
+    }
+  };
   const broadcastParticipants = (room) => {
+    applyFocusZones(room);
     const before = room.lastMeetings ?? {};
     const state = meetings(room);
     for (const [areaId, meeting] of Object.entries(state)) if (!before[areaId]) for (const member of meetingMembers(room, areaId)) systemMessage(room, areaId, member.participant, 'se unió');
@@ -471,7 +488,10 @@ export async function startServer({
           const name = displayName(payload.name);
           if (name) { participant.name = name; changed = true; }
           if (typeof payload.color === 'string' && COLOR.test(payload.color)) { participant.color = payload.color; changed = true; }
-          if (STATUSES.has(payload.status)) { participant.status = payload.status; changed = true; }
+          if (STATUSES.has(payload.status)) {
+            if (participant.status !== payload.status && focusRoomOf(participant)) { participant.focusDeclined = focusRoomOf(participant).id; delete participant.focusZone; delete participant.statusBeforeFocus; }
+            participant.status = payload.status; changed = true;
+          }
           if (payload.avatar !== undefined) { const look = sanitizeLook(payload.avatar); if (look) { participant.avatar = look; changed = true; } }
           if (typeof payload.handRaised === 'boolean') { if (payload.handRaised) participant.handRaised = true; else delete participant.handRaised; changed = true; }
           if (typeof payload.statusText === 'string') { const text = cleanText(payload.statusText, 60); if (text) participant.statusText = text; else delete participant.statusText; changed = true; }

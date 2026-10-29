@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { DoorOpen, Sofa } from 'lucide-react';
+import { DoorOpen, Headphones, Sofa } from 'lucide-react';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import type { EditItem, OfficeObject, Participant, Facing } from './types';
 import './scene.css';
@@ -7,7 +7,7 @@ import { AREAS, TILE, WORLD } from '../shared/vivo-map.js';
 import { DOORWAYS, WALLS } from '../shared/vivo-geometry.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { asMapObject, baseAsEditorObject, catalogEntry, effectiveBaseObjects, type Overrides } from '../shared/office-objects.js';
-import { deskAt, MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
+import { deskAt, FOCUS_ROOMS, MEETING_ROOMS, meetingRoomAt, meetingRoomOf, type MeetingArea } from '../shared/office-meetings.js';
 import type { Interaction, Meetings } from './types';
 import { blockedWith, canStep, findTilePath, nearestFreeTile, RUN_STEP_MS, sameTile, STEP_MS, tileCenter, tileOf, type Blocked, type Point, type Tile } from './navigation';
 import { FloorPatterns, floorKey, floorPatternId } from './sprites/floors';
@@ -39,7 +39,7 @@ type Motion = { facing: Facing; moving: boolean; frame: number };
 type Remote = { from: Point; to: Point; startedAt: number; facing: Facing; lastMoved: number };
 
 const STATUS_COLOR: Record<Participant['status'], string> = { available: '#3ac07a', busy: '#e4484f', away: '#9b9da9', focus: '#aa99ee' };
-const STATUS_LABEL_SOURCE: Record<Participant['status'], string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'Concentrado' };
+const STATUS_LABEL_SOURCE: Record<Participant['status'], string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'No molestar' };
 /** Status labels, translated each time they are read so a language change applies at once. */
 const STATUS_LABEL = Object.defineProperties({} as Record<Participant['status'], string>, Object.fromEntries(Object.entries(STATUS_LABEL_SOURCE).map(([key, value]) => [key, { enumerable: true, get: () => t(value) }])));
 const KEY_DIRECTION: Record<string, [number, number, Facing]> = { arrowup: [0, -1, 'north'], w: [0, -1, 'north'], arrowdown: [0, 1, 'south'], s: [0, 1, 'south'], arrowleft: [-1, 0, 'west'], a: [-1, 0, 'west'], arrowright: [1, 0, 'east'], d: [1, 0, 'east'] };
@@ -151,11 +151,12 @@ function SimpleAvatar({ person, self, x, y, scale }: { person: Participant; self
 /** Area markers of the simplified view: a door on meeting rooms, a sofa on lounges. */
 function SimpleAreaIcons({ scale }: { scale: number }) {
   const k = 1 / scale;
-  return <g pointerEvents="none" shapeRendering="auto">{AREAS.filter(area => area.type === 'MeetingRoom' || area.type === 'Common').map(area => {
-    const cx = (area.x + area.w / 2) * TILE, cy = (area.y + area.h / 2) * TILE, Icon = area.type === 'MeetingRoom' ? DoorOpen : Sofa;
+  return <g pointerEvents="none" shapeRendering="auto">{[...AREAS.filter(area => area.type === 'MeetingRoom' || area.type === 'Common'), ...FOCUS_ROOMS].map(area => {
+    const focus = FOCUS_ROOMS.includes(area as typeof FOCUS_ROOMS[number]);
+    const cx = (area.x + area.w / 2) * TILE, cy = (area.y + area.h / 2) * TILE, Icon = focus ? Headphones : area.type === 'MeetingRoom' ? DoorOpen : Sofa;
     return <g key={area.id} transform={`translate(${cx} ${cy})`}>
       <rect x={-11 * k} y={-11 * k} width={22 * k} height={22 * k} rx={5 * k} fill="#ffffff" stroke="#00000014" strokeWidth={k} />
-      <Icon x={-7.5 * k} y={-7.5 * k} width={15 * k} height={15 * k} strokeWidth={2} color={area.type === 'MeetingRoom' ? '#3b6fe0' : '#d26be0'} />
+      <Icon x={-7.5 * k} y={-7.5 * k} width={15 * k} height={15 * k} strokeWidth={2} color={focus ? '#8b6fe8' : area.type === 'MeetingRoom' ? '#3b6fe0' : '#d26be0'} />
     </g>;
   })}</g>;
 }
@@ -447,7 +448,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       const host = event.currentTarget.parentElement?.getBoundingClientRect();
       setHoverRoom(area && host && area.id !== selfRoomId ? { area, x: event.clientX - host.left, y: event.clientY - host.top } : null);
       const desk = !area && host ? deskAt(tx, ty) : null;
-      setHoverDesk(desk && host && deskLabels[desk.id] ? { label: deskLabels[desk.id], x: event.clientX - host.left, y: event.clientY - host.top } : null);
+      setHoverDesk(desk && host && deskLabels[desk.id] ? { label: FOCUS_ROOMS.some(room => room.id === desk.id) ? `${deskLabels[desk.id]} · ${t('Zona de concentración')}` : deskLabels[desk.id], x: event.clientX - host.left, y: event.clientY - host.top } : null);
     } else { if (hoverRoom) setHoverRoom(null); if (hoverDesk) setHoverDesk(null); }
     const start = drag.current;
     if (!start) return;

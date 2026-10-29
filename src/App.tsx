@@ -34,7 +34,7 @@ import { language, LANGUAGES, locale, onLanguageChange, setLanguage, t, type Lan
 const lookStorageKey = (name: string) => `office-look-${name.trim().toLowerCase() || 'invitado'}`;
 function readLook(name: string): AvatarLook { try { return sanitizeLook(JSON.parse(localStorage.getItem(lookStorageKey(name)) || 'null')); } catch { return sanitizeLook(null); } }
 const COLORS = ['#7869df', '#e89e57', '#4d9e8b', '#d97797', '#609bd2', '#9d805e'];
-const STATUS_SOURCE: Record<Status, string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'Concentrado' };
+const STATUS_SOURCE: Record<Status, string> = { available: 'Activo', busy: 'Ocupado', away: 'Ausente', focus: 'No molestar' };
 /** Status labels, translated each time they are read so a language change applies at once. */
 const STATUS = Object.defineProperties({} as Record<Status, string>, Object.fromEntries(Object.entries(STATUS_SOURCE).map(([key, value]) => [key, { enumerable: true, get: () => t(value) }])));
 const room = new URLSearchParams(location.search).get('room')?.replace(/[^a-z0-9_-]/g, '').slice(0, 64) || 'mi-oficina';
@@ -168,6 +168,14 @@ export default function App() {
     else if (recorder.current.recording) void recorder.current.stop(`reunion-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.webm`);
   }, [recordingMine, recordStreams.map(stream => stream.id + stream.getAudioTracks().length).join('|')]);
   const self = office.participants.find(p => p.id === office.selfId);
+  // Entering a focus office alone switches you to focus; say so once, and again when you leave.
+  const focusZone = self?.focusZone ?? null;
+  const lastFocusZone = useRef<string | null>(null);
+  useEffect(() => {
+    if (focusZone && !lastFocusZone.current) setNotice(t('Zona de concentración: estás en «No molestar» y nadie se conectará contigo por cercanía. Al salir vuelves a tu estado.'));
+    else if (!focusZone && lastFocusZone.current) setNotice(t('Saliste de la zona de concentración.'));
+    lastFocusZone.current = focusZone;
+  }, [focusZone]);
   const selectedPerson = office.participants.find(p => p.id === selected);
   const visiblePeople = office.participants.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
   const online = office.connection === 'online';

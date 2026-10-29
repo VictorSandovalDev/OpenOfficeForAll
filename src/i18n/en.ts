@@ -394,4 +394,8 @@ export const EN: Record<string, string> = {
   "Asignar a…": "Assign to…",
   "Tu escritorio": "Your desk",
   "No hay objetos con ese nombre.": "No objects with that name.",
+  "Zona de concentración: estás en «No molestar» y nadie se conectará contigo por cercanía. Al salir vuelves a tu estado.": "Focus zone: you are on Do not disturb and nobody connects with you by proximity. Leaving restores your status.",
+  "Saliste de la zona de concentración.": "You left the focus zone.",
+  "Zona de concentración": "Focus zone",
+  "No molestar": "Do not disturb",
 };

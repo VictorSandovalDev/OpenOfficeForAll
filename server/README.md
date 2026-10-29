@@ -36,6 +36,9 @@ Supported messages:
 - `meeting:lock`: `areaId` of a meeting room and `locked`. Only someone inside the room may change it;
   a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
   Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants, startedAt, music?, recordingBy? } }`).
+- Focus offices: the four private offices along the top. Someone who enters one alone while `available` is
+  switched to `focus` (Do not disturb, so proximity calls do not connect) and gets `focusZone`; leaving restores
+  the previous status. Choosing a status by hand inside the office is respected until they leave.
 - `desk:assign`: `areaId` of a desk and `userId` (someone from the office) or `null` to free it. Anyone may claim a
   free desk or free their own; assigning or freeing other people's desks needs edit rights. One desk per person.
   Saved in `server/data/<room>.desks.json`; `welcome` and every change carry `desks` (`{ [areaId]: userId }`).
