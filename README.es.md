@@ -137,7 +137,7 @@ Conecta un servidor de medios [LiveKit](https://livekit.io) opcional y las salas
 </tr>
 </table>
 
-Además: audio, vídeo y pantalla compartida con WebRTC (todo apagado al entrar), cuentas personales opcionales con contraseña, objetos interactivos que abren un enlace o una nota al pulsar **X** a su lado, escritorios asignados (⌘ / Ctrl D te lleva al tuyo), oficinas de concentración que te ponen en «No molestar» mientras estás solo dentro, zoom con la rueda y una vista general de todos al alejarte, perfiles, temas claro, oscuro y del sistema, inglés y español, zoom del 36 % al 400 %, minimapa y atajos de teclado (⌘ / Ctrl K para buscar personas, ⌘ / Ctrl D para volver a tu escritorio).
+Además: audio, vídeo y pantalla compartida con WebRTC (todo apagado al entrar), cuentas personales opcionales con contraseña, objetos interactivos que abren un enlace o una nota al pulsar **X** a su lado, espacios de trabajo con su propio nombre y mapa (desde la oficina completa o una vacía), escritorios asignados (⌘ / Ctrl D te lleva al tuyo), oficinas de concentración que te ponen en «No molestar» mientras estás solo dentro, zoom con la rueda y una vista general de todos al alejarte, perfiles, temas claro, oscuro y del sistema, inglés y español, zoom del 36 % al 400 %, minimapa y atajos de teclado (⌘ / Ctrl K para buscar personas, ⌘ / Ctrl D para volver a tu escritorio).
 
 ---
 
@@ -186,7 +186,7 @@ flowchart LR
 ## ✅ Verificación
 
 ```sh
-npm test      # 43 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
+npm test      # 46 pruebas: colisiones, asientos, colocación, reuniones, chat, cuentas, tokens de medios
 npm run build # comprobación de tipos y paquete de producción
 ```
 

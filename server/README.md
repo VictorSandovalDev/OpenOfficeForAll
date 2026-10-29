@@ -36,6 +36,11 @@ Supported messages:
 - `meeting:lock`: `areaId` of a meeting room and `locked`. Only someone inside the room may change it;
   a locked room rejects `move` and `seat:sit` from outside with `meeting_locked`, and unlocks when it empties.
   Meeting state travels with every `participants` message as `meetings` (`{ [areaId]: { active, locked, participants, startedAt, music?, recordingBy? } }`).
+- Workspaces: `POST /api/workspaces` with `name` (2–60 characters), `template` (`office` or `empty`) and, when
+  the server has an invite key, `key`; replies `201 { slug, name }` with a unique address made from the name.
+  `GET /api/workspaces/<slug>` returns its name. Every workspace is its own room (map, chat, calendar, desks);
+  `empty` starts with every piece of furniture removed. `welcome` carries `workspace`; editors send
+  `workspace:rename` with `name`, and everyone receives `workspace`. Saved in `server/data/workspaces.json`.
 - Focus offices: the four private offices along the top. Someone who enters one alone while `available` is
   switched to `focus` (Do not disturb, so proximity calls do not connect) and gets `focusZone`; leaving restores
   the previous status. Choosing a status by hand inside the office is respected until they leave.

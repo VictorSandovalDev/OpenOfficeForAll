@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
 import { OFFICE_SIZE as MAP, MEDIA_RADIUS, CHAT_RADIUS, SPAWN, sharesConversationArea } from '../shared/office-world.js';
 import { canApproachSeat, canExitSeat, getOfficeSeat, getOfficeSeats, SEAT_INTERACTION_RADIUS } from '../shared/office-seats.js';
-import { baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
+import { BASE_OBJECTS, baseAsEditorObject, catalogEntry, isBaseObjectId, nextFacing, officeObjectBlocksPoint, validOverride } from '../shared/office-objects.js';
 import { focusRoomOf, meetingRoom, meetingRoomOf } from '../shared/office-meetings.js';
 import { createAccounts } from './accounts.mjs';
 import { AREAS } from '../shared/vivo-map.js';
@@ -136,6 +136,50 @@ export async function startServer({
 } = {}) {
   const accounts = accountMode === 'off' ? null : createAccounts(dataDir);
   const loginRate = new Map();
+  const workspaceRate = new Map();
+
+  // --- Workspaces: each one is a room with its own map, chat, calendar and desks, and a display name. ---
+  const workspaceStore = { list: null, write: Promise.resolve() };
+  async function loadWorkspaces() {
+    if (workspaceStore.list) return workspaceStore.list;
+    try { const saved = JSON.parse(await readFile(join(dataDir, 'workspaces.json'), 'utf8')); workspaceStore.list = saved?.workspaces && typeof saved.workspaces === 'object' ? saved.workspaces : {}; }
+    catch { workspaceStore.list = {}; }
+    return workspaceStore.list;
+  }
+  function saveWorkspaces() {
+    const snapshot = JSON.stringify({ version: 1, workspaces: workspaceStore.list });
+    workspaceStore.write = workspaceStore.write.then(async () => {
+      await mkdir(dataDir, { recursive: true });
+      const destination = join(dataDir, 'workspaces.json'), temporary = `${destination}.${randomUUID()}.tmp`;
+      await writeFile(temporary, snapshot, { mode: 0o600 }); await rename(temporary, destination);
+    }).catch((cause) => console.error(`Could not save workspaces: ${cause.message}`));
+    return workspaceStore.write;
+  }
+  // Rooms that existed before workspaces keep a readable name; the original office is "Vivo".
+  const defaultWorkspaceName = (slug) => slug === 'mi-oficina' ? 'Vivo' : slug.replace(/[-_]+/g, ' ').replace(/^./, (c) => c.toUpperCase());
+  async function workspaceName(slug) { return (await loadWorkspaces())[slug]?.name ?? defaultWorkspaceName(slug); }
+  const slugify = (name) => name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'espacio';
+  async function slugTaken(slug) {
+    if ((await loadWorkspaces())[slug] || rooms.has(slug)) return true;
+    try { await stat(join(dataDir, `${slug}.json`)); return true; } catch { /* free */ }
+    try { await stat(join(dataDir, `${slug}.chat.json`)); return true; } catch { return false; }
+  }
+  async function createWorkspace(name, template) {
+    const base = slugify(name);
+    let slug = base;
+    for (let n = 2; await slugTaken(slug); n++) slug = `${base}-${n}`.slice(0, 63);
+    const list = await loadWorkspaces();
+    list[slug] = { name, template, createdAt: new Date().toISOString() };
+    if (template === 'empty') {
+      // An empty office keeps floors and walls; every piece of furniture starts removed and can be added back.
+      const overrides = Object.fromEntries(BASE_OBJECTS.map((object) => [object.id, { removed: true }]));
+      await mkdir(dataDir, { recursive: true });
+      await writeFile(join(dataDir, `${slug}.json`), JSON.stringify({ version: 2, objects: [], overrides, areaNames: {}, interactions: {} }), { mode: 0o600 });
+    }
+    await saveWorkspaces();
+    return { slug, name };
+  }
+
   editPolicy ??= adminKey ? 'admins' : 'everyone'; // with an admin key, decorating defaults to admins
   const canEdit = (participant) => editPolicy === 'everyone' || participant.role === 'admin';
   const rooms = new Map();
@@ -224,6 +268,7 @@ export async function startServer({
     if (rooms.size >= maxRooms) return null;
     const room = { slug, members: new Map(), channels: DEFAULT_CHANNELS.map((channel) => ({ ...channel })), history: {}, users: {}, events: [], desks: {}, chatWrite: Promise.resolve(), objects: [], overrides: {}, areaNames: {}, interactions: {}, locks: {}, meetingStarts: {}, meetingExtras: {}, lastMeetings: {}, writeQueue: Promise.resolve(), loaded: null };
     room.loaded = (async () => {
+      room.workspaceName = await workspaceName(slug);
       try {
         const raw = await readFile(join(dataDir, `${slug}.json`), 'utf8');
         if (raw.length > 256_000) return;
@@ -353,6 +398,31 @@ export async function startServer({
       response.end(JSON.stringify({ accessRequired: !!accessKey, editPolicy, iceServers, accounts: accountMode, sfu: !!livekit }));
       return;
     }
+    if (request.url === '/api/workspaces' || request.url?.startsWith('/api/workspaces/')) {
+      const reply = (status, body) => { response.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security }); response.end(JSON.stringify(body)); };
+      if (request.method === 'GET' && request.url.startsWith('/api/workspaces/')) {
+        const slug = decodeURIComponent(request.url.slice('/api/workspaces/'.length));
+        if (!ROOM_SLUG.test(slug)) return reply(400, { error: 'invalid_workspace' });
+        void workspaceName(slug).then((name) => reply(200, { slug, name }));
+        return;
+      }
+      if (request.method !== 'POST' || request.url !== '/api/workspaces' || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
+      const ip = request.socket.remoteAddress ?? 'unknown';
+      const bucket = workspaceRate.get(ip) ?? { tokens: 5, at: Date.now() }; workspaceRate.set(ip, bucket);
+      if (!takeToken(bucket, 5, 0.05)) return reply(429, { error: 'too_many_attempts' });
+      let body = '';
+      request.on('data', (chunk) => { body += chunk; if (body.length > 4096) request.destroy(); });
+      request.on('end', async () => {
+        let payload; try { payload = JSON.parse(body || '{}'); } catch { return reply(400, { error: 'invalid_json' }); }
+        if (accessKey && !sameSecret(String(payload.key ?? ''), accessKey)) return reply(403, { error: 'access_denied' });
+        const name = cleanText(payload.name, 60);
+        if (!name || name.length < 2) return reply(400, { error: 'invalid_name' });
+        const template = payload.template === 'empty' ? 'empty' : 'office';
+        try { return reply(201, await createWorkspace(name, template)); }
+        catch (cause) { console.error(`Could not create workspace: ${cause.message}`); return reply(500, { error: 'workspace_failed' }); }
+      });
+      return;
+    }
     if (request.url?.startsWith('/api/') && accounts) {
       const reply = (status, body) => { response.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...security }); response.end(JSON.stringify(body)); };
       if (request.method !== 'POST' || !validOrigin(request.headers.origin, request.headers.host, allowedOrigins)) return reply(403, { error: 'forbidden' });
@@ -445,7 +515,7 @@ export async function startServer({
         room.members.set(client.participant.id, client);
         broadcast(room, { type: 'users', users: directory(room) }, (other) => other.id !== client.participant.id);
         persistChat(room);
-        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames, interactions: room.interactions , desks: room.desks });
+        send(socket, { type: 'welcome', id: client.participant.id, userId: client.participant.userId, role: client.participant.role, editPolicy, participants: participants(room), meetings: meetings(room), channels: room.channels, users: directory(room), events: room.events, messages: visibleHistory(room, client.participant.userId), objects: room.objects, overrides: room.overrides, areaNames: room.areaNames, interactions: room.interactions , desks: room.desks , workspace: { slug: room.slug, name: room.workspaceName } });
         broadcastParticipants(room);
         return;
       }
@@ -546,6 +616,17 @@ export async function startServer({
           room.channels.push({ id, name: channelName(payload.name) || id, topic: cleanText(payload.topic, 160) });
           persistChat(room);
           broadcast(room, { type: 'channels', channels: room.channels, created: id, by: participant.id });
+          break;
+        }
+        case 'workspace:rename': {
+          if (!canEdit(participant)) return error(socket, 'forbidden', 'Only office admins can rename the workspace.');
+          const name = cleanText(payload.name, 60);
+          if (!name || name.length < 2) return error(socket, 'invalid_workspace', 'Names need 2 to 60 characters.');
+          const list = await loadWorkspaces();
+          list[room.slug] = { ...(list[room.slug] ?? { template: 'office', createdAt: new Date().toISOString() }), name };
+          room.workspaceName = name;
+          void saveWorkspaces();
+          broadcast(room, { type: 'workspace', workspace: { slug: room.slug, name } });
           break;
         }
         case 'desk:assign': {
