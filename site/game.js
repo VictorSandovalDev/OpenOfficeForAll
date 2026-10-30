@@ -8,8 +8,8 @@
   const strip = root.querySelector('.video-strip');
   const roomToast = root.querySelector('.toast-room');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const lang = () => ['es', 'pt'].includes(document.body.dataset.lang) ? document.body.dataset.lang : 'en';
-  const YOU = { en: 'You', es: 'Tú', pt: 'Você' };
+  const lang = () => document.body.dataset.lang === 'es' ? 'es' : 'en';
+  const YOU = { en: 'You', es: 'Tú' };
 
   const T = 32, CELL = 92, FOOT_Y = 69, STEP_MS = 190, FRAME_MS = 110;
   const DIRS = { south: 0, north: 1, east: 2, west: 3 };
@@ -18,7 +18,6 @@
   const LINES = {
     es: ['¡Hola! 👋', '¿Café? ☕', '¿Daily en 5?', 'Mira este diseño 👀', '¡Deploy listo! 🚀', 'jajaja 😂', '¿Almorzamos?', 'Te paso el link', '¡Buen finde!'],
     en: ['Hi! 👋', 'Coffee? ☕', 'Daily in 5?', 'Check this design 👀', 'Deploy done! 🚀', 'lol 😂', 'Lunch?', "I'll send you the link", 'Have a good weekend!'],
-    pt: ['Oi! 👋', 'Café? ☕', 'Daily em 5?', 'Olha esse design 👀', 'Deploy feito! 🚀', 'kkkkk 😂', 'Almoçamos?', 'Te mando o link', 'Bom fim de semana!'],
   };
   const PEOPLE = [
     { name: 'Ana', sheet: 'f-teal', color: '#3a9fd6' }, { name: 'Leo', sheet: 'm-lime', color: '#3f9a4b' },
@@ -160,7 +159,7 @@
       const room = world.rooms.find(r => r.type === 'MeetingRoom' && me.tx >= r.x && me.tx < r.x + r.w && me.ty >= r.y && me.ty < r.y + r.h);
       const name = room ? room.name : '';
       if (name === roomName) return; roomName = name;
-      roomToast.textContent = room ? { en: `You're in ${room.name} · the doors close 🔒`, es: `Entraste a ${room.name} · se cierran las puertas 🔒`, pt: `Você entrou em ${room.name} · as portas se fecham 🔒` }[lang()] : '';
+      roomToast.textContent = room ? { en: `You're in ${room.name} · the doors close 🔒`, es: `Entraste a ${room.name} · se cierran las puertas 🔒` }[lang()] : '';
       roomToast.classList.toggle('show', !!room);
     };
 
