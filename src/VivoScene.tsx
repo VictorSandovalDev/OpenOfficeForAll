@@ -41,7 +41,7 @@ type Props = {
 type Layer = { key: string; y: number; order: number; node: ReactNode };
 export const MIN_ZOOM = .45;
 /** Below this zoom the office switches to the simplified view, as the reference does when you zoom out. */
-export const SIMPLE_BELOW = 1.12;
+export const SIMPLE_BELOW = .74;
 type Motion = { facing: Facing; moving: boolean; frame: number };
 type Remote = { from: Point; to: Point; startedAt: number; facing: Facing; lastMoved: number };
 
@@ -104,6 +104,9 @@ const OUTER_GROUND = AREA_FLOORS.filter(area => area.parent && !area.walls && ar
 });
 /** Outdoor ground keeps its colour on the minimap. */
 const MINIMAP_GROUND: Record<string, string> = { Sand: '#cdb88a', Dune: '#bfae7d', Pier: '#8a6a4a', Shore: '#9fd0d8', Water: '#3f8fb0', StonePath: '#8f8b82', Road: '#4b4f57', Sidewalk: '#bdbab3' };
+/** The flat colour of an area in the minimap, also used by the simplified view when zoomed out. */
+const MINIMAP_BACKGROUND = '#2b2b2b';
+const minimapFill = (area: typeof AREAS[number]) => MINIMAP_GROUND[area.floor ?? ''] ?? (area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? MINIMAP_BACKGROUND : '#474c55');
 /** Tall north walls are drawn over the tiles behind them; a click on one means the floor right in front of it. */
 const NORTH_WALLS = WALLS.filter(wall => !wall.open && (wall.side === 'n' || wall.side === 'nw' || wall.side === 'ne'));
 function inFrontOfWall(point: Point): Tile | null {
@@ -601,13 +604,17 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     <svg ref={svgRef} className="office-map" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="group" aria-label={t('Oficina Vivo. Muévete con las flechas o WASD; clic para caminar, clic en una silla o E para sentarte; flechas o E para levantarte; arrastra el fondo para desplazar el mapa.')} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => { drag.current = null; setDragging(false); }} onPointerLeave={() => setHoverRoom(null)}>
       <FloorPatterns />
       <defs><pattern id="edit-grid" width={TILE} height={TILE} patternUnits="userSpaceOnUse"><path d={`M${TILE} 0V${TILE}H0`} fill="none" stroke="#ffffff" strokeOpacity=".12" strokeWidth="1" /></pattern></defs>
-      <g pointerEvents="none" shapeRendering="crispEdges">
+      {/* Zoomed out, the map is drawn exactly like the minimap: flat blocks, no textures. */}
+      {simpleView ? <g pointerEvents="none" shapeRendering="crispEdges">
+        <rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill={MINIMAP_BACKGROUND} />
+        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={minimapFill(area)} />)}
+      </g> : <g pointerEvents="none" shapeRendering="crispEdges">
         <rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill={`url(#${floorPatternId('NewStyleGrass/Green')})`} />
         {OUTER_GROUND.map(area => <rect key={`outer-${area.id}`} x={area.x} y={area.y} width={area.w} height={area.h} fill={`url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
         {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE + (area.id.startsWith('ground-') ? 1 : 0)} height={area.h * TILE + (area.id.startsWith('ground-') ? 1 : 0)} fill={`url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
         {/* The shore pattern starts with sand: a sand edge hides the wrap-around line browsers draw when scaling the pattern. */}
         {[...AREA_FLOORS, ...OUTER_GROUND].filter(area => area.floor === 'Shore').map(area => { const outer = !('depth' in area); return <rect key={`shore-edge-${area.id}`} x={outer ? area.x : area.x * TILE} y={outer ? area.y : area.y * TILE} width={outer ? area.w : area.w * TILE + 1} height={2} fill="#e9d3a2" />; })}
-      </g>
+      </g>}
       {editingMode && <g pointerEvents="none"><rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill="#0b1020" fillOpacity=".28" /><rect x="0" y="0" width={WORLD.width} height={WORLD.height} fill="url(#edit-grid)" /></g>}
       {destination && <g pointerEvents="none" transform={`translate(${destination.tx * TILE} ${destination.ty * TILE})`}><rect x="2" y="2" width="28" height="28" rx="3" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" /></g>}
       {TRAFFIC.length > 0 && !simpleView && <Traffic still={reducedMotion} />}
@@ -622,8 +629,8 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     {hoverRoom && <div className="scene-tooltip" style={hoverRoom.x > viewport.width - 200 ? { right: viewport.width - hoverRoom.x + 14, top: hoverRoom.y + 16 } : { left: hoverRoom.x + 14, top: hoverRoom.y + 16 }}>{t('Sala de reunión: {name}', { name: areaNames[hoverRoom.area.id] ?? hoverRoom.area.name })}</div>}
     <div className="scene-minimap" aria-label={t('Minimapa de la oficina')}>
       <svg viewBox={`0 0 ${WORLD.width} ${WORLD.height}`} role="button" tabIndex={0} aria-label={t('Centrar cámara en el minimapa; Intro centra en tu posición')} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); following.current = true; setCamera(tileCenter(tile.current)); } }} onClick={event => { const matrix = event.currentTarget.getScreenCTM(); if (!matrix) return; const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); following.current = false; setCamera({ x: clamp(point.x, 0, WORLD.width), y: clamp(point.y, 0, WORLD.height) }); }}>
-        <rect width={WORLD.width} height={WORLD.height} fill="#2b2b2b" />
-        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={MINIMAP_GROUND[area.floor] ?? (area.walls ? '#5a5f68' : area.type === 'Public' && !area.parent ? '#2b2b2b' : '#474c55')} />)}
+        <rect width={WORLD.width} height={WORLD.height} fill={MINIMAP_BACKGROUND} />
+        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={minimapFill(area)} />)}
         <rect x={viewX} y={viewY} width={viewWidth} height={viewHeight} fill="#ffffff" fillOpacity=".08" stroke="#d8d8e0" strokeWidth={24 * minimapScale * 10} />
         {participants.map(person => <circle key={person.id} cx={person.id === selfId ? local.x : person.x} cy={person.id === selfId ? local.y : person.y} r={person.id === selfId ? 40 : 30} fill={person.id === selfId ? '#39d98a' : '#d0c7ef'} />)}
       </svg>
