@@ -8,6 +8,9 @@
 
 **A free, open-source virtual office for every team on Earth.**
 
+### [🌐 openofficeforall.app](https://openofficeforall.app)
+
+[![Website](https://img.shields.io/badge/website-openofficeforall.app-5a4fcf?style=for-the-badge&logo=googlechrome&logoColor=white)](https://openofficeforall.app)
 [![MIT License](https://img.shields.io/badge/license-MIT-2ea44f?style=for-the-badge)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/VictorSandovalDev/OpenOfficeForAll/ci.yml?branch=main&style=for-the-badge&label=tests)](https://github.com/VictorSandovalDev/OpenOfficeForAll/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-5fa04e?style=for-the-badge&logo=node.js&logoColor=white)](#-quick-start)
@@ -16,7 +19,7 @@
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VictorSandovalDev)
 [![Ko-fi](https://img.shields.io/badge/ko--fi-buy%20me%20a%20coffee-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/victorsandovaldev)
 
-[Why](#-why-open-office-for-all) · [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Roadmap](#%EF%B8%8F-roadmap)
+[🌐 Website](https://openofficeforall.app) · [Why](#-why-open-office-for-all) · [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Roadmap](#%EF%B8%8F-roadmap)
 
 </div>
 
@@ -30,7 +33,7 @@ The project is a faithful, independent re-creation of the experience of modern v
 
 ---
 
-🌐 **Website:** https://victorsandovaldev.github.io/OpenOfficeForAll/
+🌐 **Website:** [openofficeforall.app](https://openofficeforall.app), with a playable corner of the office right on the home page.
 
 ## 🚀 Quick start
 

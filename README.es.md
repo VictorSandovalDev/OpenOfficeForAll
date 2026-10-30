@@ -8,6 +8,9 @@
 
 **Una oficina virtual libre y de código abierto para todos los equipos del mundo.**
 
+### [🌐 openofficeforall.app](https://openofficeforall.app)
+
+[![Sitio web](https://img.shields.io/badge/sitio%20web-openofficeforall.app-5a4fcf?style=for-the-badge&logo=googlechrome&logoColor=white)](https://openofficeforall.app)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-2ea44f?style=for-the-badge)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/VictorSandovalDev/OpenOfficeForAll/ci.yml?branch=main&style=for-the-badge&label=pruebas)](https://github.com/VictorSandovalDev/OpenOfficeForAll/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-5fa04e?style=for-the-badge&logo=node.js&logoColor=white)](#-inicio-rápido)
@@ -16,7 +19,7 @@
 [![Patrocinar](https://img.shields.io/badge/patrocinar-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VictorSandovalDev)
 [![Ko-fi](https://img.shields.io/badge/ko--fi-inv%C3%ADtame%20un%20caf%C3%A9-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/victorsandovaldev)
 
-[Por qué](#-por-qué-open-office-for-all) · [Inicio rápido](#-inicio-rápido) · [Funciones](#-funciones) · [Arquitectura](#%EF%B8%8F-arquitectura) · [Hoja de ruta](#%EF%B8%8F-hoja-de-ruta)
+[🌐 Sitio web](https://openofficeforall.app) · [Por qué](#-por-qué-open-office-for-all) · [Inicio rápido](#-inicio-rápido) · [Funciones](#-funciones) · [Arquitectura](#%EF%B8%8F-arquitectura) · [Hoja de ruta](#%EF%B8%8F-hoja-de-ruta)
 
 </div>
 
@@ -30,7 +33,7 @@ El proyecto es una recreación fiel e independiente de la experiencia de las ofi
 
 ---
 
-🌐 **Sitio web:** https://victorsandovaldev.github.io/OpenOfficeForAll/
+🌐 **Sitio web:** [openofficeforall.app](https://openofficeforall.app), con un rincón jugable de la oficina en la portada.
 
 ## 🚀 Inicio rápido
 
