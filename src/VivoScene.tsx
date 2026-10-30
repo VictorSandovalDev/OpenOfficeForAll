@@ -4,7 +4,8 @@ import { floorMaterial, playStep } from './footsteps';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import type { EditItem, FocusRoom, OfficeObject, Participant, Facing } from './types';
 import './scene.css';
-import { AREAS, TILE, TRAFFIC, WORLD } from '../shared/vivo-map.js';
+import { AREAS, TILE, WORLD } from '../shared/vivo-map.js';
+import { stepTraffic, vehicleOnTile, VEHICLES_ON_STREET } from './traffic';
 import { DOORWAYS, WALLS } from '../shared/vivo-geometry.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { asMapObject, baseAsEditorObject, catalogEntry, effectiveBaseObjects, type Overrides } from '../shared/office-objects.js';
@@ -165,27 +166,21 @@ function Ghost({ item, tile }: { item: EditItem; tile: GhostTile }) {
 }
 
 /** A person in the simplified view: a round badge with their initial under the nameplate, constant on screen. */
-/** Vehicle sprites (side view, facing right) and their size in pixels. */
-export const VEHICLES: Record<string, { w: number; h: number }> = { 'car-red': { w: 72, h: 44 }, 'car-blue': { w: 76, h: 44 }, 'car-taxi': { w: 76, h: 46 }, 'car-green': { w: 64, h: 42 }, 'van-white': { w: 84, h: 52 }, 'city-bus': { w: 140, h: 64 } };
-/** Cars driving along the street, from beyond one edge of the map to beyond the other. Decorative: nobody can be hit,
-    because the road itself cannot be walked on except at the crossing. */
-function Traffic({ still }: { still: boolean }) {
-  const margin = 400, distance = WORLD.width + margin * 2;
-  return <g pointerEvents="none" className="scene-traffic">{TRAFFIC.flatMap((lane, laneIndex) => {
-    const duration = distance / lane.speed;
-    return lane.vehicles.map((kind, index) => {
-      const size = VEHICLES[kind] ?? { w: 72, h: 44 };
-      const y = (lane.row + 1) * TILE - size.h - 9; // wheels inside the lane, clear of the centre line and the kerb
-      const offset = (index * duration) / lane.vehicles.length; // spread evenly over the loop, so cars in a lane never overlap
-      const from = lane.direction > 0 ? -margin : WORLD.width + margin, to = lane.direction > 0 ? WORLD.width + margin : -margin;
-      const image = <image className="pixel-resource" href={`/assets/pixel/vehicles/${kind}.png`} width={size.w} height={size.h} x={-size.w / 2} y={0} transform={lane.direction < 0 ? 'scale(-1 1)' : undefined} />;
-      if (still) return <g key={`${laneIndex}-${index}`} transform={`translate(${((index + .5) * WORLD.width) / lane.vehicles.length} ${y})`}>{image}</g>;
-      return <g key={`${laneIndex}-${index}`} transform={`translate(${from} ${y})`}>
-        {image}
-        <animateTransform attributeName="transform" type="translate" from={`${from} ${y}`} to={`${to} ${y}`} dur={`${duration}s`} begin={`${-((offset + laneIndex * 3.7) % duration)}s`} repeatCount="indefinite" />
-      </g>;
-    });
-  })}</g>;
+/** The vehicles on the street. The simulation lives in traffic.ts; this only moves the sprites every frame. */
+function Traffic() {
+  const refs = useRef<Record<string, SVGGElement | null>>({});
+  useEffect(() => {
+    let frame = 0;
+    const draw = () => {
+      for (const vehicle of VEHICLES_ON_STREET) refs.current[vehicle.id]?.setAttribute('transform', `translate(${vehicle.x.toFixed(1)} ${vehicle.y})`);
+      frame = requestAnimationFrame(draw);
+    };
+    frame = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return <g pointerEvents="none" className="scene-traffic">{VEHICLES_ON_STREET.map(vehicle => <g key={vehicle.id} ref={node => { refs.current[vehicle.id] = node; }} transform={`translate(${vehicle.x} ${vehicle.y})`}>
+    <image className="pixel-resource" href={`/assets/pixel/vehicles/${vehicle.kind}.png`} width={vehicle.w} height={vehicle.h} x={-vehicle.w / 2} y={0} transform={vehicle.direction < 0 ? 'scale(-1 1)' : undefined} />
+  </g>)}</g>;
 }
 function SimpleAvatar({ person, self, x, y, scale }: { person: Participant; self: boolean; x: number; y: number; scale: number }) {
   const k = 1 / scale, name = self ? `${person.name}` : person.name, width = (name.length * 6.4 + 26) * k;
@@ -296,7 +291,6 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   const scale = clamp(pinned?.zoom ?? zoom, MIN_ZOOM, 4);
   // Zoomed out (or on request) the office shows only floors, walls and people, as the reference's simplified view.
   const simpleView = (simplified || scale < SIMPLE_BELOW) && !editKind && !editorOpen;
-  const reducedMotion = useMemo(() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } }, []);
   const viewWidth = viewport.width / scale, viewHeight = viewport.height / scale;
   const viewX = camera.x - viewWidth / 2, viewY = camera.y - viewHeight / 2;
 
@@ -413,7 +407,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
     const blur = () => { keys.current.clear(); cancelRoute(); pendingNavigation.current = null; };
     const focus = (event: FocusEvent) => { if (typing(event.target)) blur(); };
     window.addEventListener('keydown', down); window.addEventListener('keyup', up); window.addEventListener('blur', blur); window.addEventListener('focusin', focus);
-    let frame = 0, wasMoving = false;
+    let frame = 0, wasMoving = false, lastTick = 0;
     const tick = (time: number) => {
       // Remote avatars.
       const rendered: Record<string, Point & Motion> = {};
@@ -428,6 +422,15 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
         changed = ids.length !== Object.keys(previous).length || ids.some(id => { const a = previous[id], b = rendered[id]; return !a || a.x !== b.x || a.y !== b.y || a.facing !== b.facing || a.moving !== b.moving || a.frame !== b.frame; });
         return changed ? rendered : previous;
       });
+      // Traffic stops for anyone in its lane: where people are now and the tile they are stepping onto.
+      if (VEHICLES_ON_STREET.length) {
+        const people: Point[] = [tileCenter(tile.current)];
+        for (const remote of remotes.current.values()) people.push(remote.to);
+        for (const id in rendered) people.push(rendered[id]);
+        if (step.current) people.push(step.current.from);
+        stepTraffic(lastTick ? (time - lastTick) / 1000 : 0, people);
+      }
+      lastTick = time;
       // Local avatar: finish the current step, then pick the next one.
       const canMove = currentSelf.current && currentSelf.current.status !== 'away' && !currentSelf.current.seatId && !standingRequested.current && !editing.current;
       if (step.current) {
@@ -445,10 +448,11 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
         if (held.length) {
           const [dx, dy, direction] = held[held.length - 1];
           facing = direction;
-          if (canStep(tile.current.tx, tile.current.ty, tile.current.tx + dx, tile.current.ty + dy, currentBlocked.current)) next = { tx: tile.current.tx + dx, ty: tile.current.ty + dy };
+          if (canStep(tile.current.tx, tile.current.ty, tile.current.tx + dx, tile.current.ty + dy, currentBlocked.current) && !vehicleOnTile(tile.current.tx + dx, tile.current.ty + dy)) next = { tx: tile.current.tx + dx, ty: tile.current.ty + dy };
         } else if (route.current.length) {
           const candidate = route.current[0];
-          if (canStep(tile.current.tx, tile.current.ty, candidate.tx, candidate.ty, currentBlocked.current)) { next = route.current.shift()!; facing = facingFor(next.tx - tile.current.tx, next.ty - tile.current.ty); }
+          if (vehicleOnTile(candidate.tx, candidate.ty)) facing = facingFor(candidate.tx - tile.current.tx, candidate.ty - tile.current.ty); // wait for the vehicle to pass
+          else if (canStep(tile.current.tx, tile.current.ty, candidate.tx, candidate.ty, currentBlocked.current)) { next = route.current.shift()!; facing = facingFor(next.tx - tile.current.tx, next.ty - tile.current.ty); }
           else { const path = findTilePath(tile.current, route.current.at(-1)!, currentBlocked.current); route.current = path; if (!path.length) cancelRoute(); }
         }
         if (next) {
@@ -617,7 +621,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       </g>}
       {editingMode && <g pointerEvents="none"><rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill="#0b1020" fillOpacity=".28" /><rect x="0" y="0" width={WORLD.width} height={WORLD.height} fill="url(#edit-grid)" /></g>}
       {destination && <g pointerEvents="none" transform={`translate(${destination.tx * TILE} ${destination.ty * TILE})`}><rect x="2" y="2" width="28" height="28" rx="3" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" /></g>}
-      {TRAFFIC.length > 0 && !simpleView && <Traffic still={reducedMotion} />}
+      {VEHICLES_ON_STREET.length > 0 && !simpleView && <Traffic />}
       <g shapeRendering="crispEdges">{layers.map(layer => <g key={layer.key}>{layer.node}</g>)}</g>
       {simpleView && <SimpleAreaIcons scale={scale} />}
       {nearInteractive && <g pointerEvents="none" className="scene-interactive"><rect x={nearInteractive.object.x - nearInteractive.object.originX - 2} y={nearInteractive.object.y - nearInteractive.object.originY - 2} width={nearInteractive.object.w + 4} height={nearInteractive.object.h + 4} rx="3" fill="#f5c84222" stroke="#f5c842" strokeWidth="2" /></g>}

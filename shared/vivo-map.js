@@ -11,5 +11,5 @@ export const AREAS = map.AREAS;
 export const OBJECTS = map.OBJECTS;
 export const EXTRA_OBJECTS = map.EXTRA_OBJECTS;
 export const SPAWN_TILE = map.SPAWN_TILE;
-/** Vehicles driving along a street: lanes with a row, a direction, a speed (pixels a second) and the vehicles in order. */
+/** Vehicles driving along a street: lanes with a row (the lower of its two tiles), a direction, a speed (pixels a second) and the vehicles in order. */
 export const TRAFFIC = map.TRAFFIC ?? [];
