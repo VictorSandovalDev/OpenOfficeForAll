@@ -263,6 +263,11 @@ section { position: relative; }
 .btn-pink { background: #db61a2; color: #fff; box-shadow: 0 6px 0 #a83b78, 0 18px 40px -12px #db61a288; }
 .btn-pink:hover { box-shadow: 0 8px 0 #a83b78, 0 24px 50px -12px #db61a2aa; }
 .btn-pink:active { transform: translateY(4px) !important; box-shadow: 0 2px 0 #a83b78; }
+.btn-kofi { background: #fff; color: var(--ink); border: 2px solid #ff5e5b; box-shadow: 0 6px 0 #e04a47; }
+.btn-kofi:hover { background: #fff4f3; }
+.btn-kofi:active { transform: translateY(4px) !important; box-shadow: 0 2px 0 #e04a47; }
+.support-note { margin: 18px 0 0; color: var(--muted); font-size: 14.5px; }
+.support-note a { color: var(--ink); text-decoration: underline; text-decoration-style: dashed; text-underline-offset: 4px; }
 .support { padding: 40px 0 40px; }
 .support-card { width: min(1180px, calc(100% - 32px)); margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: center; padding: 48px; border-radius: 30px; background: linear-gradient(135deg, #fff1f7, var(--card) 55%); border: 1px solid #f1cfe0; box-shadow: 0 30px 60px -40px #a83b7866; overflow: hidden; }
 .support h2 em { color: #db61a2; }

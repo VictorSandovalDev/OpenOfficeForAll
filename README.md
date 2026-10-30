@@ -14,6 +14,7 @@
 [![React 19](https://img.shields.io/badge/react-19-149eca?style=for-the-badge&logo=react&logoColor=white)](#-architecture)
 [![Self-hosted](https://img.shields.io/badge/your%20data-your%20server-f5a623?style=for-the-badge)](#-built-for-the-whole-world)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VictorSandovalDev)
+[![Ko-fi](https://img.shields.io/badge/ko--fi-buy%20me%20a%20coffee-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/victorsandovaldev)
 
 [Why](#-why-open-office-for-all) · [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Roadmap](#%EF%B8%8F-roadmap)
 
@@ -252,6 +253,7 @@ An office can also run with its own local art pack in `src/sprites/reference/` (
 Open Office For All is free and will stay free. If it is useful to you or your team, you can help keep it growing: new maps, furniture, avatars, languages and a public demo server.
 
 <a href="https://github.com/sponsors/VictorSandovalDev"><img src="https://img.shields.io/badge/Sponsor%20on%20GitHub-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub"></a>
+<a href="https://ko-fi.com/victorsandovaldev"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-Ko--fi-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white" alt="Buy me a coffee on Ko-fi"></a>
 
 Starring the repository and sharing it with a team that works remotely helps too. ⭐
 
