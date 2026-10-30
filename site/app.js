@@ -160,7 +160,8 @@
 
   // Nav hides while scrolling down -----------------------------------------------------------------------------
   let lastY = scrollY;
-  addEventListener('scroll', () => { const y = scrollY; $('.nav').classList.toggle('hide', y > 200 && y > lastY); lastY = y; }, { passive: true });
+  // On phones the menu stays put.
+  addEventListener('scroll', () => { const y = scrollY; $('.nav').classList.toggle('hide', innerWidth > 700 && y > 200 && y > lastY); lastY = y; }, { passive: true });
 
   if (reduced || !window.gsap) return;
 

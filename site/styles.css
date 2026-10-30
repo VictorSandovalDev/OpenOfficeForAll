@@ -164,8 +164,8 @@ section { position: relative; }
 .art-talk .walk-east { left: 12%; top: 34%; background-position-y: -184px; animation: walkcycle .66s steps(6) infinite, toCenterL 6s ease-in-out infinite; }
 .art-talk .walk-west { right: 12%; top: 34%; background-position-y: -276px; animation: walkcycle .66s steps(6) infinite, toCenterR 6s ease-in-out infinite; }
 @keyframes walkcycle { from { background-position-x: -92px; } to { background-position-x: -644px; } }
-@keyframes toCenterL { 0%, 8% { left: 2%; } 45%, 92% { left: 30%; } 100% { left: 2%; } }
-@keyframes toCenterR { 0%, 8% { right: 2%; } 45%, 92% { right: 30%; } 100% { right: 2%; } }
+@keyframes toCenterL { 0%, 8% { left: 2%; } 45%, 92% { left: calc(50% - 130px); } 100% { left: 2%; } }
+@keyframes toCenterR { 0%, 8% { right: 2%; } 45%, 92% { right: calc(50% - 130px); } 100% { right: 2%; } }
 .rings { position: absolute; left: 50%; top: 50%; }
 .rings i { position: absolute; left: -40px; top: -40px; width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; opacity: 0; animation: ring 6s infinite; }
 .rings i:nth-child(2) { animation-delay: .4s; } .rings i:nth-child(3) { animation-delay: .8s; }
@@ -277,7 +277,9 @@ section { position: relative; }
 }
 @media (max-width: 560px) {
   body { font-size: 16px; }
-  .nav { gap: 8px; padding-left: 12px; }
+  /* Clear of the phone's status bar and notch, with room to breathe. */
+  .nav { top: calc(env(safe-area-inset-top, 0px) + 16px); width: calc(100% - 28px); gap: 8px; padding: 9px 9px 9px 12px; border-radius: 16px; }
+  .hero { padding-top: calc(env(safe-area-inset-top, 0px) + 118px); }
   .brand span, .stars { display: none; }
   .badges { height: 520px; }
   .badge { width: 140px; }
