@@ -749,7 +749,7 @@ export async function startServer({
           const list = await loadWorkspaces();
           list[room.slug] = { ...(list[room.slug] ?? { template: 'office', createdAt: new Date().toISOString() }), name };
           room.workspaceName = name;
-          void saveWorkspaces();
+          await saveWorkspaces(); // saved before anyone is told, so a restart right after cannot lose it
           broadcast(room, { type: 'workspace', workspace: { slug: room.slug, name } });
           break;
         }
