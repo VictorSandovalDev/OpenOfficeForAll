@@ -1,254 +1,323 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Open Office For All</title>
-<meta name="description" content="A free, open-source virtual office for remote teams. Walk around a pixel-art office, talk to whoever is nearby, meet in rooms. Host it yourself, in any country and any language." />
-<meta property="og:title" content="Open Office For All" />
-<meta property="og:description" content="A free, open-source virtual office for remote teams. Host it yourself." />
-<meta property="og:image" content="assets/office.jpg" />
+<meta name="description" content="Una oficina virtual gratis y de código abierto: camina por una oficina en pixel art, habla con quien tengas al lado y cierra la puerta para concentrarte. En tu propio servidor." />
+<meta property="og:title" content="Open Office For All — tu oficina remota, pero con pasillos" />
+<meta property="og:description" content="Oficina virtual gratis y de código abierto. Camina, habla por cercanía, reúnete en salas. En tu servidor." />
+<meta property="og:image" content="https://openofficeforall.app/assets/office.jpg" />
+<meta property="og:url" content="https://openofficeforall.app/" />
+<meta name="theme-color" content="#f6efe0" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<style>
-  :root { --ink: #16161a; --muted: #5f5f6b; --line: #e6e4ee; --bg: #fbfaf7; --card: #ffffff; --brand: #3b3df0; --brand-2: #7c6cf2; --grass: #4e8a48; --wood: #a27f6b; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #f2f2f5; --muted: #a8a8b4; --line: #2b2b33; --bg: #111114; --card: #1a1a1f; } }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
-  a { color: inherit; }
-  .wrap { width: min(1120px, 100% - 32px); margin: 0 auto; }
-  img.pixel { image-rendering: pixelated; }
-
-  header.bar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line); }
-  header.bar .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; }
-  .brand img { width: 30px; height: 30px; }
-  nav.links { margin-left: auto; display: flex; gap: 22px; font-size: 14.5px; }
-  nav.links a { text-decoration: none; color: var(--muted); }
-  nav.links a:hover { color: var(--ink); }
-  .lang { display: flex; border: 1px solid var(--line); border-radius: 9999px; overflow: hidden; }
-  .lang button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; padding: 6px 11px; cursor: pointer; }
-  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-  .btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 10px; font-weight: 650; text-decoration: none; font-size: 15px; }
-  .btn.primary { background: var(--brand); color: #fff; }
-  .btn.primary:hover { background: #2a2dd6; }
-  .btn.ghost { border: 1px solid var(--line); background: var(--card); }
-
-  .hero { padding: 72px 0 40px; display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
-  .eyebrow { display: inline-flex; gap: 8px; align-items: center; padding: 5px 12px; border-radius: 9999px; background: color-mix(in srgb, var(--brand) 12%, transparent); color: var(--brand-2); font-size: 13px; font-weight: 700; letter-spacing: .02em; }
-  h1 { font-size: clamp(38px, 5.4vw, 62px); line-height: 1.04; letter-spacing: -.03em; margin: 18px 0 18px; }
-  h1 .accent { background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .lead { font-size: 19px; color: var(--muted); max-width: 560px; margin: 0 0 28px; }
-  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
-  .fine { margin-top: 16px; font-size: 13.5px; color: var(--muted); }
-  .hero-art { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px -30px #0006; aspect-ratio: 16 / 10; background: var(--grass); }
-  .hero-art img.map { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .bubble { position: absolute; display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 9999px; background: #1d1d22e6; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 8px 20px #0005; }
-  .bubble img { width: 26px; height: 34px; object-fit: contain; background: #ffffff1a; border-radius: 9999px; padding: 2px 3px; }
-  .bubble i { width: 8px; height: 8px; border-radius: 9999px; background: #3ac07a; display: inline-block; }
-  .b1 { left: 8%; top: 14%; } .b2 { right: 8%; bottom: 14%; }
-
-  section { padding: 64px 0; }
-  .kicker { font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-2); }
-  h2 { font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -.02em; line-height: 1.12; margin: 10px 0 14px; }
-  .sub { color: var(--muted); max-width: 640px; margin: 0 0 36px; font-size: 17px; }
-
-  .values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .value { padding: 22px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
-  .value b { display: block; font-size: 17px; margin: 10px 0 6px; }
-  .value p { margin: 0; color: var(--muted); font-size: 14.5px; }
-  .icon { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 12%, transparent); font-size: 20px; }
-
-  .feature { display: grid; grid-template-columns: 1fr 1.15fr; gap: 44px; align-items: center; padding: 28px 0; }
-  .feature.flip { grid-template-columns: 1.15fr 1fr; }
-  .feature.flip .copy { order: 2; }
-  .feature h3 { font-size: 26px; letter-spacing: -.01em; margin: 6px 0 10px; }
-  .feature p { color: var(--muted); margin: 0 0 14px; }
-  .feature ul { margin: 0; padding-left: 18px; color: var(--muted); }
-  .feature li { margin: 4px 0; }
-  .shot { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 24px 60px -30px #0007; background: #222; }
-  .shot img { display: block; width: 100%; }
-
-  .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .size { border-radius: 16px; overflow: hidden; background: var(--card); border: 1px solid var(--line); }
-  .size img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-  .size div { padding: 16px 18px 20px; }
-  .size b { font-size: 18px; } .size .people { float: right; font-size: 13px; color: var(--brand-2); font-weight: 700; }
-  .size p { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; }
-
-  .grid-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 28px; margin: 0; padding: 0; list-style: none; }
-  .grid-list li { padding: 14px 0; border-top: 1px solid var(--line); }
-  .grid-list b { display: block; margin-bottom: 3px; }
-  .grid-list span { color: var(--muted); font-size: 14.5px; }
-
-  .start { border-radius: 22px; padding: 40px; background: linear-gradient(135deg, #1b1b3a, #2b1e57); color: #fff; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
-  .start h2 { color: #fff; } .start p { color: #c9c7e8; }
-  pre { margin: 0; padding: 18px 20px; border-radius: 14px; background: #0d0d14; color: #e8e6ff; font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; border: 1px solid #ffffff14; }
-  pre .c { color: #8886b0; }
-
-  footer { padding: 36px 0 48px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 40px; }
-  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
-
-  [data-lang="es"] .en, [data-lang="en"] .es { display: none !important; }
-
-  @media (max-width: 900px) {
-    .hero, .feature, .feature.flip, .start { grid-template-columns: 1fr; }
-    .feature.flip .copy { order: 0; }
-    .values { grid-template-columns: 1fr 1fr; }
-    .sizes, .grid-list { grid-template-columns: 1fr; }
-    nav.links { display: none; }
-    .hero { padding-top: 40px; }
-  }
-  @media (max-width: 520px) { .values { grid-template-columns: 1fr; } .start { padding: 26px; } .lang { margin-left: auto; } }
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;600&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
 </head>
-<body data-lang="en">
-<header class="bar">
-  <div class="wrap">
-    <a class="brand" href="#"><img src="assets/favicon.svg" alt="" />Open Office For All</a>
-    <nav class="links">
-      <a href="#features"><span class="en">Features</span><span class="es">Funciones</span></a>
-      <a href="#sizes"><span class="en">Office sizes</span><span class="es">Tamaños</span></a>
-      <a href="#start"><span class="en">Get started</span><span class="es">Empezar</span></a>
-      <a href="https://github.com/VictorSandovalDev/OpenOfficeForAll">GitHub</a>
-    </nav>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
-      <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+<body data-lang="es">
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Open Office For All">
+    <img src="assets/favicon.svg" alt="" width="28" height="28" />
+    <span>openoffice<b>forall</b></span>
+  </a>
+  <nav class="links">
+    <a href="#equipo"><span lang="es">El equipo</span><span lang="en">The team</span></a>
+    <a href="#funciones"><span lang="es">Funciones</span><span lang="en">Features</span></a>
+    <a href="#dia"><span lang="es">Un día</span><span lang="en">A day</span></a>
+    <a href="#tamanos"><span lang="es">Mapas</span><span lang="en">Maps</span></a>
+    <a href="#empezar"><span lang="es">Empezar</span><span lang="en">Get started</span></a>
+  </nav>
+  <div class="nav-right">
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" data-set-lang="es">ES</button><button type="button" data-set-lang="en">EN</button>
     </div>
+    <a class="stars" href="https://github.com/VictorSandovalDev/OpenOfficeForAll" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+      <span class="star-count">GitHub</span>
+    </a>
+    <a class="btn btn-lime small" href="#empezar"><span lang="es">Monta tu oficina</span><span lang="en">Host yours</span></a>
   </div>
 </header>
 
-<main>
-  <div class="wrap hero">
-    <div>
-      <span class="eyebrow"><span class="en">Free · open source · MIT</span><span class="es">Gratis · código abierto · MIT</span></span>
-      <h1><span class="en">A virtual office your team can <span class="accent">actually walk into</span>.</span><span class="es">Una oficina virtual en la que tu equipo <span class="accent">puede entrar de verdad</span>.</span></h1>
-      <p class="lead"><span class="en">Move around a cosy pixel-art office, talk to whoever is next to you, sit at your desk and close the door for a meeting. No subscriptions, no seat limits, no vendor. Run it on your own server, in any country and any language.</span><span class="es">Muévete por una acogedora oficina en pixel art, habla con quien tengas al lado, siéntate en tu escritorio y cierra la puerta para reunirte. Sin suscripciones, sin límite de puestos y sin depender de nadie. Ejecútalo en tu propio servidor, en cualquier país y en cualquier idioma.</span></p>
-      <div class="cta">
-        <a class="btn primary" href="#start"><span class="en">Host your office</span><span class="es">Monta tu oficina</span> →</a>
-        <a class="btn ghost" href="https://github.com/VictorSandovalDev/OpenOfficeForAll">★ <span class="en">Star on GitHub</span><span class="es">Ver en GitHub</span></a>
-      </div>
-      <p class="fine"><span class="en">Your office, your data, your server.</span><span class="es">Tu oficina, tus datos, tu servidor.</span></p>
-    </div>
-    <div class="hero-art">
-      <img class="map" src="assets/office.jpg" alt="A pixel-art office with meeting rooms, desks, a lounge and a garden" />
-      <span class="bubble b1"><img class="pixel" src="assets/avatar-2.png" alt="" /><i></i>Ana</span>
-      <span class="bubble b2"><img class="pixel" src="assets/avatar-1.png" alt="" /><i></i>Leo</span>
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="cursors" aria-hidden="true">
+    <div class="cursor c1"><svg viewBox="0 0 24 24"><path d="M3 2l18 8-8 2.5L10 21z"/></svg><span>Ana</span></div>
+    <div class="cursor c2"><svg viewBox="0 0 24 24"><path d="M3 2l18 8-8 2.5L10 21z"/></svg><span>Leo</span></div>
+    <div class="cursor c3"><svg viewBox="0 0 24 24"><path d="M3 2l18 8-8 2.5L10 21z"/></svg><span>Mar</span></div>
+  </div>
+
+  <div class="hero-copy">
+    <p class="scribble reveal"><span lang="es">gratis · código abierto · para siempre</span><span lang="en">free · open source · forever</span></p>
+    <h1 class="hero-title">
+      <span class="line"><span lang="es">Tu oficina remota,</span><span lang="en">Your remote office,</span></span>
+      <span class="line"><span lang="es">pero con&nbsp;</span><span lang="en">now with&nbsp;</span><span class="marker"><span lang="es">pasillos</span><span lang="en">hallways</span><svg viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 16 C 60 6, 130 22, 200 10 S 280 8, 296 14" /></svg></span>.</span>
+    </h1>
+    <p class="lead reveal">
+      <span lang="es">Camina por una oficina en pixel art, habla con quien tengas al lado y cierra la puerta cuando toca concentrarse. Sin suscripciones, sin límite de puestos, en tu propio servidor.</span>
+      <span lang="en">Walk around a pixel-art office, talk to whoever is next to you and close the door when it's time to focus. No subscriptions, no seat limits, on your own server.</span>
+    </p>
+    <div class="cta reveal">
+      <a class="btn btn-lime magnetic" href="#empezar"><span lang="es">Monta tu oficina</span><span lang="en">Host your office</span> <span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#juega"><span lang="es">o pruébala aquí mismo</span><span lang="en">or try it right here</span></a>
     </div>
   </div>
 
-  <section>
-    <div class="wrap">
-      <div class="values">
-        <div class="value"><span class="icon">🚶</span><b class="en">Presence, not calls</b><b class="es">Presencia, no llamadas</b><p class="en">Walk up to a colleague and you hear each other. Walk away and you don't.</p><p class="es">Acércate a un compañero y os oís. Aléjate y dejáis de oíros.</p></div>
-        <div class="value"><span class="icon">🔓</span><b class="en">Truly open</b><b class="es">Abierto de verdad</b><p class="en">MIT licence and original art: use it, fork it, ship it, teach with it.</p><p class="es">Licencia MIT y arte original: úsalo, modifícalo, publícalo y enseña con él.</p></div>
-        <div class="value"><span class="icon">🏠</span><b class="en">Self-hosted</b><b class="es">En tu servidor</b><p class="en">One Node process and static files. Docker, HTTPS and a TURN relay included.</p><p class="es">Un proceso de Node y archivos estáticos. Incluye Docker, HTTPS y un relé TURN.</p></div>
-        <div class="value"><span class="icon">🌍</span><b class="en">For the whole world</b><b class="es">Para todo el mundo</b><p class="en">English and Spanish today, ready for more. Works in any modern browser.</p><p class="es">Inglés y español hoy, listo para más. Funciona en cualquier navegador moderno.</p></div>
+  <div class="game-wrap reveal" id="juega">
+    <p class="hand-note"><span lang="es">¡esto es de verdad! haz clic y camina</span><span lang="en">it's real! click and walk</span>
+      <svg viewBox="0 0 80 60" aria-hidden="true"><path d="M6 6 C 30 10, 60 20, 64 50 M64 50 l-10 -8 M64 50 l6 -12"/></svg></p>
+    <div class="window">
+      <div class="window-bar">
+        <i></i><i></i><i></i>
+        <span class="url">openofficeforall.app/<b>mi-equipo</b></span>
+        <span class="online"><em></em> <span class="online-count">6</span> <span lang="es">en línea</span><span lang="en">online</span></span>
+      </div>
+      <div class="game" tabindex="0" aria-label="Minioficina jugable: muévete con las flechas o WASD, o haz clic para caminar">
+        <canvas></canvas>
+        <div class="video-strip" aria-live="polite"></div>
+        <div class="toast-room"></div>
+        <div class="game-hint">
+          <span class="keys"><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></span>
+          <span lang="es">Haz clic para jugar · flechas o WASD · clic para caminar</span>
+          <span lang="en">Click to play · arrows or WASD · click to walk</span>
+        </div>
+        <button class="game-exit" type="button"><span lang="es">Esc · salir</span><span lang="en">Esc · exit</span></button>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="features">
-    <div class="wrap">
-      <span class="kicker en">Features</span><span class="kicker es">Funciones</span>
-      <h2><span class="en">Everything a team needs to feel together</span><span class="es">Todo lo que un equipo necesita para sentirse cerca</span></h2>
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span lang="es">SIN SUSCRIPCIÓN ✦ CÓDIGO ABIERTO ✦ EN TU SERVIDOR ✦ PIXEL ART ✦ HABLA POR CERCANÍA ✦ LICENCIA MIT ✦ SALAS QUE SE CIERRAN ✦ PUESTOS ILIMITADOS ✦ </span>
+    <span lang="en">NO SUBSCRIPTION ✦ OPEN SOURCE ✦ ON YOUR SERVER ✦ PIXEL ART ✦ PROXIMITY CHAT ✦ MIT LICENCE ✦ ROOMS THAT CLOSE ✦ UNLIMITED SEATS ✦ </span>
+  </div>
+</div>
 
-      <div class="feature">
-        <div class="copy">
-          <h3 class="en">Spaces for every team</h3><h3 class="es">Espacios para cada equipo</h3>
-          <p class="en">Create as many workspaces as you like, each with its own name, map, people, chat, calendar and desks.</p>
-          <p class="es">Crea todos los espacios que quieras, cada uno con su nombre, su mapa, sus personas, su chat, su calendario y sus escritorios.</p>
-          <ul class="en"><li>A shared list of every space on your server</li><li>See who is inside right now</li><li>Rename or delete spaces from the dashboard</li></ul>
-          <ul class="es"><li>Una lista compartida de todos los espacios de tu servidor</li><li>Mira quién está dentro ahora</li><li>Renombra o elimina espacios desde el panel</li></ul>
+<!-- TEAM / BADGES -->
+<section class="team" id="equipo">
+  <div class="section-head">
+    <p class="scribble"><span lang="es">quién está</span><span lang="en">who's in</span></p>
+    <h2><span lang="es">Ves a tu equipo <em>sin llamar</em> a nadie.</span><span lang="en">See your team <em>without calling</em> anyone.</span></h2>
+    <p class="sub"><span lang="es">Cada quien con su avatar, su estado y su escritorio. Ves quién está, quién está en reunión y quién no quiere que le molesten, sin preguntar.</span><span lang="en">Everyone has an avatar, a status and a desk. You can see who's around, who's in a meeting and who doesn't want to be disturbed, without asking.</span></p>
+  </div>
+  <div class="badges" aria-label="Gafetes del equipo">
+    <svg class="straps" aria-hidden="true"></svg>
+  </div>
+  <p class="hand-note center"><span lang="es">↑ agárralos y lánzalos</span><span lang="en">↑ grab them and throw them</span></p>
+</section>
+
+<!-- FEATURES (stacked cards) -->
+<section class="features" id="funciones">
+  <div class="section-head">
+    <p class="scribble"><span lang="es">lo que trae</span><span lang="en">what's inside</span></p>
+    <h2><span lang="es">Todo lo de una oficina. Menos el tráfico.</span><span lang="en">Everything an office has. Minus the commute.</span></h2>
+  </div>
+
+  <div class="stack">
+    <article class="card" style="--c: var(--lime)">
+      <div class="tab">PISO 1 · <span lang="es">CERCANÍA</span><span lang="en">PROXIMITY</span></div>
+      <div class="card-body">
+        <div class="card-art art-talk">
+          <div class="sprite walk-east" style="--sheet:url(assets/avatars/m-violet.png)"></div>
+          <div class="sprite walk-west" style="--sheet:url(assets/avatars/f-coral.png)"></div>
+          <div class="rings"><i></i><i></i><i></i></div>
+          <div class="speech s1">¡Hola! 👋</div>
+          <div class="speech s2">¿Café? ☕</div>
         </div>
-        <div class="shot"><img src="assets/dashboard-en.png" alt="The workspace dashboard with map cards" loading="lazy" /></div>
-      </div>
-
-      <div class="feature flip">
-        <div class="copy">
-          <h3 class="en">Desks and focus rooms</h3><h3 class="es">Escritorios y oficinas de concentración</h3>
-          <p class="en">Walk into a desk to claim it or give it to a teammate, and press ⌘ / Ctrl D to sit back at yours. Private offices switch you to Do not disturb and close the door: others knock, you let them in.</p>
-          <p class="es">Entra a un escritorio para reclamarlo o dárselo a un compañero, y pulsa ⌘ / Ctrl D para volver al tuyo. Las oficinas privadas te ponen en «No molestar» y cierran la puerta: los demás tocan y tú les dejas pasar.</p>
+        <div class="card-text">
+          <p class="kicker"><span lang="es">Audio y vídeo por cercanía</span><span lang="en">Proximity audio and video</span></p>
+          <h3><span lang="es">Acércate y habla.</span><span lang="en">Walk up and talk.</span></h3>
+          <ul>
+            <li><span lang="es">Te acercas a alguien y os oís; te alejas y dejáis de oíros.</span><span lang="en">Walk up to someone and you hear each other; walk away and you don't.</span></li>
+            <li><span lang="es">Cámara, micrófono y pantalla compartida con WebRTC.</span><span lang="en">Camera, microphone and screen sharing over WebRTC.</span></li>
+            <li><span lang="es">Reacciones, mano levantada y estados.</span><span lang="en">Reactions, raised hand and statuses.</span></li>
+          </ul>
+          <p class="rule"><b lang="es">DATO</b><b lang="en">GOOD TO KNOW</b><span lang="es">Nadie te obliga a encender la cámara para decir hola.</span><span lang="en">Nobody makes you turn on your camera to say hi.</span></p>
         </div>
-        <div class="shot"><img src="assets/desk-menu-en.png" alt="The desk label with its menu" loading="lazy" /></div>
       </div>
+    </article>
 
-      <div class="feature">
-        <div class="copy">
-          <h3 class="en">Meetings that just work</h3><h3 class="es">Reuniones que funcionan solas</h3>
-          <p class="en">Step into a meeting room and the doors close. Camera, microphone and screen sharing over WebRTC, an optional LiveKit media server for large meetings, music for everyone, recording, reactions and a raised hand.</p>
-          <p class="es">Entra a una sala de reuniones y se cierran las puertas. Cámara, micrófono y pantalla compartida con WebRTC, un servidor de medios LiveKit opcional para reuniones grandes, música para todos, grabación, reacciones y mano levantada.</p>
-          <p class="en">Zoom out with the wheel and the office turns into a clean overview of rooms and people.</p>
-          <p class="es">Aléjate con la rueda y la oficina pasa a una vista limpia de salas y personas.</p>
+    <article class="card" style="--c: var(--violet)">
+      <div class="tab">PISO 1 · <span lang="es">REUNIONES</span><span lang="en">MEETINGS</span></div>
+      <div class="card-body">
+        <div class="card-art art-room">
+          <div class="map-crop" style="--x:-600px; --y:-640px"></div>
+          <div class="sound-bars"><i></i><i></i><i></i><i></i><i></i></div>
         </div>
-        <div class="shot"><img src="assets/simplified-en.png" alt="The simplified overview of the office" loading="lazy" /></div>
+        <div class="card-text">
+          <p class="kicker"><span lang="es">Salas de reunión</span><span lang="en">Meeting rooms</span></p>
+          <h3><span lang="es">Entras y se cierran las puertas.</span><span lang="en">Step in and the doors close.</span></h3>
+          <ul>
+            <li><span lang="es">Todos los que están dentro se oyen, los de fuera no.</span><span lang="en">Everyone inside hears each other, nobody outside does.</span></li>
+            <li><span lang="es">Servidor LiveKit opcional para reuniones grandes.</span><span lang="en">Optional LiveKit server for large meetings.</span></li>
+            <li><span lang="es">Música para todos, grabación y calendario compartido.</span><span lang="en">Music for everyone, recording and a shared calendar.</span></li>
+          </ul>
+          <p class="rule"><b lang="es">DATO</b><b lang="en">GOOD TO KNOW</b><span lang="es">«Unirse» en el calendario te lleva caminando hasta la sala.</span><span lang="en">“Join” in the calendar walks you to the room.</span></p>
+        </div>
       </div>
+    </article>
+
+    <article class="card" style="--c: var(--pink)">
+      <div class="tab">PISO 1 · <span lang="es">FOCO</span><span lang="en">FOCUS</span></div>
+      <div class="card-body">
+        <div class="card-art art-desk">
+          <div class="map-crop" style="--x:-540px; --y:-220px"></div>
+          <div class="dnd"><i></i><span lang="es">No molestar</span><span lang="en">Do not disturb</span></div>
+          <div class="knock">toc toc</div>
+        </div>
+        <div class="card-text">
+          <p class="kicker"><span lang="es">Escritorios y oficinas de concentración</span><span lang="en">Desks and focus offices</span></p>
+          <h3><span lang="es">Tu escritorio. Tu silencio.</span><span lang="en">Your desk. Your quiet.</span></h3>
+          <ul>
+            <li><span lang="es">Reclama un escritorio o dáselo a un compañero.</span><span lang="en">Claim a desk or give it to a teammate.</span></li>
+            <li><span lang="es"><kbd>⌘</kbd>/<kbd>Ctrl</kbd> <kbd>D</kbd> y vuelves a tu sitio.</span><span lang="en"><kbd>⌘</kbd>/<kbd>Ctrl</kbd> <kbd>D</kbd> takes you back to your seat.</span></li>
+            <li><span lang="es">En una oficina de concentración pasas a «No molestar»: los demás tocan la puerta.</span><span lang="en">In a focus office you go to Do not disturb: others knock on the door.</span></li>
+          </ul>
+          <p class="rule"><b lang="es">DATO</b><b lang="en">GOOD TO KNOW</b><span lang="es">Tú decides a quién dejas pasar.</span><span lang="en">You decide who gets in.</span></p>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" style="--c: var(--sun); --on: #241d38">
+      <div class="tab">PISO 1 · <span lang="es">DECORADOR</span><span lang="en">DECORATOR</span></div>
+      <div class="card-body">
+        <div class="card-art art-deco">
+          <div class="deco-grid"></div>
+        </div>
+        <div class="card-text">
+          <p class="kicker"><span lang="es">Editor integrado</span><span lang="en">Built-in editor</span></p>
+          <h3><span lang="es">Sofá aquí, planta allá.</span><span lang="en">Couch here, plant there.</span></h3>
+          <ul>
+            <li><span lang="es">Más de cien objetos en pixel art, por categorías.</span><span lang="en">Over a hundred pixel-art objects, by category.</span></li>
+            <li><span lang="es">Colocación libre, deshacer y rehacer.</span><span lang="en">Free placement, undo and redo.</span></li>
+            <li><span lang="es">Calles con tráfico, playas, fuentes y parques.</span><span lang="en">Streets with traffic, beaches, fountains and parks.</span></li>
+          </ul>
+          <p class="rule"><b lang="es">DATO</b><b lang="en">GOOD TO KNOW</b><span lang="es">El arte es original y libre: úsalo como quieras.</span><span lang="en">The art is original and free: use it however you like.</span></p>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- A DAY (pinned horizontal timeline) -->
+<section class="day" id="dia">
+  <div class="day-pin">
+    <div class="day-head">
+      <p class="scribble"><span lang="es">de 9 a 6</span><span lang="en">nine to six</span></p>
+      <h2><span lang="es">Un día en la oficina.</span><span lang="en">A day at the office.</span></h2>
+      <div class="clock" aria-hidden="true">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="54" />
+          <g class="ticks"></g>
+          <line class="hour" x1="60" y1="60" x2="60" y2="32" />
+          <line class="minute" x1="60" y1="60" x2="60" y2="18" />
+          <circle class="pin" cx="60" cy="60" r="4" />
+        </svg>
+        <span class="clock-time">08:58</span>
+      </div>
+      <p class="tiny"><span lang="es">baja y pasa el día</span><span lang="en">scroll through the day</span></p>
     </div>
-  </section>
-
-  <section id="sizes">
-    <div class="wrap">
-      <span class="kicker en">Office sizes</span><span class="kicker es">Tamaños de oficina</span>
-      <h2><span class="en">From a small studio to a campus</span><span class="es">Desde un estudio pequeño hasta un campus</span></h2>
-      <p class="sub"><span class="en">Pick a map when you create a space. Every one is fully furnished and you can redecorate anything with the built-in editor.</span><span class="es">Elige un mapa al crear un espacio. Todos vienen amueblados y puedes redecorar lo que quieras con el editor integrado.</span></p>
-      <div class="sizes">
-        <div class="size"><img src="assets/studio.jpg" alt="" loading="lazy" /><div><span class="people"><span class="en">up to 6</span><span class="es">hasta 6</span></span><b class="en">Studio</b><b class="es">Estudio</b><p class="en">On a city street: six desks, a meeting room, a garden walk, a fountain plaza, passing traffic and a park across the road.</p><p class="es">En una calle de ciudad: seis escritorios, una sala de reuniones, jardín, plaza con fuente, tráfico y un parque enfrente.</p></div></div>
-        <div class="size"><img src="assets/office.jpg" alt="" loading="lazy" /><div><span class="people"><span class="en">up to 10</span><span class="es">hasta 10</span></span><b class="en">Office</b><b class="es">Oficina</b><p class="en">Ten desks, five meeting rooms, four focus offices, a lounge and a garden.</p><p class="es">Diez escritorios, cinco salas de reunión, cuatro oficinas de concentración, sala de estar y jardín.</p></div></div>
-        <div class="size"><img src="assets/campus.jpg" alt="" loading="lazy" /><div><span class="people"><span class="en">20 and more</span><span class="es">20 o más</span></span><b class="en">Campus</b><b class="es">Campus</b><p class="en">Two buildings joined by a promenade and a plaza: twenty desks, ten meeting rooms, eight focus offices and a long beach.</p><p class="es">Dos edificios unidos por un paseo y una plaza: veinte escritorios, diez salas de reunión, ocho oficinas de concentración y una playa larga.</p></div></div>
-      </div>
+    <div class="day-track">
+      <div class="moment" data-time="08:58"><b class="time">08:58</b><div class="who"><i style="--sheet:url(assets/avatars/f-teal.png)"></i>Ana</div><p><span lang="es">Llegas y saludas a Ana en el lobby. Nadie te pidió encender la cámara.</span><span lang="en">You arrive and say hi to Ana in the lobby. Nobody asked you to turn your camera on.</span></p></div>
+      <div class="moment note" data-time="09:30"><b class="time">09:30</b><div class="who"><i style="--sheet:url(assets/avatars/m-violet.png)"></i>Daily</div><p><span lang="es">Daily en la sala de medios. Se cierran las puertas y entra la música.</span><span lang="en">Daily in the media room. The doors close and the music starts.</span></p></div>
+      <div class="moment" data-time="11:15"><b class="time">11:15</b><div class="who"><i style="--sheet:url(assets/avatars/m-lime.png)"></i>Leo</div><p><span lang="es">Leo te comparte pantalla desde su escritorio: «mira este bug».</span><span lang="en">Leo shares his screen from his desk: “look at this bug”.</span></p></div>
+      <div class="moment" data-time="13:00"><b class="time">13:00</b><div class="who"><i style="--sheet:url(assets/avatars/f-sun.png)"></i>Sofi</div><p><span lang="es">Almuerzo en la plaza de la fuente. Bueno, cada uno en su casa.</span><span lang="en">Lunch at the fountain plaza. Well, everyone at home.</span></p></div>
+      <div class="moment dashed" data-time="15:00"><b class="time">15:00</b><div class="who"><i style="--sheet:url(assets/avatars/m-coral.png)"></i><span lang="es">Tú</span><span lang="en">You</span></div><p><span lang="es">Modo foco: oficina cerrada y «No molestar».</span><span lang="en">Focus mode: office closed, Do not disturb.</span></p><div class="mini-btns"><span><span lang="es">Abrir puerta</span><span lang="en">Open door</span></span><span><span lang="es">Ahora no</span><span lang="en">Not now</span></span></div></div>
+      <div class="moment note pink" data-time="16:40"><b class="time">16:40</b><div class="who"><i style="--sheet:url(assets/avatars/f-pink.png)"></i>Mar</div><p><span lang="es">Toc toc. Mar quiere enseñarte el diseño. La dejas pasar.</span><span lang="en">Knock knock. Mar wants to show you the design. You let her in.</span></p></div>
+      <div class="moment" data-time="18:05"><b class="time">18:05</b><div class="who"><i style="--sheet:url(assets/avatars/m-teal.png)"></i>👋</div><p><span lang="es">Te vas. El autobús sigue pasando por la calle.</span><span lang="en">You head out. The bus keeps driving down the street.</span></p></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section>
-    <div class="wrap">
-      <span class="kicker en">And also</span><span class="kicker es">Y además</span>
-      <h2><span class="en">Built in, not bolted on</span><span class="es">Integrado, no añadido</span></h2>
-      <ul class="grid-list">
-        <li><b class="en">Chat channels and DMs</b><b class="es">Canales y mensajes directos</b><span class="en">#general, your own channels, mentions and formatting.</span><span class="es">#general, tus propios canales, menciones y formato.</span></li>
-        <li><b class="en">Shared calendar</b><b class="es">Calendario compartido</b><span class="en">Schedule a meeting in a room; Join walks you there.</span><span class="es">Programa una reunión en una sala; Unirse te lleva allí.</span></li>
-        <li><b class="en">Decorator</b><b class="es">Decorador</b><span class="en">Eighty objects by category, free placement, undo and redo.</span><span class="es">Ochenta objetos por categoría, colocación libre, deshacer y rehacer.</span></li>
-        <li><b class="en">Your avatar</b><b class="es">Tu avatar</b><span class="en">Two bodies, colours, glasses, hats, headphones and facial hair.</span><span class="es">Dos cuerpos, colores, gafas, sombreros, auriculares y vello facial.</span></li>
-        <li><b class="en">Personal accounts</b><b class="es">Cuentas personales</b><span class="en">Optional email and password, or just a name and an invite link.</span><span class="es">Correo y contraseña opcionales, o solo un nombre y un enlace de invitación.</span></li>
-        <li><b class="en">Footsteps and sound</b><b class="es">Pasos y sonido</b><span class="en">Footsteps that change with the floor, with their own volume.</span><span class="es">Pasos que cambian según el suelo, con su propio volumen.</span></li>
+<!-- MAPS -->
+<section class="maps" id="tamanos">
+  <div class="section-head">
+    <p class="scribble"><span lang="es">elige tu mapa</span><span lang="en">pick your map</span></p>
+    <h2><span lang="es">Del estudio de esquina al campus con playa.</span><span lang="en">From a corner studio to a beach campus.</span></h2>
+    <p class="sub"><span lang="es">Todos vienen amueblados y puedes redecorarlos con el editor.</span><span lang="en">Every map comes furnished and you can redecorate it with the editor.</span></p>
+  </div>
+  <div class="map-cards">
+    <a class="map-card tilt" href="#empezar" style="--c: var(--lime)">
+      <span class="people"><span lang="es">hasta 6</span><span lang="en">up to 6</span></span>
+      <div class="map-img"><img src="assets/studio.jpg" alt="" loading="lazy" /></div>
+      <h3><span lang="es">Estudio</span><span lang="en">Studio</span></h3>
+      <p><span lang="es">En una calle de ciudad: seis escritorios, una sala de reuniones, plaza con fuente, tráfico y un parque enfrente.</span><span lang="en">On a city street: six desks, a meeting room, a fountain plaza, passing traffic and a park across the road.</span></p>
+    </a>
+    <a class="map-card tilt" href="#empezar" style="--c: var(--violet)">
+      <span class="people"><span lang="es">hasta 10</span><span lang="en">up to 10</span></span>
+      <div class="map-img"><img src="assets/office.jpg" alt="" loading="lazy" /></div>
+      <h3><span lang="es">Oficina</span><span lang="en">Office</span></h3>
+      <p><span lang="es">Diez escritorios, cinco salas de reunión, cuatro oficinas de concentración, sala de estar y jardín.</span><span lang="en">Ten desks, five meeting rooms, four focus offices, a lounge and a garden.</span></p>
+    </a>
+    <a class="map-card tilt" href="#empezar" style="--c: var(--pink)">
+      <span class="people"><span lang="es">20 o más</span><span lang="en">20 and more</span></span>
+      <div class="map-img"><img src="assets/campus.jpg" alt="" loading="lazy" /></div>
+      <h3>Campus</h3>
+      <p><span lang="es">Dos edificios unidos por un paseo y una plaza, veinte escritorios, diez salas y una playa larga con muelles.</span><span lang="en">Two buildings joined by a promenade and a plaza, twenty desks, ten rooms and a long beach with piers.</span></p>
+    </a>
+  </div>
+</section>
+
+<!-- OPEN SOURCE -->
+<section class="open" id="empezar">
+  <div class="section-head">
+    <p class="scribble"><span lang="es">es tuyo</span><span lang="en">it's yours</span></p>
+    <h2><span lang="es">Tu oficina, tus datos, tu servidor.</span><span lang="en">Your office, your data, your server.</span></h2>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>0 €</b><span lang="es">al mes, para siempre</span><span lang="en">a month, forever</span></div>
+    <div class="stat"><b>∞</b><span lang="es">puestos y espacios</span><span lang="en">seats and spaces</span></div>
+    <div class="stat"><b>MIT</b><span lang="es">licencia, arte incluido</span><span lang="en">licence, art included</span></div>
+    <div class="stat"><b>2 min</b><span lang="es">para tenerla corriendo</span><span lang="en">to get it running</span></div>
+  </div>
+  <div class="open-grid">
+    <div class="terminal">
+      <div class="window-bar"><i></i><i></i><i></i><span class="url">~/OpenOfficeForAll</span></div>
+      <pre class="term"><code></code><span class="caret"></span></pre>
+    </div>
+    <div class="open-text">
+      <ul class="checks">
+        <li><span lang="es">Un proceso de Node y archivos estáticos.</span><span lang="en">One Node process and static files.</span></li>
+        <li><span lang="es">Docker, HTTPS y un relé TURN incluidos.</span><span lang="en">Docker, HTTPS and a TURN relay included.</span></li>
+        <li><span lang="es">Cuentas con correo, o solo un nombre y un enlace de invitación.</span><span lang="en">Email accounts, or just a name and an invite link.</span></li>
+        <li><span lang="es">Español e inglés hoy, lista para más idiomas.</span><span lang="en">Spanish and English today, ready for more languages.</span></li>
       </ul>
-    </div>
-  </section>
-
-  <section id="start">
-    <div class="wrap start">
-      <div>
-        <h2><span class="en">Your office in two minutes</span><span class="es">Tu oficina en dos minutos</span></h2>
-        <p class="en">Run it on your computer to try it, then put it on any server with Docker. The deployment guide covers HTTPS, invite keys, admins and TURN.</p>
-        <p class="es">Pruébala en tu computador y luego súbela a cualquier servidor con Docker. La guía de despliegue explica HTTPS, claves de invitación, administradores y TURN.</p>
-        <div class="cta"><a class="btn primary" href="https://github.com/VictorSandovalDev/OpenOfficeForAll#-quick-start"><span class="en">Read the guide</span><span class="es">Leer la guía</span> →</a><a class="btn ghost" style="color:#16161a" href="https://github.com/VictorSandovalDev/OpenOfficeForAll/blob/main/docs/DEPLOY.md"><span class="en">Deploy with Docker</span><span class="es">Desplegar con Docker</span></a></div>
+      <div class="cta">
+        <a class="btn btn-lime magnetic" href="https://github.com/VictorSandovalDev/OpenOfficeForAll#-quick-start" target="_blank" rel="noopener"><span lang="es">Ver en GitHub</span><span lang="en">View on GitHub</span> <span class="arrow">→</span></a>
+        <a class="btn btn-ghost" href="https://github.com/VictorSandovalDev/OpenOfficeForAll/blob/main/docs/DEPLOY.md" target="_blank" rel="noopener"><span lang="es">Guía de despliegue</span><span lang="en">Deployment guide</span></a>
       </div>
-      <pre><span class="c"># <span class="en">try it locally</span><span class="es">pruébala en local</span></span>
-git clone https://github.com/VictorSandovalDev/OpenOfficeForAll
-cd OpenOfficeForAll
-npm install
-npm run dev
-<span class="c"># <span class="en">open</span><span class="es">abre</span> http://127.0.0.1:5173</span></pre>
     </div>
-  </section>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <h2 class="huge"><span lang="es">¿Nos vemos en la oficina?</span><span lang="en">See you at the office?</span></h2>
+  <button class="btn btn-lime big magnetic confetti-btn" type="button"><span lang="es">¡Sí, vamos!</span><span lang="en">Yes, let's go!</span> 🎉</button>
+  <div class="parade" aria-hidden="true"></div>
+</section>
+
 </main>
 
-<footer>
-  <div class="wrap">
-    <span>Open Office For All · <span class="en">MIT licence</span><span class="es">Licencia MIT</span></span>
-    <span><a href="https://github.com/VictorSandovalDev/OpenOfficeForAll">GitHub</a> · <span class="en">Original art made with PixelLab</span><span class="es">Arte original hecho con PixelLab</span></span>
-  </div>
+<footer class="foot">
+  <span>Open Office For All · <span lang="es">Licencia MIT</span><span lang="en">MIT licence</span></span>
+  <span><a href="https://github.com/VictorSandovalDev/OpenOfficeForAll" target="_blank" rel="noopener">GitHub</a> · <span lang="es">Arte original hecho con PixelLab</span><span lang="en">Original art made with PixelLab</span></span>
 </footer>
 
-<script>
-  const setLang = (lang) => {
-    document.body.dataset.lang = lang; document.documentElement.lang = lang;
-    document.querySelectorAll('[data-set-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setLang === lang)));
-    try { localStorage.setItem('oofa-lang', lang); } catch {}
-  };
-  let saved = null; try { saved = localStorage.getItem('oofa-lang'); } catch {}
-  setLang(saved === 'es' || saved === 'en' ? saved : (navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en');
-  document.querySelectorAll('[data-set-lang]').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.setLang)));
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="game.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
