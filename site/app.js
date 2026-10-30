@@ -50,7 +50,7 @@
         <div class="barcode"></div>
       </div>`).join(''));
     const cards = $$('.badge', stage);
-    const SEG = 9;
+    const SEG = 9, ANCHOR_Y = 44; // the nails sit on a wooden rail near the top of the stage
     let topZ = 1;
     let bodies = [];
     const layout = () => {
@@ -59,10 +59,15 @@
       cards.forEach((c, i) => c.style.display = i < count ? '' : 'none');
       bodies = cards.slice(0, count).map((card, i) => {
         const ax = w * (i + .5) / count, len = (narrow ? 110 : 130) + (i % 2) * 60 + (i === 2 ? 30 : 0);
-        const pts = Array.from({ length: SEG + 1 }, (_, k) => ({ x: ax, y: -20 + len * k / SEG, px: ax + (k ? rand(-6, 6) * k / SEG : 0), py: -20 + len * k / SEG }));
+        const pts = Array.from({ length: SEG + 1 }, (_, k) => ({ x: ax, y: ANCHOR_Y + len * k / SEG, px: ax + (k ? rand(-4, 4) * k / SEG : 0), py: ANCHOR_Y + len * k / SEG }));
         return { card, pts, len: len / SEG, ax, drag: null, angle: 0 };
       });
-      strapSvg.innerHTML = bodies.map((b, i) => `<path stroke="${TEAM[i].c}" />`).join('');
+      // A wooden rail with one nail per badge; each strap loops over its nail.
+      strapSvg.innerHTML = `<defs><radialGradient id="nail" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#f4f1ea"/><stop offset=".45" stop-color="#b9b4c2"/><stop offset="1" stop-color="#5d566b"/></radialGradient></defs>
+        <rect class="rail" x="${w * .03}" y="${ANCHOR_Y - 11}" width="${w * .94}" height="22" rx="6" />
+        <rect class="rail-shade" x="${w * .03}" y="${ANCHOR_Y + 5}" width="${w * .94}" height="6" rx="3" />
+        <g class="strap-paths">${bodies.map((b, i) => `<path stroke="${TEAM[i].c}" />`).join('')}</g>
+        ${bodies.map(b => `<g class="nail" transform="translate(${b.ax} ${ANCHOR_Y})"><ellipse cx="2" cy="4" rx="9" ry="5" fill="#00000033"/><circle r="8" fill="url(#nail)" stroke="#4a4458" stroke-width="1"/><circle cx="-2.5" cy="-2.5" r="2.2" fill="#fff" opacity=".8"/></g>`).join('')}`;
     };
     function rand(a, b) { return a + Math.random() * (b - a); }
     layout(); addEventListener('resize', layout);
@@ -70,27 +75,36 @@
     const step = () => {
       for (const b of bodies) {
         const p = b.pts;
+        // Heavy air and a speed limit: badges swing, they do not fly around.
         for (let k = 1; k < p.length; k++) {
-          const q = p[k], vx = (q.x - q.px) * .975, vy = (q.y - q.py) * .975;
-          q.px = q.x; q.py = q.y; q.x += vx; q.y += vy + .9;
+          const q = p[k];
+          let vx = (q.x - q.px) * .93, vy = (q.y - q.py) * .93;
+          const speed = Math.hypot(vx, vy); if (speed > 9) { vx *= 9 / speed; vy *= 9 / speed; }
+          q.px = q.x; q.py = q.y; q.x += vx; q.y += vy + .45;
         }
-        if (b.drag) { const last = p[p.length - 1]; last.x = b.drag.x; last.y = b.drag.y; }
+        const reach = b.len * SEG * 1.05;
+        if (b.drag) { // the hand pulls the badge gently, and never further than the strap allows
+          let tx = b.drag.x - b.ax, ty = b.drag.y - ANCHOR_Y; const d = Math.hypot(tx, ty);
+          if (d > reach) { tx *= reach / d; ty *= reach / d; }
+          const last = p[p.length - 1]; b.hold = { x: last.x + (b.ax + tx - last.x) * .18, y: last.y + (ANCHOR_Y + ty - last.y) * .18 };
+          last.x = b.hold.x; last.y = b.hold.y;
+        }
         for (let it = 0; it < 14; it++) {
-          p[0].x = b.ax; p[0].y = -20;
+          p[0].x = b.ax; p[0].y = ANCHOR_Y;
           for (let k = 0; k < p.length - 1; k++) {
             const a = p[k], c = p[k + 1], dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy) || 1, diff = (d - b.len) / d;
             if (d < b.len) continue; // a strap goes slack, it does not push
             if (k === 0) { c.x -= dx * diff; c.y -= dy * diff; }
             else { a.x += dx * diff * .5; a.y += dy * diff * .5; c.x -= dx * diff * .5; c.y -= dy * diff * .5; }
           }
-          if (b.drag) { const last = p[p.length - 1]; last.x = b.drag.x; last.y = b.drag.y; }
+          if (b.drag) { const last = p[p.length - 1]; last.x = b.hold.x; last.y = b.hold.y; }
         }
         const last = p[p.length - 1], prev = p[p.length - 3];
-        const target = -Math.atan2(last.x - prev.x, last.y - prev.y); // hang from the strap
-        b.angle += (target - b.angle) * .3;
+        const target = Math.max(-.6, Math.min(.6, -Math.atan2(last.x - prev.x, last.y - prev.y))); // hang from the strap
+        b.angle += (target - b.angle) * .12;
         b.card.style.transform = `translate(${last.x - b.card.offsetWidth / 2}px, ${last.y - 6}px) rotate(${b.angle}rad)`;
       }
-      const paths = strapSvg.children;
+      const paths = strapSvg.querySelector('.strap-paths')?.children ?? [];
       bodies.forEach((b, i) => { const p = b.pts; let d = `M${p[0].x},${p[0].y}`; for (let k = 1; k < p.length - 1; k++) { const mx = (p[k].x + p[k + 1].x) / 2, my = (p[k].y + p[k + 1].y) / 2; d += ` Q${p[k].x},${p[k].y} ${mx},${my}`; } d += ` L${p[p.length - 1].x},${p[p.length - 1].y}`; paths[i]?.setAttribute('d', d); });
       requestAnimationFrame(step);
     };
@@ -103,7 +117,7 @@
       move(e); card.addEventListener('pointermove', move); card.addEventListener('pointerup', up); card.addEventListener('pointercancel', up);
     }));
     // A little swing as the section scrolls into view.
-    new IntersectionObserver(([entry]) => { if (entry.isIntersecting) bodies.forEach((b, i) => { const last = b.pts[b.pts.length - 1]; last.px = last.x + (i % 2 ? 26 : -26); }); }, { threshold: .4 }).observe(stage);
+    new IntersectionObserver(([entry]) => { if (entry.isIntersecting) bodies.forEach((b, i) => { const last = b.pts[b.pts.length - 1]; last.px = last.x + (i % 2 ? 8 : -8); }); }, { threshold: .4 }).observe(stage);
   }
 
   // Terminal typing --------------------------------------------------------------------------------------------

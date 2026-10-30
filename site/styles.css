@@ -124,7 +124,10 @@ section { position: relative; }
 .team { padding: 40px 0 120px; }
 .badges { position: relative; height: 520px; width: min(1180px, calc(100% - 20px)); margin: 0 auto; touch-action: pan-y; }
 .straps { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.straps path { fill: none; stroke-width: 14; stroke-linecap: round; }
+.straps path { fill: none; stroke-width: 12; stroke-linecap: round; }
+.straps .rail { fill: #b07a52; }
+.straps .rail-shade { fill: #8a5c3b; }
+.straps { z-index: 0; } .badge { z-index: 1; }
 .badge { position: absolute; left: 0; top: 0; width: 176px; padding: 12px 12px 14px; border-radius: 16px; background: #fff; color: #16131f; border: 1px solid var(--line); box-shadow: 0 30px 40px -22px #3a2a1a88, inset 0 -4px 0 #0000000f; cursor: grab; user-select: none; touch-action: none; transform-origin: 50% 0; will-change: transform; }
 .badge:active { cursor: grabbing; }
 .badge::before { content: ""; position: absolute; top: 8px; left: 50%; width: 34px; height: 7px; margin-left: -17px; border-radius: 9px; background: #16131f; box-shadow: inset 0 2px 2px #000; }
