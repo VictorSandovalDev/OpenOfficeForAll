@@ -90,8 +90,20 @@ function BaseObject({ object, selected, editing, onSelectObject, onGrab }: { obj
 }
 /** Static layers: floors in area depth order, then walls, doorways and furniture sorted with the avatars. */
 const AREA_FLOORS = [...AREAS].sort((a, b) => a.depth - b.depth);
+/** Outdoor ground touching the edge of the map (the sea, the sand) carries on beyond it, so a beach ends in open sea. */
+const OUTER_GROUND = AREA_FLOORS.filter(area => area.parent && !area.walls && area.type === 'Public' && /^(Sand|Dune|Shore|Water)$/.test(area.floor)).flatMap(area => {
+  const far = Math.max(WORLD.width, WORLD.height) * 2, x = area.x * TILE, y = area.y * TILE, w = area.w * TILE, h = area.h * TILE;
+  const left = area.x === 0, right = area.x + area.w === WORLD.cols, bottom = area.y + area.h === WORLD.rows;
+  const out: { id: string; floor: string; floorColor: string; x: number; y: number; w: number; h: number }[] = [];
+  const base = { floor: area.floor, floorColor: area.floorColor };
+  // One pixel of overlap hides the seam between the map's own ground and its continuation outside.
+  if (left) out.push({ id: `${area.id}-l`, ...base, x: x - far, y, w: far + 1, h: bottom ? h + far : h + 1 });
+  if (right) out.push({ id: `${area.id}-r`, ...base, x: x + w - 1, y, w: far + 1, h: bottom ? h + far : h + 1 });
+  if (bottom) out.push({ id: `${area.id}-b`, ...base, x, y: y + h - 1, w, h: far });
+  return out;
+});
 /** Outdoor ground keeps its colour on the minimap. */
-const MINIMAP_GROUND: Record<string, string> = { Sand: '#cdb88a', Shore: '#9fd0d8', Water: '#3f8fb0', StonePath: '#8f8b82' };
+const MINIMAP_GROUND: Record<string, string> = { Sand: '#cdb88a', Dune: '#bfae7d', Pier: '#8a6a4a', Shore: '#9fd0d8', Water: '#3f8fb0', StonePath: '#8f8b82' };
 /** Tall north walls are drawn over the tiles behind them; a click on one means the floor right in front of it. */
 const NORTH_WALLS = WALLS.filter(wall => !wall.open && (wall.side === 'n' || wall.side === 'nw' || wall.side === 'ne'));
 function inFrontOfWall(point: Point): Tile | null {
@@ -568,7 +580,10 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       <defs><pattern id="edit-grid" width={TILE} height={TILE} patternUnits="userSpaceOnUse"><path d={`M${TILE} 0V${TILE}H0`} fill="none" stroke="#ffffff" strokeOpacity=".12" strokeWidth="1" /></pattern></defs>
       <g pointerEvents="none" shapeRendering="crispEdges">
         <rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill={`url(#${floorPatternId('NewStyleGrass/Green')})`} />
-        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE} height={area.h * TILE} fill={`url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
+        {OUTER_GROUND.map(area => <rect key={`outer-${area.id}`} x={area.x} y={area.y} width={area.w} height={area.h} fill={`url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
+        {AREA_FLOORS.map(area => <rect key={area.id} x={area.x * TILE} y={area.y * TILE} width={area.w * TILE + (area.id.startsWith('ground-') ? 1 : 0)} height={area.h * TILE + (area.id.startsWith('ground-') ? 1 : 0)} fill={`url(#${floorPatternId(floorKey(area.floor, area.floorColor))})`} />)}
+        {/* The shore pattern starts with sand: a sand edge hides the wrap-around line browsers draw when scaling the pattern. */}
+        {[...AREA_FLOORS, ...OUTER_GROUND].filter(area => area.floor === 'Shore').map(area => { const outer = !('depth' in area); return <rect key={`shore-edge-${area.id}`} x={outer ? area.x : area.x * TILE} y={outer ? area.y : area.y * TILE} width={outer ? area.w : area.w * TILE + 1} height={2} fill="#e9d3a2" />; })}
       </g>
       {editingMode && <g pointerEvents="none"><rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill="#0b1020" fillOpacity=".28" /><rect x="0" y="0" width={WORLD.width} height={WORLD.height} fill="url(#edit-grid)" /></g>}
       {destination && <g pointerEvents="none" transform={`translate(${destination.tx * TILE} ${destination.ty * TILE})`}><rect x="2" y="2" width="28" height="28" rx="3" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" /></g>}

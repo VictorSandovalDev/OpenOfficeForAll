@@ -9,7 +9,7 @@ export function floorMaterial(point: { x: number; y: number }): Material {
   const tx = Math.floor(point.x / TILE), ty = Math.floor(point.y / TILE);
   const area = BY_DEPTH.find(candidate => tx >= candidate.x && tx < candidate.x + candidate.w && ty >= candidate.y && ty < candidate.y + candidate.h);
   const floor = area?.floor ?? 'NewStyleGrass';
-  return floor.startsWith('Carpet') ? 'carpet' : floor.includes('Grass') ? 'grass' : floor === 'Sand' ? 'sand' : floor === 'StonePath' ? 'stone' : 'wood';
+  return floor.startsWith('Carpet') ? 'carpet' : floor.includes('Grass') ? 'grass' : floor === 'Sand' || floor === 'Dune' ? 'sand' : floor === 'StonePath' ? 'stone' : 'wood';
 }
 
 /** Sound effects volume, 0 to 1 (0 silences them). */

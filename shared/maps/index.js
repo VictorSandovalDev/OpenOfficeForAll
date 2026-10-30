@@ -6,12 +6,34 @@ import { composeMap } from './compose.js';
 
 const ground = (name, floor, floorColor, x, y, w, h, extra = {}) => ({ name, floor, floorColor, x, y, w, h, ...extra });
 const path = (x, y, w, h) => ground('Camino', 'StonePath', 'Grey', x, y, w, h);
-/** Sand, a frothy shore line, shallow and deep water from row `top` down to the bottom of the map. */
-const beach = (cols, top, rows) => [
-  ground('Playa', 'Sand', 'Beige', 0, top, cols, rows - top - 7),
-  ground('Orilla', 'Shore', 'Foam', 0, rows - 7, cols, 1, { blocked: true }),
-  ground('Mar', 'Water', 'Shallow', 0, rows - 6, cols, 3, { blocked: true }),
-  ground('Mar abierto', 'Water', 'Deep', 0, rows - 3, cols, 3, { blocked: true }),
+/** A beach from row `top` to the bottom of the map: an uneven line of dunes biting into the lawn (skipping the `gaps`,
+    where paths come down), wide sand, a frothy shore and the sea getting deeper. The sea continues past the map edge. */
+const beach = (cols, top, rows, gaps = []) => {
+  const shoreRow = rows - 10, bumps = [];
+  // Dune bumps of varying width and height: a natural coastline instead of a ruler-straight edge.
+  const widths = [5, 3, 6, 4, 7, 3, 5, 4], heights = [2, 1, 0, 2, 1, 2, 0, 1];
+  for (let x = 0, i = 0; x < cols; i++) {
+    const w = Math.min(widths[i % widths.length], cols - x), h = heights[i % heights.length];
+    if (h && !gaps.some(([from, to]) => x < to && x + w > from)) bumps.push(ground('Dunas', 'Dune', 'Beige', x, top - h, w, h));
+    x += w;
+  }
+  return [
+    ...bumps,
+    ground('Dunas', 'Dune', 'Beige', 0, top, cols, 1),
+    ground('Playa', 'Sand', 'Beige', 0, top + 1, cols, shoreRow - top - 1),
+    ground('Orilla', 'Shore', 'Foam', 0, shoreRow, cols, 1, { blocked: true }),
+    ground('Mar', 'Water', 'Shallow', 0, shoreRow + 1, cols, 3, { blocked: true }),
+    ground('Mar abierto', 'Water', 'Deep', 0, shoreRow + 4, cols, rows - shoreRow - 4, { blocked: true }),
+  ];
+};
+/** A pier three tiles wide from the shore out to sea: planks, beams with posts on both sides and a beam at the end. */
+const pier = (x, top, length) => [
+  ground('Muelle', 'Pier', 'Left', x, top, 1, length - 1, { depth: 3 }),
+  ground('Muelle', 'Pier', 'Center', x + 1, top, 1, length - 1, { depth: 3 }),
+  ground('Muelle', 'Pier', 'Right', x + 2, top, 1, length - 1, { depth: 3 }),
+  ground('Muelle', 'Pier', 'EndLeft', x, top + length - 1, 1, 1, { depth: 3 }),
+  ground('Muelle', 'Pier', 'EndCenter', x + 1, top + length - 1, 1, 1, { depth: 3 }),
+  ground('Muelle', 'Pier', 'EndRight', x + 2, top + length - 1, 1, 1, { depth: 3 }),
 ];
 const every = (from, to, step, make) => { const out = []; for (let v = from; v <= to; v += step) out.push(...make(v)); return out; };
 /** An umbrella with two loungers and a towel beside it, standing on the tile (x, y). */
@@ -19,7 +41,7 @@ const sunSpot = (x, y, color) => [['beach-umbrella', color, x, y], ['sun-lounger
 
 // ---------------------------------------------------------------------------------------------------------------
 // Studio: the lobby, the team hall and the media room by the sea, with a garden walk down to the beach.
-const STUDIO_COLS = 40, STUDIO_ROWS = 52, SAND = 38;
+const STUDIO_COLS = 40, STUDIO_ROWS = 58, SAND = 39;
 const studio = composeMap(vivo, {
   cols: STUDIO_COLS, rows: STUDIO_ROWS, spawn: { tx: 10, ty: 27 },
   stamps: [
@@ -32,9 +54,9 @@ const studio = composeMap(vivo, {
     path(32, 8, 2, 26), // along the east side of the building
     path(15, 6, 2, 2), // from the hall's garden door to the pond
     ground('Plaza', 'StonePath', 'Grey', 31, 2, 8, 6),
-    path(18, 36, 3, 2), // down to the sand
-    ...beach(STUDIO_COLS, SAND, STUDIO_ROWS),
-    ground('Muelle', 'WoodSlats', 'Wood', 30, STUDIO_ROWS - 7, 3, 6, { depth: 3 }),
+    path(18, 36, 3, 3), // down to the sand
+    ...beach(STUDIO_COLS, SAND, STUDIO_ROWS, [[17, 22]]),
+    ...pier(29, STUDIO_ROWS - 10, 8),
   ],
   objects: [
     // Garden along the promenade: hedges with gaps, flower beds, benches and lamps.
@@ -58,7 +80,7 @@ const studio = composeMap(vivo, {
 
 // ---------------------------------------------------------------------------------------------------------------
 // Campus: two buildings joined by a promenade and a fountain plaza, gardens in between and a long beach.
-const CAMPUS_COLS = 92, CAMPUS_ROWS = 72, CAMPUS_SAND = 58;
+const CAMPUS_COLS = 92, CAMPUS_ROWS = 78, CAMPUS_SAND = 59;
 const campus = composeMap(vivo, {
   cols: CAMPUS_COLS, rows: CAMPUS_ROWS, spawn: { tx: 20, ty: 39 },
   stamps: [
@@ -71,10 +93,9 @@ const campus = composeMap(vivo, {
     path(44, 8, 3, 39), // the garden alley between the buildings, up to the northern walk
     path(24, 8, 44, 2), // the northern walk past both koi ponds
     ground('Plaza', 'StonePath', 'Grey', 39, 49, 14, 7),
-    path(44, 56, 3, 2), // down to the sand
-    ...beach(CAMPUS_COLS, CAMPUS_SAND, CAMPUS_ROWS),
-    ground('Muelle', 'WoodSlats', 'Wood', 72, CAMPUS_ROWS - 7, 3, 6, { depth: 3 }),
-    ground('Muelle', 'WoodSlats', 'Wood', 16, CAMPUS_ROWS - 7, 3, 6, { depth: 3 }),
+    path(44, 56, 3, 3), // down to the sand
+    ...beach(CAMPUS_COLS, CAMPUS_SAND, CAMPUS_ROWS, [[38, 54]]),
+    ...pier(72, CAMPUS_ROWS - 10, 8), ...pier(16, CAMPUS_ROWS - 10, 8),
   ],
   objects: [
     // Hedges and flower beds along the promenade, open in front of the doors, the alley and the plaza.

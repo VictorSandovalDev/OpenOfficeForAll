@@ -102,31 +102,72 @@ function sand(): PixelSprite {
   for (let y = 0; y < 32; y++) { let row = ''; for (let x = 0; x < 32; x++) { const n = noise(x, y, 3); row += n > .94 ? 'd' : n > .88 ? 'l' : n < .04 ? 'p' : 'b'; } rows.push(row); }
   return { w: 32, h: 32, palette: { b: '#e9d3a2', d: '#cfb37f', l: '#f6e6bf', p: '#d9a98a' }, rows };
 }
-function water(base: string, ripple: string, light: string): PixelSprite {
+/** Water, one frame of four: the ripples drift to the right and bob a pixel, so the sea moves. */
+function water(base: string, ripple: string, light: string, frame = 0): PixelSprite {
   const rows: string[] = [];
   for (let y = 0; y < 32; y++) {
     let row = '';
     for (let x = 0; x < 32; x++) {
-      const wave = (x + Math.round(Math.sin((y / 32) * Math.PI * 2) * 3) + 32) % 16;
-      const band = y % 8 === 3 && wave < 5;
-      row += band ? 'r' : y % 8 === 4 && wave >= 1 && wave < 3 ? 'l' : noise(x, y, 7) > .97 ? 'l' : 'b';
+      const bob = frame % 2;
+      const wave = (x - frame * 4 + Math.round(Math.sin(((y + frame * 2) / 32) * Math.PI * 2) * 3) + 64) % 16;
+      const band = (y + bob) % 8 === 3 && wave < 5;
+      const glint = (y + bob) % 8 === 4 && wave >= 1 && wave < 3;
+      row += band ? 'r' : glint ? 'l' : noise((x - frame * 4 + 64) % 32, y, 7) > .975 ? 'l' : 'b';
     }
     rows.push(row);
   }
   return { w: 32, h: 32, palette: { b: base, r: ripple, l: light }, rows };
 }
-/** The shore: sand above, a frothy wave line, shallow water below. */
-function shore(): PixelSprite {
+/** The shore, one frame of four: the foam line washes up the sand and back. */
+function shore(frame = 0): PixelSprite {
+  const reach = [0, 2, 4, 2][frame];
   const rows: string[] = [];
   for (let y = 0; y < 32; y++) {
     let row = '';
     for (let x = 0; x < 32; x++) {
-      const edge = 14 + Math.round(Math.sin((x / 32) * Math.PI * 2) * 2);
-      row += y < edge - 3 ? (noise(x, y, 3) > .92 ? 'd' : 's') : y < edge - 1 ? 'w' : y < edge + 1 ? (x % 5 === 0 ? 'f' : 'w') : y < edge + 3 ? 'f' : (noise(x, y, 9) > .95 ? 'l' : 'b');
+      const edge = 16 - reach + Math.round(Math.sin(((x + frame * 3) / 32) * Math.PI * 2) * 2);
+      row += y < edge - 3 ? (noise(x, y, 3) > .92 ? 'd' : y >= edge - 5 && reach < 2 ? 'm' : 's')
+        : y < edge - 1 ? 'w' : y < edge + 1 ? ((x + frame) % 5 === 0 ? 'f' : 'w') : y < edge + 3 ? 'f' : (noise(x, (y + frame) % 32, 9) > .95 ? 'l' : 'b');
     }
     rows.push(row);
   }
-  return { w: 32, h: 32, palette: { s: '#e9d3a2', d: '#d4b986', w: '#f4f1e8', f: '#bfe6ea', b: '#5fb6c9', l: '#8fd3df' }, rows };
+  return { w: 32, h: 32, palette: { s: '#e9d3a2', d: '#d4b986', m: '#d8bf8f', w: '#f4f1e8', f: '#bfe6ea', b: '#5fb6c9', l: '#8fd3df' }, rows };
+}
+/** Dunes: sand with tufts of beach grass, between the lawn and the beach. */
+function dune(): PixelSprite {
+  const rows: string[] = [];
+  const tufts = [[4, 6], [19, 3], [27, 14], [9, 20], [23, 25], [13, 11], [2, 28], [30, 22]];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      let ch = noise(x, y, 3) > .93 ? 'd' : 's';
+      for (const [tx, ty] of tufts) { const dx = x - tx, dy = y - ty; if (dy >= -3 && dy <= 0 && Math.abs(dx) <= (dy === 0 ? 2 : dy === -1 ? 1 : 0)) ch = dy === 0 ? 'g' : 'h'; if (dy === -3 && Math.abs(dx) === 2) ch = 'h'; }
+      row += ch;
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { s: '#e6cd98', d: '#cfb37f', g: '#5f9a4f', h: '#7cb562' }, rows };
+}
+/** A pier tile: planks across the pier, a dark beam with round posts on the open sides and a beam at the end. */
+function pier({ left = false, right = false, end = false } = {}): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      const outer = (left && x < 4) || (right && x > 27) || (end && y > 27);
+      const post = ((left && x < 6) || (right && x > 25)) && (y % 16 >= 5 && y % 16 <= 10) || (end && y > 25 && x % 16 >= 5 && x % 16 <= 10);
+      const postTop = post && (((left || right) && (y % 16 === 5 || y % 16 === 6)) || (end && (y === 26 || y === 27)));
+      if (post) row += postTop ? 'q' : 'p';
+      else if (outer) row += (left && x === 3) || (right && x === 28) || (end && y === 28) ? 'e' : 'k';
+      else {
+        const gap = y % 6 === 5, plank = Math.floor(y / 6);
+        const nail = !gap && (y % 6 === 2) && (x === 6 + (plank % 2) * 2 || x === 25 - (plank % 2) * 2);
+        row += gap ? 'g' : nail ? 'n' : noise(Math.floor(x / 11) + plank * 3, plank, 4) > .5 ? 'b' : 'c';
+      }
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { b: '#c39a6b', c: '#b38a5d', g: '#6e5038', n: '#7b5c43', k: '#5a3f2c', e: '#3f2b1f', p: '#6b4a33', q: '#9a7350' }, rows };
 }
 function cobbles(): PixelSprite {
   const rows: string[] = [];
@@ -156,6 +197,13 @@ export const ORIGINAL_FLOOR_TILES: Record<string, PixelSprite> = {
   'Shore/Foam': shore(),
   'Water/Shallow': water('#5fb6c9', '#8fd3df', '#c3ecf2'),
   'Water/Deep': water('#3a8fb3', '#5aa9c8', '#8fd3df'),
+  'Dune/Beige': dune(),
+  'Pier/Center': pier(),
+  'Pier/Left': pier({ left: true }),
+  'Pier/Right': pier({ right: true }),
+  'Pier/EndCenter': pier({ end: true }),
+  'Pier/EndLeft': pier({ left: true, end: true }),
+  'Pier/EndRight': pier({ right: true, end: true }),
   'StonePath/Grey': cobbles(),
 };
 export const FLOOR_TILES: Record<string, PixelSprite> = { ...ORIGINAL_FLOOR_TILES, ...REFERENCE_FLOORS };
@@ -163,10 +211,27 @@ export const floorKey = (texture: string, color: string) => `${texture}/${color}
 export const floorPatternId = (key: string) => `floor-${key.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
 
 /** SVG pattern definitions for every floor tile. */
+/** Floors that move: the sea and the shore cycle through four frames. */
+const FRAMES = [0, 1, 2, 3];
+const ANIMATED_FLOORS: Record<string, { frames: PixelSprite[]; duration: number }> = {
+  'Water/Shallow': { frames: FRAMES.map(f => water('#5fb6c9', '#8fd3df', '#c3ecf2', f)), duration: 1.6 },
+  'Water/Deep': { frames: FRAMES.map(f => water('#3a8fb3', '#5aa9c8', '#8fd3df', f)), duration: 2.2 },
+  'Shore/Foam': { frames: FRAMES.map(f => shore(f)), duration: 2.4 },
+};
+const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+function SpriteGroup({ sprite }: { sprite: PixelSprite }) { return <>{spritePaths(sprite).map(path => <path key={path.color} d={path.d} fill={path.color} />)}</>; }
+
 export function FloorPatterns() {
+  const still = reducedMotion();
   return <defs>
-    {Object.entries(artPack() === 'reference' ? FLOOR_TILES : ORIGINAL_FLOOR_TILES).map(([key, sprite]) => <pattern key={key} id={floorPatternId(key)} width="32" height="32" patternUnits="userSpaceOnUse">
-      {spritePaths(sprite).map(path => <path key={path.color} d={path.d} fill={path.color} />)}
-    </pattern>)}
+    {Object.entries(artPack() === 'reference' ? FLOOR_TILES : ORIGINAL_FLOOR_TILES).map(([key, sprite]) => {
+      const animated = !still && ANIMATED_FLOORS[key];
+      return <pattern key={key} id={floorPatternId(key)} width="32" height="32" patternUnits="userSpaceOnUse">
+        {animated ? animated.frames.map((frame, index) => <g key={index} opacity={index === 0 ? 1 : 0}>
+          <SpriteGroup sprite={frame} />
+          <animate attributeName="opacity" dur={`${animated.duration}s`} repeatCount="indefinite" calcMode="discrete" values={FRAMES.map(f => (f === index ? 1 : 0)).join(';')} />
+        </g>) : <SpriteGroup sprite={sprite} />}
+      </pattern>;
+    })}
   </defs>;
 }
