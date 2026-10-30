@@ -24,7 +24,7 @@ kbd { font: 600 .82em var(--mono); padding: 1px 6px; border-radius: 6px; backgro
 .window, .terminal { --ink: #f5f2ea; --muted: #b4aec4; --dim: #7c7690; color: var(--ink); }
 
 /* Languages: every text exists twice, the body shows one. */
-body[data-lang="es"] [lang="en"], body[data-lang="en"] [lang="es"] { display: none !important; }
+body:not([data-lang="en"]) [lang="en"], body:not([data-lang="es"]) [lang="es"], body:not([data-lang="pt"]) [lang="pt"] { display: none !important; }
 
 .grain { position: fixed; inset: -50%; z-index: 100; pointer-events: none; opacity: .05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); animation: grain 1s steps(4) infinite; }
 @keyframes grain { 0% { transform: translate(0, 0); } 25% { transform: translate(-4%, 3%); } 50% { transform: translate(3%, -2%); } 75% { transform: translate(-2%, -4%); } }

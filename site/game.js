@@ -8,7 +8,8 @@
   const strip = root.querySelector('.video-strip');
   const roomToast = root.querySelector('.toast-room');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const lang = () => document.body.dataset.lang === 'en' ? 'en' : 'es';
+  const lang = () => ['es', 'pt'].includes(document.body.dataset.lang) ? document.body.dataset.lang : 'en';
+  const YOU = { en: 'You', es: 'Tú', pt: 'Você' };
 
   const T = 32, CELL = 92, FOOT_Y = 69, STEP_MS = 190, FRAME_MS = 110;
   const DIRS = { south: 0, north: 1, east: 2, west: 3 };
@@ -17,6 +18,7 @@
   const LINES = {
     es: ['¡Hola! 👋', '¿Café? ☕', '¿Daily en 5?', 'Mira este diseño 👀', '¡Deploy listo! 🚀', 'jajaja 😂', '¿Almorzamos?', 'Te paso el link', '¡Buen finde!'],
     en: ['Hi! 👋', 'Coffee? ☕', 'Daily in 5?', 'Check this design 👀', 'Deploy done! 🚀', 'lol 😂', 'Lunch?', "I'll send you the link", 'Have a good weekend!'],
+    pt: ['Oi! 👋', 'Café? ☕', 'Daily em 5?', 'Olha esse design 👀', 'Deploy feito! 🚀', 'kkkkk 😂', 'Almoçamos?', 'Te mando o link', 'Bom fim de semana!'],
   };
   const PEOPLE = [
     { name: 'Ana', sheet: 'f-teal', color: '#3a9fd6' }, { name: 'Leo', sheet: 'm-lime', color: '#3f9a4b' },
@@ -72,7 +74,7 @@
 
     const makeAvatar = (spec, tx, ty) => ({ ...spec, tx, ty, px: tx * T + T / 2, py: ty * T + T / 2, from: null, to: null, start: 0, facing: 'south', route: [], wait: rand(500, 2500), line: '', lineUntil: 0 });
     const spawn = world.spawn;
-    const me = makeAvatar({ name: lang() === 'en' ? 'You' : 'Tú', sheet: 'm-coral', color: '#ff7a59', me: true }, spawn.tx, spawn.ty);
+    const me = makeAvatar({ name: YOU[lang()], sheet: 'm-coral', color: '#ff7a59', me: true }, spawn.tx, spawn.ty);
     const npcStarts = [[6, 18], [17, 24], [24, 12], [26, 35], [8, 47]];
     const npcs = PEOPLE.map((p, i) => makeAvatar(p, ...npcStarts[i]));
     const everyone = [me, ...npcs];
@@ -151,14 +153,14 @@
       const talking = npcs.filter(n => near(n, me));
       const k = talking.map(n => n.name).join();
       if (k === stripKey) return; stripKey = k;
-      strip.innerHTML = (talking.length ? [me, ...talking] : []).map(a => `<div class="vtile" style="--c:${a.color}55"><div class="face" style="background-image:url(assets/avatars/${a.sheet}.png)"></div><span class="tag"><span class="bars"><i></i><i></i><i></i></span>${a.me ? (lang() === 'en' ? 'You' : 'Tú') : a.name}</span></div>`).join('');
+      strip.innerHTML = (talking.length ? [me, ...talking] : []).map(a => `<div class="vtile" style="--c:${a.color}55"><div class="face" style="background-image:url(assets/avatars/${a.sheet}.png)"></div><span class="tag"><span class="bars"><i></i><i></i><i></i></span>${a.me ? YOU[lang()] : a.name}</span></div>`).join('');
     };
     let roomName = '';
     const updateRoom = () => {
       const room = world.rooms.find(r => r.type === 'MeetingRoom' && me.tx >= r.x && me.tx < r.x + r.w && me.ty >= r.y && me.ty < r.y + r.h);
       const name = room ? room.name : '';
       if (name === roomName) return; roomName = name;
-      roomToast.textContent = room ? (lang() === 'en' ? `You're in ${room.name} · the doors close 🔒` : `Entraste a ${room.name} · se cierran las puertas 🔒`) : '';
+      roomToast.textContent = room ? { en: `You're in ${room.name} · the doors close 🔒`, es: `Entraste a ${room.name} · se cierran las puertas 🔒`, pt: `Você entrou em ${room.name} · as portas se fecham 🔒` }[lang()] : '';
       roomToast.classList.toggle('show', !!room);
     };
 
@@ -196,7 +198,7 @@
         ctx.drawImage(sheet, col * CELL, DIRS[a.facing] * CELL, CELL, CELL, Math.round(a.px - CELL / 2), Math.round(a.py + 10 - FOOT_Y), CELL, CELL);
       }
       for (const a of sorted) {
-        pill(a.me ? (lang() === 'en' ? 'You' : 'Tú') : a.name, a.px, a.py - 44, a.me ? '#5a4fcf' : '#16131fdd', '#fff');
+        pill(a.me ? YOU[lang()] : a.name, a.px, a.py - 44, a.me ? '#5a4fcf' : '#16131fdd', '#fff');
         if (!a.me && near(a, me) && a.line && time < a.lineUntil) bubble(a.line, a.px, a.py - 66);
       }
     };

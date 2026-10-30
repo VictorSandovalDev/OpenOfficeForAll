@@ -12,7 +12,7 @@
     if (window.ScrollTrigger) ScrollTrigger.refresh();
   };
   let saved = null; try { saved = localStorage.getItem('oofa-lang'); } catch {}
-  setLang(saved === 'en' || saved === 'es' ? saved : (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en');
+  setLang(['en', 'es', 'pt'].includes(saved) ? saved : 'en'); // English first; the selector remembers the choice
   $$('[data-set-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.setLang)));
 
   // GitHub stars ----------------------------------------------------------------------------------------------
@@ -32,11 +32,11 @@
 
   // Team badges with lanyards (verlet physics) ----------------------------------------------------------------
   const TEAM = [
-    { name: 'Ana', es: 'Diseño', en: 'Design', sheet: 'f-teal', c: '#3a9fd6', s: '#3ac07a', st: ['Disponible', 'Available'], n: '0001' },
-    { name: 'Leo', es: 'Backend', en: 'Backend', sheet: 'm-lime', c: '#3f9a4b', s: '#ff4d5e', st: ['No molestar', 'Do not disturb'], n: '0002' },
-    { name: 'Mar', es: 'Producto', en: 'Product', sheet: 'f-pink', c: '#e5603f', s: '#8f73ff', st: ['En reunión', 'In a meeting'], n: '0003' },
-    { name: 'Sofi', es: 'Marketing', en: 'Marketing', sheet: 'f-sun', c: '#f0ac22', s: '#3ac07a', st: ['Disponible', 'Available'], n: '0004' },
-    { name: 'Teo', es: 'Soporte', en: 'Support', sheet: 'm-violet', c: '#5a4fcf', s: '#a8a2b8', st: ['Ausente', 'Away'], n: '0005' },
+    { name: 'Ana', es: 'Diseño', en: 'Design', pt: 'Design', sheet: 'f-teal', c: '#3a9fd6', s: '#3ac07a', st: ['Disponible', 'Available', 'Disponível'], n: '0001' },
+    { name: 'Leo', es: 'Backend', en: 'Backend', pt: 'Backend', sheet: 'm-lime', c: '#3f9a4b', s: '#ff4d5e', st: ['No molestar', 'Do not disturb', 'Não perturbe'], n: '0002' },
+    { name: 'Mar', es: 'Producto', en: 'Product', pt: 'Produto', sheet: 'f-pink', c: '#e5603f', s: '#8f73ff', st: ['En reunión', 'In a meeting', 'Em reunião'], n: '0003' },
+    { name: 'Sofi', es: 'Marketing', en: 'Marketing', pt: 'Marketing', sheet: 'f-sun', c: '#f0ac22', s: '#3ac07a', st: ['Disponible', 'Available', 'Disponível'], n: '0004' },
+    { name: 'Teo', es: 'Soporte', en: 'Support', pt: 'Suporte', sheet: 'm-violet', c: '#5a4fcf', s: '#a8a2b8', st: ['Ausente', 'Away', 'Ausente'], n: '0005' },
   ];
   const stage = $('.badges'), strapSvg = $('.straps');
   if (stage) {
@@ -45,8 +45,8 @@
         <div class="head"><b>OPEN OFFICE</b><span>Nº ${t.n}</span></div>
         <div class="pic"><i></i></div>
         <p class="name">${t.name}</p>
-        <p class="role"><span lang="es">${t.es}</span><span lang="en">${t.en}</span></p>
-        <span class="status"><i></i><span lang="es">${t.st[0]}</span><span lang="en">${t.st[1]}</span></span>
+        <p class="role"><span lang="es">${t.es}</span><span lang="en">${t.en}</span><span lang="pt">${t.pt}</span></p>
+        <span class="status"><i></i><span lang="es">${t.st[0]}</span><span lang="en">${t.st[1]}</span><span lang="pt">${t.st[2]}</span></span>
         <div class="barcode"></div>
       </div>`).join(''));
     const cards = $$('.badge', stage);
@@ -109,20 +109,20 @@
   // Terminal typing --------------------------------------------------------------------------------------------
   const term = $('.term code');
   const script = [
-    ['c', { es: '# pruébala en tu computador', en: '# try it on your computer' }],
+    ['c', { es: '# pruébala en tu computador', en: '# try it on your computer', pt: '# experimente no seu computador' }],
     ['p', 'git clone https://github.com/VictorSandovalDev/OpenOfficeForAll'],
     ['p', 'cd OpenOfficeForAll && npm install'],
-    ['ok', { es: '✓ listo en 14 s', en: '✓ done in 14 s' }],
+    ['ok', { es: '✓ listo en 14 s', en: '✓ done in 14 s', pt: '✓ pronto em 14 s' }],
     ['p', 'npm run dev'],
     ['ok', '➜ http://127.0.0.1:5173'],
-    ['c', { es: '# ¿y en tu servidor? Docker y listo', en: '# on your server? Docker and done' }],
+    ['c', { es: '# ¿y en tu servidor? Docker y listo', en: '# on your server? Docker and done', pt: '# e no seu servidor? Docker e pronto' }],
     ['p', 'docker compose up -d'],
-    ['ok', { es: '✓ tu oficina está en línea 🎉', en: '✓ your office is online 🎉' }],
+    ['ok', { es: '✓ tu oficina está en línea 🎉', en: '✓ your office is online 🎉', pt: '✓ seu escritório está no ar 🎉' }],
   ];
   let typed = false;
   const typeTerm = async () => {
     if (typed || !term) return; typed = true;
-    const lang = () => document.body.dataset.lang === 'en' ? 'en' : 'es';
+    const lang = () => document.body.dataset.lang || 'en';
     for (const [kind, text] of script) {
       const line = typeof text === 'string' ? text : text[lang()];
       const span = document.createElement('span'); span.className = kind;
