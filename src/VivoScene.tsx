@@ -39,7 +39,7 @@ type Props = {
   onSit: (id: string) => void; onStand: () => void;
 };
 type Layer = { key: string; y: number; order: number; node: ReactNode };
-export const MIN_ZOOM = .15;
+export const MIN_ZOOM = .45;
 /** Below this zoom the office switches to the simplified view, as the reference does when you zoom out. */
 export const SIMPLE_BELOW = 1.12;
 type Motion = { facing: Facing; moving: boolean; frame: number };
