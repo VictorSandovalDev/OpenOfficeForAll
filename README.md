@@ -13,6 +13,7 @@
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-5fa04e?style=for-the-badge&logo=node.js&logoColor=white)](#-quick-start)
 [![React 19](https://img.shields.io/badge/react-19-149eca?style=for-the-badge&logo=react&logoColor=white)](#-architecture)
 [![Self-hosted](https://img.shields.io/badge/your%20data-your%20server-f5a623?style=for-the-badge)](#-built-for-the-whole-world)
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VictorSandovalDev)
 
 [Why](#-why-open-office-for-all) · [Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Roadmap](#%EF%B8%8F-roadmap)
 
@@ -245,6 +246,16 @@ Personal accounts are optional (`ACCOUNTS=optional` or `required`); without them
 All art in this repository is original. The avatars, trees, plants, pond and furniture were generated with [PixelLab](https://pixellab.ai) from generic descriptions, using the project's own pieces as style guides, and some were drawn by hand; the floors are drawn in code. Icons are [Lucide](https://lucide.dev) (ISC). Nothing from any third-party product is included: no code, sprites or credentials.
 
 An office can also run with its own local art pack in `src/sprites/reference/` (ignored by git and never published). When that folder exists the office uses it automatically; otherwise it uses the art above.
+
+## 💜 Support the project
+
+Open Office For All is free and will stay free. If it is useful to you or your team, you can help keep it growing: new maps, furniture, avatars, languages and a public demo server.
+
+<a href="https://github.com/sponsors/VictorSandovalDev"><img src="https://img.shields.io/badge/Sponsor%20on%20GitHub-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub"></a>
+
+Starring the repository and sharing it with a team that works remotely helps too. ⭐
+
+---
 
 ## 📄 License
 

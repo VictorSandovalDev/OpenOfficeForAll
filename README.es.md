@@ -13,6 +13,7 @@
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-5fa04e?style=for-the-badge&logo=node.js&logoColor=white)](#-inicio-rápido)
 [![React 19](https://img.shields.io/badge/react-19-149eca?style=for-the-badge&logo=react&logoColor=white)](#%EF%B8%8F-arquitectura)
 [![Autoalojado](https://img.shields.io/badge/tus%20datos-tu%20servidor-f5a623?style=for-the-badge)](#-hecho-para-todo-el-mundo)
+[![Patrocinar](https://img.shields.io/badge/patrocinar-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VictorSandovalDev)
 
 [Por qué](#-por-qué-open-office-for-all) · [Inicio rápido](#-inicio-rápido) · [Funciones](#-funciones) · [Arquitectura](#%EF%B8%8F-arquitectura) · [Hoja de ruta](#%EF%B8%8F-hoja-de-ruta)
 
@@ -245,6 +246,16 @@ Las cuentas personales son opcionales (`ACCOUNTS=optional` o `required`); sin el
 Todo el arte de este repositorio es original. Los avatares, los árboles, las plantas, el estanque y los muebles se generaron con [PixelLab](https://pixellab.ai) a partir de descripciones genéricas, usando las propias piezas del proyecto como guía de estilo, y algunos se dibujaron a mano; los suelos se dibujan por código. Los iconos son de [Lucide](https://lucide.dev) (ISC). No se incluye nada de ningún producto de terceros: ni código, ni sprites, ni credenciales.
 
 Una oficina también puede usar su propio paquete de arte local en `src/sprites/reference/` (ignorado por git y nunca publicado). Si esa carpeta existe, la oficina lo usa automáticamente; si no, usa el arte anterior.
+
+## 💜 Apoya el proyecto
+
+Open Office For All es gratis y lo seguirá siendo. Si te sirve a ti o a tu equipo, puedes ayudar a que siga creciendo: nuevos mapas, muebles, avatares, idiomas y un servidor de demostración público.
+
+<a href="https://github.com/sponsors/VictorSandovalDev"><img src="https://img.shields.io/badge/Patrocinar%20en%20GitHub-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Patrocinar en GitHub"></a>
+
+Darle una estrella al repositorio y compartirlo con un equipo que trabaje en remoto también ayuda. ⭐
+
+---
 
 ## 📄 Licencia
 
