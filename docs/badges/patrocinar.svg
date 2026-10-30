@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="28" role="img" aria-label="Patrocinar">
+  <title>Patrocinar</title>
+  <rect width="130" height="28" rx="3" fill="#db61a2"/>
+  <path fill="#fff" transform="translate(12 8) scale(.75)" d="M8 14.2 6.9 13.2C3 9.7.5 7.4.5 4.6.5 2.4 2.2.7 4.4.7c1.2 0 2.4.6 3.1 1.5.8-.9 1.9-1.5 3.1-1.5 2.2 0 3.9 1.7 3.9 3.9 0 2.8-2.5 5.1-6.4 8.6Z"/>
+  <text x="75" y="18.5" fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.1">PATROCINAR</text>
+</svg>

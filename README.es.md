@@ -10,14 +10,14 @@
 
 ### [🌐 openofficeforall.app](https://openofficeforall.app)
 
-[![Sitio web](https://img.shields.io/badge/sitio%20web-openofficeforall.app-5a4fcf?style=for-the-badge&logo=googlechrome&logoColor=white)](https://openofficeforall.app)
+[![Sitio web](docs/badges/website.svg)](https://openofficeforall.app)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-2ea44f?style=for-the-badge)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/VictorSandovalDev/OpenOfficeForAll/ci.yml?branch=main&style=for-the-badge&label=pruebas)](https://github.com/VictorSandovalDev/OpenOfficeForAll/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-5fa04e?style=for-the-badge&logo=node.js&logoColor=white)](#-inicio-rápido)
 [![React 19](https://img.shields.io/badge/react-19-149eca?style=for-the-badge&logo=react&logoColor=white)](#%EF%B8%8F-arquitectura)
 [![Autoalojado](https://img.shields.io/badge/tus%20datos-tu%20servidor-f5a623?style=for-the-badge)](#-hecho-para-todo-el-mundo)
-[![Patrocinar](https://img.shields.io/badge/patrocinar-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VictorSandovalDev)
-[![Ko-fi](https://img.shields.io/badge/ko--fi-inv%C3%ADtame%20un%20caf%C3%A9-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/victorsandovaldev)
+[![Patrocinar](docs/badges/patrocinar.svg)](https://github.com/sponsors/VictorSandovalDev)
+[![Ko-fi](docs/badges/ko-fi-es.svg)](https://ko-fi.com/victorsandovaldev)
 
 [🌐 Sitio web](https://openofficeforall.app) · [Por qué](#-por-qué-open-office-for-all) · [Inicio rápido](#-inicio-rápido) · [Funciones](#-funciones) · [Arquitectura](#%EF%B8%8F-arquitectura) · [Hoja de ruta](#%EF%B8%8F-hoja-de-ruta)
 
@@ -255,8 +255,8 @@ Una oficina también puede usar su propio paquete de arte local en `src/sprites/
 
 Open Office For All es gratis y lo seguirá siendo. Si te sirve a ti o a tu equipo, puedes ayudar a que siga creciendo: nuevos mapas, muebles, avatares, idiomas y un servidor de demostración público.
 
-<a href="https://github.com/sponsors/VictorSandovalDev"><img src="https://img.shields.io/badge/Patrocinar%20en%20GitHub-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Patrocinar en GitHub"></a>
-<a href="https://ko-fi.com/victorsandovaldev"><img src="https://img.shields.io/badge/Inv%C3%ADtame%20un%20caf%C3%A9-Ko--fi-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white" alt="Invítame un café en Ko-fi"></a>
+<a href="https://github.com/sponsors/VictorSandovalDev"><img src="docs/badges/patrocinar-en-github.svg" alt="Patrocinar en GitHub"></a>
+<a href="https://ko-fi.com/victorsandovaldev"><img src="docs/badges/ko-fi-es.svg" alt="Invítame un café en Ko-fi"></a>
 
 Darle una estrella al repositorio y compartirlo con un equipo que trabaje en remoto también ayuda. ⭐
 

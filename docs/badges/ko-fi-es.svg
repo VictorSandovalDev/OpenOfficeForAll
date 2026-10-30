@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="28" role="img" aria-label="Invítame un café">
+  <title>Invítame un café</title>
+  <rect width="180" height="28" rx="3" fill="#ff5e5b"/>
+  <g transform="translate(11 8)" fill="#fff"><path d="M1 2h10v5.5A3.5 3.5 0 0 1 7.5 11h-3A3.5 3.5 0 0 1 1 7.5Z"/><path d="M11 3.5h1.2a2.3 2.3 0 0 1 0 4.6H11V6.8h1.2a1 1 0 0 0 0-2H11Z"/></g>
+  <text x="100" y="18.5" fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.1">INVÍTAME UN CAFÉ</text>
+</svg>
