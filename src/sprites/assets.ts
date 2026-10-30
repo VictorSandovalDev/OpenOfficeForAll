@@ -5,6 +5,13 @@ import { ROTATED_ASSETS } from './rotatedAssets';
 /** Generated pixel assets (PixelLab, see public/assets/pixel/objects/README.md) keyed by object kind, optionally by colour. */
 export const OBJECT_ASSETS: Record<string, string> = {
   // Outdoor and beach objects (PixelLab, project style)
+  'bus-stop/glass': 'bus-stop-glass.png',
+  'traffic-light/black': 'traffic-light-black.png',
+  'fire-hydrant/red': 'fire-hydrant-red.png',
+  'bike-rack/grey': 'bike-rack-grey.png',
+  'trash-bin/green': 'trash-bin-green.png',
+  'street-tree/green': 'street-tree-green.png',
+  'food-cart/red': 'food-cart-red.png',
   'rowboat/wood': 'rowboat-wood.png',
   'palm-tree/green': 'palm-tree-green.png',
   'palm-tree-short/green': 'palm-tree-short-green.png',

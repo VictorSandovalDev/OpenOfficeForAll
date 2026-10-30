@@ -8,3 +8,5 @@ export const OBJECTS: MapObject[];
 export const EXTRA_OBJECTS: MapObject[];
 export const SPAWN_TILE: { readonly tx: number; readonly ty: number };
 export const MAP_ID: string;
+export type TrafficLane = { row: number; direction: 1 | -1; speed: number; vehicles: string[] };
+export const TRAFFIC: TrafficLane[];

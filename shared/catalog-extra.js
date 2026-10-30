@@ -22,4 +22,12 @@ export const EXTRA_CATALOG = Object.fromEntries([
   entry('park-bench', 'wood', 'Garden Seat', 64, 40, { cols: 2, seat: [[0, 0], [1, 0]] }),
   entry('street-lamp', 'black', 'Street Lamp', 24, 72, { blocks: [[0, 0]] }),
   entry('fountain', 'stone', 'Fountain', 96, 80, { cols: 3, rows: 2, blocks: [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]] }),
+  // Street furniture
+  entry('bus-stop', 'glass', 'Street', 80, 64, { cols: 3, blocks: [[0, 0], [2, 0]], seat: [[1, 0]] }),
+  entry('traffic-light', 'black', 'Street', 20, 72, { blocks: [[0, 0]] }),
+  entry('fire-hydrant', 'red', 'Street', 16, 22, { blocks: [[0, 0]] }),
+  entry('bike-rack', 'grey', 'Street', 64, 40, { cols: 2, blocks: [[0, 0], [1, 0]] }),
+  entry('trash-bin', 'green', 'Street', 20, 32, { blocks: [[0, 0]] }),
+  entry('street-tree', 'green', 'Street', 48, 80, { blocks: [[0, 0]] }),
+  entry('food-cart', 'red', 'Street', 56, 56, { cols: 2, blocks: [[0, 0], [1, 0]] }),
 ]);

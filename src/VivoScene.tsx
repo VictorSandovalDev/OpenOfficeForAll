@@ -4,7 +4,7 @@ import { floorMaterial, playStep } from './footsteps';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import type { EditItem, FocusRoom, OfficeObject, Participant, Facing } from './types';
 import './scene.css';
-import { AREAS, TILE, WORLD } from '../shared/vivo-map.js';
+import { AREAS, TILE, TRAFFIC, WORLD } from '../shared/vivo-map.js';
 import { DOORWAYS, WALLS } from '../shared/vivo-geometry.js';
 import { getOfficeSeats } from '../shared/office-seats.js';
 import { asMapObject, baseAsEditorObject, catalogEntry, effectiveBaseObjects, type Overrides } from '../shared/office-objects.js';
@@ -91,7 +91,7 @@ function BaseObject({ object, selected, editing, onSelectObject, onGrab }: { obj
 /** Static layers: floors in area depth order, then walls, doorways and furniture sorted with the avatars. */
 const AREA_FLOORS = [...AREAS].sort((a, b) => a.depth - b.depth);
 /** Outdoor ground touching the edge of the map (the sea, the sand) carries on beyond it, so a beach ends in open sea. */
-const OUTER_GROUND = AREA_FLOORS.filter(area => area.parent && !area.walls && area.type === 'Public' && /^(Sand|Dune|Shore|Water)$/.test(area.floor)).flatMap(area => {
+const OUTER_GROUND = AREA_FLOORS.filter(area => area.parent && !area.walls && area.type === 'Public' && /^(Sand|Dune|Shore|Water|Road|Sidewalk)$/.test(area.floor)).flatMap(area => {
   const far = Math.max(WORLD.width, WORLD.height) * 2, x = area.x * TILE, y = area.y * TILE, w = area.w * TILE, h = area.h * TILE;
   const left = area.x === 0, right = area.x + area.w === WORLD.cols, bottom = area.y + area.h === WORLD.rows;
   const out: { id: string; floor: string; floorColor: string; x: number; y: number; w: number; h: number }[] = [];
@@ -103,7 +103,7 @@ const OUTER_GROUND = AREA_FLOORS.filter(area => area.parent && !area.walls && ar
   return out;
 });
 /** Outdoor ground keeps its colour on the minimap. */
-const MINIMAP_GROUND: Record<string, string> = { Sand: '#cdb88a', Dune: '#bfae7d', Pier: '#8a6a4a', Shore: '#9fd0d8', Water: '#3f8fb0', StonePath: '#8f8b82' };
+const MINIMAP_GROUND: Record<string, string> = { Sand: '#cdb88a', Dune: '#bfae7d', Pier: '#8a6a4a', Shore: '#9fd0d8', Water: '#3f8fb0', StonePath: '#8f8b82', Road: '#4b4f57', Sidewalk: '#bdbab3' };
 /** Tall north walls are drawn over the tiles behind them; a click on one means the floor right in front of it. */
 const NORTH_WALLS = WALLS.filter(wall => !wall.open && (wall.side === 'n' || wall.side === 'nw' || wall.side === 'ne'));
 function inFrontOfWall(point: Point): Tile | null {
@@ -162,6 +162,28 @@ function Ghost({ item, tile }: { item: EditItem; tile: GhostTile }) {
 }
 
 /** A person in the simplified view: a round badge with their initial under the nameplate, constant on screen. */
+/** Vehicle sprites (side view, facing right) and their size in pixels. */
+export const VEHICLES: Record<string, { w: number; h: number }> = { 'car-red': { w: 72, h: 44 }, 'car-blue': { w: 76, h: 44 }, 'car-taxi': { w: 76, h: 46 }, 'car-green': { w: 64, h: 42 }, 'van-white': { w: 84, h: 52 }, 'city-bus': { w: 140, h: 64 } };
+/** Cars driving along the street, from beyond one edge of the map to beyond the other. Decorative: nobody can be hit,
+    because the road itself cannot be walked on except at the crossing. */
+function Traffic({ still }: { still: boolean }) {
+  const margin = 400, distance = WORLD.width + margin * 2;
+  return <g pointerEvents="none" className="scene-traffic">{TRAFFIC.flatMap((lane, laneIndex) => {
+    const duration = distance / lane.speed;
+    return lane.vehicles.map((kind, index) => {
+      const size = VEHICLES[kind] ?? { w: 72, h: 44 };
+      const y = (lane.row + 1) * TILE - size.h - 9; // wheels inside the lane, clear of the centre line and the kerb
+      const offset = (index * duration) / lane.vehicles.length; // spread evenly over the loop, so cars in a lane never overlap
+      const from = lane.direction > 0 ? -margin : WORLD.width + margin, to = lane.direction > 0 ? WORLD.width + margin : -margin;
+      const image = <image className="pixel-resource" href={`/assets/pixel/vehicles/${kind}.png`} width={size.w} height={size.h} x={-size.w / 2} y={0} transform={lane.direction < 0 ? 'scale(-1 1)' : undefined} />;
+      if (still) return <g key={`${laneIndex}-${index}`} transform={`translate(${((index + .5) * WORLD.width) / lane.vehicles.length} ${y})`}>{image}</g>;
+      return <g key={`${laneIndex}-${index}`} transform={`translate(${from} ${y})`}>
+        {image}
+        <animateTransform attributeName="transform" type="translate" from={`${from} ${y}`} to={`${to} ${y}`} dur={`${duration}s`} begin={`${-((offset + laneIndex * 3.7) % duration)}s`} repeatCount="indefinite" />
+      </g>;
+    });
+  })}</g>;
+}
 function SimpleAvatar({ person, self, x, y, scale }: { person: Participant; self: boolean; x: number; y: number; scale: number }) {
   const k = 1 / scale, name = self ? `${person.name}` : person.name, width = (name.length * 6.4 + 26) * k;
   return <g className="scene-avatar scene-simple-avatar" transform={`translate(${x} ${y})`} shapeRendering="auto">
@@ -271,6 +293,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
   const scale = clamp(pinned?.zoom ?? zoom, MIN_ZOOM, 4);
   // Zoomed out (or on request) the office shows only floors, walls and people, as the reference's simplified view.
   const simpleView = (simplified || scale < SIMPLE_BELOW) && !editKind && !editorOpen;
+  const reducedMotion = useMemo(() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } }, []);
   const viewWidth = viewport.width / scale, viewHeight = viewport.height / scale;
   const viewX = camera.x - viewWidth / 2, viewY = camera.y - viewHeight / 2;
 
@@ -587,6 +610,7 @@ export default function VivoScene({ participants, selfId, objects, zoom, simplif
       </g>
       {editingMode && <g pointerEvents="none"><rect x={-WORLD.width} y={-WORLD.height} width={WORLD.width * 3} height={WORLD.height * 3} fill="#0b1020" fillOpacity=".28" /><rect x="0" y="0" width={WORLD.width} height={WORLD.height} fill="url(#edit-grid)" /></g>}
       {destination && <g pointerEvents="none" transform={`translate(${destination.tx * TILE} ${destination.ty * TILE})`}><rect x="2" y="2" width="28" height="28" rx="3" fill="none" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" /></g>}
+      {TRAFFIC.length > 0 && !simpleView && <Traffic still={reducedMotion} />}
       <g shapeRendering="crispEdges">{layers.map(layer => <g key={layer.key}>{layer.node}</g>)}</g>
       {simpleView && <SimpleAreaIcons scale={scale} />}
       {nearInteractive && <g pointerEvents="none" className="scene-interactive"><rect x={nearInteractive.object.x - nearInteractive.object.originX - 2} y={nearInteractive.object.y - nearInteractive.object.originY - 2} width={nearInteractive.object.w + 4} height={nearInteractive.object.h + 4} rx="3" fill="#f5c84222" stroke="#f5c842" strokeWidth="2" /></g>}

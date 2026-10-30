@@ -12,17 +12,22 @@ const reachable = (g, from) => {
 };
 
 for (const id of ['studio', 'campus']) {
-  test(`${id}: the sea cannot be walked on, and every chair, path, plaza, beach and pier is reachable from the lobby`, async () => {
+  test(`${id}: water and roads cannot be walked on, and every chair, path, plaza, crossing and pier is reachable from the lobby`, async () => {
     const { g, m, w } = await load(id);
     const seen = reachable(g, w.SPAWN_TILE);
     for (const seat of g.SEATS) assert.ok(seen.has(`${Math.floor(seat.standX / 32)}/${Math.floor(seat.standY / 32)}`), `${seat.label} is reachable`);
+    const openOver = (x, y, depth) => m.AREAS.some((o) => o.depth > depth && !o.blocked && x >= o.x && x < o.x + o.w && y >= o.y && y < o.y + o.h);
     for (const area of m.AREAS.filter((a) => a.id.startsWith('ground-'))) {
-      const tile = `${area.x + Math.floor(area.w / 2)}/${area.y + area.h - 1}`;
-      if (area.blocked) assert.ok(!seen.has(tile) || m.AREAS.some((o) => o.depth > area.depth && !o.blocked && tile === `${o.x + 1}/${o.y + o.h - 1}`), `${area.name} stays out of reach`);
-      else assert.ok(seen.has(tile), `${area.name} is reachable`);
+      const x = area.x + Math.floor(area.w / 2), y = area.y + area.h - 1;
+      if (area.blocked) assert.ok(!seen.has(`${x}/${y}`) || openOver(x, y, area.depth), `${area.name} stays out of reach`);
+      else assert.ok(seen.has(`${x}/${y}`), `${area.name} is reachable`);
     }
-    const pier = m.AREAS.find((a) => a.name === 'Muelle');
-    assert.ok(seen.has(`${pier.x + 1}/${pier.y + pier.h - 1}`), 'the end of the pier is reachable over the water');
-    assert.ok(!seen.has(`${pier.x - 3}/${pier.y + pier.h - 1}`), 'but the water beside it is not');
+    // A pier reaches over the water and a zebra crossing over the road; the water or road beside them does not.
+    for (const name of ['Muelle', 'Paso de peatones']) {
+      const way = m.AREAS.find((a) => a.name === name);
+      if (!way) continue;
+      assert.ok(seen.has(`${way.x + 1}/${way.y + way.h - 1}`), `the far end of the ${name} is reachable`);
+      assert.ok(!seen.has(`${way.x - 3}/${way.y + 1}`), `but beside the ${name} is not`);
+    }
   });
 }

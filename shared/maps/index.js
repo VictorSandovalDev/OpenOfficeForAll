@@ -40,8 +40,10 @@ const every = (from, to, step, make) => { const out = []; for (let v = from; v <
 const sunSpot = (x, y, color) => [['beach-umbrella', color, x, y], ['sun-lounger', 'white', x - 1, y + 2], ['sun-lounger', 'white', x + 1, y + 2], ['beach-towel', 'yellow', x + 3, y + 2]];
 
 // ---------------------------------------------------------------------------------------------------------------
-// Studio: the lobby, the team hall and the media room by the sea, with a garden walk down to the beach.
-const STUDIO_COLS = 40, STUDIO_ROWS = 58, SAND = 39;
+// Studio: the lobby, the team hall and the media room on a city street, with a garden walk down to the pavement,
+// a zebra crossing, traffic in both directions and a small park across the road.
+const STUDIO_COLS = 40, STUDIO_ROWS = 52;
+const ROAD = 40; // first row of the road
 const studio = composeMap(vivo, {
   cols: STUDIO_COLS, rows: STUDIO_ROWS, spawn: { tx: 10, ty: 27 },
   stamps: [
@@ -50,31 +52,50 @@ const studio = composeMap(vivo, {
   ],
   areas: [
     path(10, 31, 2, 4), // from the lobby door
-    path(2, 34, 36, 2), // the promenade
+    path(2, 34, 36, 2), // the garden walk
     path(32, 8, 2, 26), // along the east side of the building
     path(15, 6, 2, 2), // from the hall's garden door to the pond
     ground('Plaza', 'StonePath', 'Grey', 31, 2, 8, 6),
-    path(18, 36, 3, 3), // down to the sand
-    ...beach(STUDIO_COLS, SAND, STUDIO_ROWS, [[17, 22]]),
-    ...pier(29, STUDIO_ROWS - 10, 8),
+    path(19, 36, 3, 2), // down to the pavement
+    // The street: pavement, kerb, two lanes with a dashed centre line, kerb and pavement again.
+    ground('Acera', 'Sidewalk', 'Grey', 0, ROAD - 2, STUDIO_COLS, 1),
+    ground('Acera', 'Sidewalk', 'CurbBottom', 0, ROAD - 1, STUDIO_COLS, 1),
+    ground('Calle', 'Road', 'Asphalt', 0, ROAD, STUDIO_COLS, 4, { blocked: true }),
+    ground('Calle', 'Road', 'Line', 0, ROAD + 1, STUDIO_COLS, 1, { blocked: true, depth: 3 }),
+    ground('Paso de peatones', 'Road', 'Zebra', 19, ROAD, 3, 4, { depth: 4 }),
+    ground('Acera', 'Sidewalk', 'CurbTop', 0, ROAD + 4, STUDIO_COLS, 1),
+    ground('Acera', 'Sidewalk', 'Grey', 0, ROAD + 5, STUDIO_COLS, 1),
+    // The park across the street.
+    path(19, ROAD + 6, 3, 3),
+    path(3, ROAD + 8, 34, 2),
   ],
   objects: [
-    // Garden along the promenade: hedges with gaps, flower beds, benches and lamps.
+    // Garden along the walk: hedges with gaps, flower beds, benches and lamps.
     ['hedge', 'green', 2, 32], ['hedge', 'green', 4, 32], ['flower-bed', 'pink', 6, 32], ['hedge', 'green', 13, 32], ['flower-bed', 'pink', 15, 32], ['hedge', 'green', 17, 32], ['hedge', 'green', 22, 32], ['flower-bed', 'pink', 24, 32], ['hedge', 'green', 26, 32], ['hedge', 'green', 28, 32],
-    ['park-bench', 'wood', 5, 36], ['park-bench', 'wood', 23, 36], ['park-bench', 'wood', 33, 36],
-    ...[3, 14, 22, 30, 37].map((x) => ['street-lamp', 'black', x, 33]),
-    // The plaza with a fountain, benches and palms.
+    ['park-bench', 'wood', 5, 36], ['park-bench', 'wood', 25, 36], ['park-bench', 'wood', 33, 36],
+    ...[3, 14, 24, 30, 37].map((x) => ['street-lamp', 'black', x, 33]),
+    // The plaza with a fountain, benches and greenery.
     ['fountain', 'stone', 34, 3], ['park-bench', 'wood', 31, 2], ['park-bench', 'wood', 36, 2],
-    ['palm-tree-short', 'green', 38, 3], ['palm-tree-short', 'green', 38, 7], ['flower-bed', 'pink', 31, 7],
+    ['street-tree', 'green', 38, 3], ['street-tree', 'green', 38, 7], ['flower-bed', 'pink', 31, 7],
     // Trees around the building.
     ['pine-tree-small', 'green', 1, 10], ['pine-tree-large', 'green', 1, 18], ['maple-tree', 'lightgreen', 1, 25], ['birch-tree', 'lightgreen', 36, 14], ['pine-tree-small', 'green', 37, 21], ['maple-tree', 'green', 36, 28],
     ['pine-tree-small', 'green', 5, 2], ['birch-tree', 'lightgreen', 24, 3], ['pine-tree-large', 'green', 28, 1],
-    // The beach: palms, umbrellas, loungers and the fun bits.
-    ...every(2, 37, 7, (x) => [['palm-tree', 'green', x, SAND]]),
-    ...sunSpot(5, SAND + 2, 'red'), ...sunSpot(14, SAND + 3, 'blue'), ...sunSpot(23, SAND + 2, 'red'),
-    ['lifeguard-tower', 'white', 35, SAND + 2], ['surfboard', 'white', 28, SAND + 4], ['surfboard', 'white', 29, SAND + 4],
-    ['sandcastle', 'sand', 11, SAND + 5], ['beach-ball', 'red', 20, SAND + 5], ['beach-rocks', 'grey', 1, SAND + 5], ['beach-rocks', 'grey', 38, SAND + 5],
-    ['rowboat', 'wood', 33, SAND + 3],
+    // Near pavement: street trees, lamps, the bus stop, bins, bikes, a hydrant and traffic lights at the crossing.
+    ['street-tree', 'green', 2, ROAD - 2], ['street-tree', 'green', 11, ROAD - 2], ['street-tree', 'green', 27, ROAD - 2], ['street-tree', 'green', 38, ROAD - 2],
+    ['bus-stop', 'glass', 32, ROAD - 2], ['bike-rack', 'grey', 6, ROAD - 2], ['trash-bin', 'green', 16, ROAD - 2], ['trash-bin', 'green', 30, ROAD - 2],
+    ['fire-hydrant', 'red', 24, ROAD - 1], ['traffic-light', 'black', 18, ROAD - 1], ['traffic-light', 'black', 22, ROAD - 1],
+    // Far pavement.
+    ['traffic-light', 'black', 18, ROAD + 4], ['traffic-light', 'black', 22, ROAD + 4],
+    ['street-tree', 'green', 4, ROAD + 5], ['street-tree', 'green', 13, ROAD + 5], ['street-tree', 'green', 29, ROAD + 5], ['street-tree', 'green', 36, ROAD + 5],
+    ['food-cart', 'red', 25, ROAD + 5], ['trash-bin', 'green', 9, ROAD + 5], ['fire-hydrant', 'red', 33, ROAD + 4],
+    // The park.
+    ['park-bench', 'wood', 6, ROAD + 7], ['park-bench', 'wood', 13, ROAD + 7], ['park-bench', 'wood', 25, ROAD + 7], ['park-bench', 'wood', 32, ROAD + 7],
+    ['flower-bed', 'pink', 9, ROAD + 7], ['flower-bed', 'pink', 28, ROAD + 7],
+    ['maple-tree', 'lightgreen', 2, ROAD + 11], ['pine-tree-small', 'green', 10, ROAD + 11], ['birch-tree', 'lightgreen', 17, ROAD + 11], ['pine-tree-large', 'green', 25, ROAD + 11], ['maple-tree', 'green', 32, ROAD + 11], ['pine-tree-small', 'green', 38, ROAD + 10],
+  ],
+  traffic: [
+    { row: ROAD + 1, direction: 1, speed: 80, vehicles: ['car-red', 'car-taxi', 'van-white', 'car-green', 'city-bus', 'car-blue'] },
+    { row: ROAD + 3, direction: -1, speed: 70, vehicles: ['car-blue', 'city-bus', 'car-green', 'car-taxi', 'car-red', 'van-white'] },
   ],
 });
 

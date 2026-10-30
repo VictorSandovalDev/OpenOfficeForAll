@@ -6,7 +6,7 @@ const TILE = 32;
 const inside = (rect, x, y) => x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h;
 const containsArea = (rect, area) => area.x >= rect.x && area.y >= rect.y && area.x + area.w <= rect.x + rect.w && area.y + area.h <= rect.y + rect.h;
 
-export function composeMap(base, { cols, rows, stamps, spawn, areas: extraAreas = [], objects: placements = [] }) {
+export function composeMap(base, { cols, rows, stamps, spawn, areas: extraAreas = [], objects: placements = [], traffic = [] }) {
   const root = { id: 'root', name: 'Public area', type: 'Public', parent: null, x: 0, y: 0, w: cols, h: rows, depth: 1, capacity: null, floor: 'NewStyleGrass', floorColor: 'Green', walls: null, doorways: [] };
   const areas = [root], objects = [], extras = [];
   const walled = base.AREAS.filter((area) => area.walls);
@@ -52,5 +52,5 @@ export function composeMap(base, { cols, rows, stamps, spawn, areas: extraAreas 
       x: tx * TILE + variant.offLeft + variant.originX, y: ty * TILE + variant.offTop + variant.originY,
       ...(variant.blocks.length ? { blocks: variant.blocks.map(([x, y]) => [tx + x, ty + y]) } : {}), ...(variant.seat.length ? { seat: variant.seat.map(([x, y]) => [tx + x, ty + y]) } : {}) });
   });
-  return { TILE, WORLD: Object.freeze({ cols, rows, width: cols * TILE, height: rows * TILE }), AREAS: areas, OBJECTS: objects, EXTRA_OBJECTS: extras, SPAWN_TILE: Object.freeze(spawn) };
+  return { TILE, WORLD: Object.freeze({ cols, rows, width: cols * TILE, height: rows * TILE }), AREAS: areas, OBJECTS: objects, EXTRA_OBJECTS: extras, SPAWN_TILE: Object.freeze(spawn), TRAFFIC: traffic };
 }

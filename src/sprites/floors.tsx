@@ -169,6 +169,37 @@ function pier({ left = false, right = false, end = false } = {}): PixelSprite {
   }
   return { w: 32, h: 32, palette: { b: '#c39a6b', c: '#b38a5d', g: '#6e5038', n: '#7b5c43', k: '#5a3f2c', e: '#3f2b1f', p: '#6b4a33', q: '#9a7350' }, rows };
 }
+/** Asphalt; `line` paints the dashed centre line along the tile's bottom edge, `zebra` the crossing stripes. */
+function asphalt({ line = false, zebra = false } = {}): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      const dash = line && y >= 29 && x % 32 < 18 && x % 32 >= 2;
+      const stripe = zebra && x % 16 >= 3 && x % 16 < 12 && y >= 2 && y < 30;
+      const n = noise(x, y, 11);
+      row += dash ? 'y' : stripe ? (n > .9 ? 'z' : 'w') : n > .93 ? 'l' : n < .06 ? 'd' : 'b';
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { b: '#4b4f57', l: '#5a5e66', d: '#3f4249', y: '#f2c94c', w: '#e9e9e4', z: '#cfcfca' }, rows };
+}
+/** Sidewalk slabs; `curb` adds the kerb along the side that meets the road ('top' or 'bottom'). */
+function sidewalk(curb: '' | 'top' | 'bottom' = ''): PixelSprite {
+  const rows: string[] = [];
+  for (let y = 0; y < 32; y++) {
+    let row = '';
+    for (let x = 0; x < 32; x++) {
+      const kerb = (curb === 'bottom' && y >= 27) || (curb === 'top' && y < 5);
+      const kerbEdge = (curb === 'bottom' && y === 27) || (curb === 'top' && y === 4);
+      const kerbShade = (curb === 'bottom' && y >= 30) || (curb === 'top' && y < 2);
+      const joint = x % 16 === 15 || y % 16 === 15;
+      row += kerb ? (kerbEdge ? 'e' : kerbShade ? 's' : 'k') : joint ? 'j' : noise(Math.floor(x / 16), Math.floor(y / 16), 6) > .5 ? 'b' : 'c';
+    }
+    rows.push(row);
+  }
+  return { w: 32, h: 32, palette: { b: '#c9c6bf', c: '#c1beb6', j: '#a9a59d', k: '#b3b0a9', e: '#dedbd4', s: '#8d8a83' }, rows };
+}
 function cobbles(): PixelSprite {
   const rows: string[] = [];
   for (let y = 0; y < 32; y++) {
@@ -205,6 +236,12 @@ export const ORIGINAL_FLOOR_TILES: Record<string, PixelSprite> = {
   'Pier/EndLeft': pier({ left: true, end: true }),
   'Pier/EndRight': pier({ right: true, end: true }),
   'StonePath/Grey': cobbles(),
+  'Road/Asphalt': asphalt(),
+  'Road/Line': asphalt({ line: true }),
+  'Road/Zebra': asphalt({ zebra: true }),
+  'Sidewalk/Grey': sidewalk(),
+  'Sidewalk/CurbBottom': sidewalk('bottom'),
+  'Sidewalk/CurbTop': sidewalk('top'),
 };
 export const FLOOR_TILES: Record<string, PixelSprite> = { ...ORIGINAL_FLOOR_TILES, ...REFERENCE_FLOORS };
 export const floorKey = (texture: string, color: string) => `${texture}/${color}`;

@@ -11,6 +11,7 @@ export const CATEGORIES: { id: string; es: string; en: string; families: string[
   { id: 'kitchen', es: 'Cocina y café', en: 'Kitchen and coffee', families: ['Coffee', 'Fridge', 'Kitchen Counters', 'Hydration'] },
   { id: 'plants', es: 'Plantas y exterior', en: 'Plants and outdoors', families: ['Room Plant', 'Desk Plant', 'Ground Plant', 'Tree', 'Pond', 'Garden', 'Garden Seat', 'Fountain'] },
   { id: 'beach', es: 'Playa', en: 'Beach', families: ['Palm Tree', 'Beach Umbrella', 'Beach Seat', 'Beach Decor'] },
+  { id: 'city', es: 'Ciudad', en: 'City', families: ['Street'] },
   { id: 'lighting', es: 'Iluminación', en: 'Lighting', families: ['Floor Lamp', 'Street Lamp'] },
   { id: 'decor', es: 'Decoración', en: 'Decoration', families: ['Painting', 'Wall Cover', 'Wall Clock', 'Globe', 'Small Fishtank', 'Duck'] },
   { id: 'stationery', es: 'Papelería y oficina', en: 'Stationery and office', families: ['Book', 'Document', 'Handwritten Notes', 'Easel'] },
@@ -101,12 +102,19 @@ const NAMES: Record<string, [string, string]> = {
   'park-bench': ['Banco', 'Park bench'],
   'street-lamp': ['Farola', 'Street lamp'],
   'fountain': ['Fuente', 'Fountain'],
+  'bus-stop': ['Parada de autobús', 'Bus stop'],
+  'traffic-light': ['Semáforo', 'Traffic light'],
+  'fire-hydrant': ['Boca de incendio', 'Fire hydrant'],
+  'bike-rack': ['Aparcabicis', 'Bike rack'],
+  'trash-bin': ['Papelera', 'Trash bin'],
+  'street-tree': ['Árbol de calle', 'Street tree'],
+  'food-cart': ['Carrito de comida', 'Food cart'],
 };
 const COLORS: Record<string, [string, string]> = {
   purple: ['morado', 'purple'], black: ['negro', 'black'], white: ['blanco', 'white'], yellow: ['amarillo', 'yellow'],
   lightcoffee: ['madera clara', 'light wood'], coffee: ['madera', 'wood'], brown: ['marrón', 'brown'], blue: ['azul', 'blue'],
   pink: ['rosa', 'pink'], green: ['verde', 'green'], lightgreen: ['verde claro', 'light green'], grey: ['gris', 'grey'],
-  teal: ['turquesa', 'teal'], sand: ['arena', 'sand'], wood: ['madera', 'wood'], stone: ['piedra', 'stone'], lightteal: ['turquesa claro', 'light teal'], orange: ['naranja', 'orange'], lightblue: ['azul claro', 'light blue'], red: ['rojo', 'red'],
+  teal: ['turquesa', 'teal'], sand: ['arena', 'sand'], glass: ['cristal', 'glass'], wood: ['madera', 'wood'], stone: ['piedra', 'stone'], lightteal: ['turquesa claro', 'light teal'], orange: ['naranja', 'orange'], lightblue: ['azul claro', 'light blue'], red: ['rojo', 'red'],
 };
 const FACINGS: Record<string, [string, string]> = { Down: ['de frente', 'facing front'], Up: ['de espaldas', 'facing back'], Left: ['hacia la izquierda', 'facing left'], Right: ['hacia la derecha', 'facing right'] };
 
